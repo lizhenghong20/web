@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.farwalker.ravv.service.category.value.dao.IBaseCategoryPropertyValueDao">
+    
+      <select id="getProValListTreeByCatId" resultType="cn.farwalker.waka.core.ZTreeNode">
+		SELECT
+			bcpv.id AS id,
+			bcpv.property_id AS pid,
+			bcpv. value_name AS `name`,
+			('false') AS isOpen,
+			('false') AS checked
+		FROM
+			base_category_property_value bcpv
+		<where>
+			<if test="catId != null and catId != 0">
+				bcpv.tmp_category_id = #{catId}
+			</if>
+		</where>
+		ORDER BY
+			bcpv.gmt_create DESC
+	</select>
+    
+</mapper>

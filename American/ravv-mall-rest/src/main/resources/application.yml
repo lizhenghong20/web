@@ -1,0 +1,30 @@
+
+
+hello:
+  msg: 我的消息
+
+mybatis-plus:
+  # 多值的配置 mapper-locations: classpath*:cn/farwalker/ravv/**/dao/*Mapper.xml,classpath*:cn/farwalker/standard/**/mapping/*.xml
+  mapper-locations: classpath*:cn/farwalker/ravv/**/dao/*Mapper.xml
+  typeAliasesPackage: cn.farwalker.ravv.service.**.model
+  # 枚举支持统配符 * 或者 ; 分割
+  typeEnumsPackage: cn.farwalker.waka.constants;cn.farwalker.ravv.service.**.constants
+  global-config:
+    id-type: 2  #0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
+    db-column-underline: false
+    refresh-mapper: true
+    #自定义填充策略接口实现
+    meta-object-handler: cn.farwalker.waka.core.WakaMetaObjectHandler
+  configuration:
+    map-underscore-to-camel-case: true #开启下划线转驼峰
+    auto-mapping-behavior: partial #只对非嵌套的 resultMap 进行自动映射
+    cache-enabled: true #配置的缓存的全局开关
+    lazyLoadingEnabled: true #延时加载的开关
+    multipleResultSetsEnabled: true #开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句,调试用
+
+
+###################  spring配置  ###################
+spring:
+  profiles:
+    active: @profileActive@

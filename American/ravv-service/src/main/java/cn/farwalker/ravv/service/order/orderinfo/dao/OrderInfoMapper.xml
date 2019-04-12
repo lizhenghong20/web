@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.order.orderinfo.dao.IOrderInfoDao">
+    
+    <!-- 我的订单列表
+    未付款前显示 拆单的主单和没有拆单的订单
+    select * from order_info o where (order_status in ('CREATED_UNREVIEW','REVIEWADOPT_UNPAID','REVIEW_REJECT') and order_type != 1) 
+	union 
+	已付款前显示 拆单的子单和没有拆单的订单
+	select * from order_info o where order_status in ('PAID_UNSENDGOODS','GOODS_SENDING','SENDGOODS_UNCONFIRM','SING_GOODS','TRADE_CLOSE') and order_type in (1,2);
+     -->
+    <select id="getMyOrder" resultType="cn.farwalker.ravv.service.order.orderinfo.model.OrderInfoBo">
+      select * from (
+        select * from order_info  where (order_type != 1 and order_status in 
+        <foreach collection="unpaidStatus" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        )
+        <if test="search"><!--  搜索条件 (要加入pid) -->
+        	and (
+        		id in (select order_id from order_goods where goods_name like #{search})
+        		or id in (select o.pid from order_info o inner join order_goods g on o.id = g.order_id where o.order_type=1 and g.goods_name like #{search})
+        	)
+        </if>
+        <include refid="getMyOrderWhere"/>
+        union 
+        select * from order_info where 
+         (order_type in (1,2) and order_status in 
+        <foreach collection="paidStatus" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+        ) 
+        <if test="search"><!--  搜索条件  -->
+        	and (id in (select order_id from order_goods where goods_name like #{search}))
+        </if>
+        <include refid="getMyOrderWhere"/>
+      ) t
+      <include refid="getMyOrderFieldList"/>
+      limit #{start},#{size}
+    </select>
+    
+    <sql id="getMyOrderWhere">
+		<if test ="buyerId">and buyer_id = #{buyerId}</if> 
+		<if test="lastDate">and gmt_create &gt;= #{lastDate}</if>
+		<!-- 未评论 -->
+		<if test ="waitReview">and (id in (select order_id from order_goods where ifnull(comment,0)=0))</if>
+		<!-- 售后 --> 
+		<if test="afterSale">and (id in (select order_id from order_returns))</if>
+		<if test="statusList">
+			and order_status in 
+	        <foreach collection="statusList" item="item" index="index" open="(" close=")" separator=",">
+	            #{item}
+	        </foreach>
+        </if>
+        
+	</sql>
+	
+    <sql id="getMyOrderFieldList">
+		<if test="orderList">
+			order by
+			<foreach collection="orderList" item="column" separator=",">
+				${column}
+			</foreach>
+		</if>
+	</sql>
+</mapper>

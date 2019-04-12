@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.farwalker.ravv.service.base.storehouse.dao.IStorehouseUserDao">
+	<select id="sysUserListByStoreId" resultType="cn.farwalker.ravv.service.sys.user.model.SysUserBo">
+		select
+		su.id,su.account,su.avatar,su.birthday,su.deptid,su.email,su.`name`,su.phone,su.remark,su.roleid,su.sex,su.`status`
+		
+		from storehouse_user shu
+		LEFT JOIN sys_user su ON su.id = shu.user_id
+		<where>
+			<if test="storeId != null and storeId != 0">
+				shu.store_id = #{storeId}
+			</if>
+		</where>
+	</select>
+</mapper>

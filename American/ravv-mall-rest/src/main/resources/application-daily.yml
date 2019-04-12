@@ -1,0 +1,65 @@
+waka:
+  auth-open: true #jwt鉴权机制是否开启(true或者false)
+  sign-open: true #签名机制是否开启(true或false)
+  file-upload-path: d:/tmp  #文件上传目录(不配置的话为java.io.tmpdir目录)
+  rest-domain-path: http://localhost:8070/
+jwt:
+  header: Authorization   #http请求头所需要的字段
+  secret: mySecret        #jwt秘钥
+  expiration: 60      #测试 单位:秒
+  auth-path: auth         #认证请求的路径
+  md5-key: randomKey      #md5加密混淆key
+
+server:
+  port: 9200 #项目端口
+  context-path: /ravv-mall-rest/
+
+spring:
+  profiles: daily
+  datasource:
+      url: jdbc:mysql://52.53.127.206:3306/ravv?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+      username: root
+      password: Ravv_123
+      db-name: ravv
+      type: com.alibaba.druid.pool.DruidDataSource
+      filters: log4j,wall,mergeStat
+
+logging:
+  level.root: info
+  level.cn.farwalker: debug
+  path: logs/
+  file: dev-rest.log
+
+wechat:
+  appid: wx0bd79a512d56a83c
+  secret: 4bcc9519778c3b108822885658d5de31
+  token: 111
+  aesKey: wPofYpaaljbfribotOx0RfzUbGSmYN3QuoZ3JHIdDda
+  msgDataFormat: JSON
+  mchId: 1501826331
+  mchKey: 49fd664cbf3500fd0c1d57f9b3dc20ff
+  notifyUrl: https://weapp.standard.ketter.cn/wxpay/notify
+#  subAppId: dsfas
+#  subMchId: sdfadsf
+#  keyPath: sdfsdaf
+
+# 七牛云配置
+# bucket是创建的存储空间名
+# path对应存储空间的访问域名
+qiniu:
+  accessKey: jnIntrKoJKDbQX0wxya1VTNUTYE6DOx70SGwy_Bz
+  secretKey: vJUjlYuOHe8CUkh1322Ag-ggN7ugAZq9fu2I_lgY
+  bucket: ravv
+  domain: http://ravv.qiniu.farwalker.cn
+
+#app样式
+ravv:
+    app:
+      style: /styleControl.css
+#paypal的沙箱测试环境
+#paypal:
+#  mode: sandbox
+#  client:
+#    app: AX-x-YAnir3Wy25ha46CB7Xx8-FiE4rQgraI5hg-C2YB2EMzTmAX4z8iCAHot9LmqKbw2GLnRFmJMGLN
+#    secret: EIIQHJ-PxWEI__RZ7B1qMDTFJpzz87j7ri3Qyab7tNBjh9m1lqN0HaGMV7eFEGj5UkxRee4H1rgNfAir
+

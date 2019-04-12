@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.web.webmodel.dao.IWebModelGoodsDao">
+    <select id="selectHomePage" parameterType="map" resultType="cn.farwalker.ravv.service.goods.base.model.GoodsListVo">
+        select gs.id,min(gp.price) as lowest_price,wmg.menu_id,wm.picture1,wm.picture2,wm.title,gs.goods_name,gi.img_url
+        from goods gs
+        left join web_model_goods wmg
+        on gs.id = wmg.goods_id
+        left join web_menu wm
+        on wmg.menu_id = wm.id
+        LEFT JOIN goods_image gi
+        on wmg.goods_id = gi.goods_id
+        left join goods_price gp
+        on gs.id = gp.goods_id
+        where gi.img_position LIKE 'MAJOR'
+        and   wmg.model_code LIKE #{modelCode}
+         and  wmg.show_type LIKE #{showType}
+         and gs.goods_status LIKE 'online'
+         group by gs.id,wmg.menu_id,wm.sequence
+         order by wm.sequence,wmg.menu_id
+    </select>
+
+    <select id="selectGoodsIdListByMenuId" parameterType="map" resultType="long">
+        select wmg.goods_id
+        from web_model_goods wmg
+        left join goods on goods.id = wmg.goods_id
+        where wmg.model_code LIKE #{modelCode}
+        and goods.goods_status like 'online'
+        <if test="menuIdList != null">
+            and wmg.menu_id in
+            <foreach collection="menuIdList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        group by wmg.goods_id,wmg.menu_id
+    </select>
+    <select id="searchModelGoods" parameterType="map" resultType="cn.farwalker.ravv.service.web.webmodel.model.WebModelGoodsVo">
+        SELECT
+			*
+		FROM
+			web_model_goods wmg
+		LEFT JOIN goods g ON wmg.goods_id = g.id
+		<where>
+			<if test="modelCode != null and modelCode != ''">
+				AND wmg.model_code = #{modelCode}
+			</if>
+			<if test="goodsName != null and goodsName != ''">
+				AND g.goods_name LIKE CONCAT("%",#{goodsName}, "%")
+			</if>
+			<if test="showType != null and showType != ''">
+				AND wmg.show_type = #{showType}
+			</if>
+		</where>
+		LIMIT #{start},#{size}
+    </select>
+
+	<select id="countModelGoods" parameterType="map" resultType="java.lang.Integer">
+        SELECT
+			count(*)
+		FROM
+			web_model_goods wmg
+		LEFT JOIN goods g ON wmg.goods_id = g.id
+		<where>
+			<if test="modelCode != null and modelCode != ''">
+				AND wmg.model_code = #{modelCode}
+			</if>
+			<if test="goodsName != null and goodsName != ''">
+				AND g.goods_name LIKE CONCAT("%",#{goodsName}, "%")
+			</if>
+			<if test="showType != null and showType != ''">
+				AND wmg.show_type = #{showType}
+			</if>
+		</where>
+    </select>
+</mapper>

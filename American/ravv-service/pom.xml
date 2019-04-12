@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>ravv-service</artifactId>
+	<packaging>jar</packaging>
+
+	<name>ravv-service</name>
+	<description>ravv service</description>
+
+	<parent>
+		<groupId>cn.farwalker</groupId>
+		<artifactId>ravv-parent</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>cn.farwalker</groupId>
+			<artifactId>ravv-component</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cn.farwalker</groupId>
+			<artifactId>ravv-web-core</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>cn.farwalker</groupId>
+			<artifactId>ravv-generator-code</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+
+		<!--税率taxjar对接
+			https://blog.csdn.net/zxl646801924/article/details/80984949
+			-->
+		<dependency>
+			<groupId>com.taxjar</groupId>
+			<artifactId>taxjar-java</artifactId>
+		</dependency>
+
+		<!--spring boot 热加载-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.google.api-client/google-api-client -->
+		<dependency>
+			<groupId>com.google.api-client</groupId>
+			<artifactId>google-api-client</artifactId>
+		</dependency>
+
+		<!-- YouTube Data V3 support -->
+		<dependency>
+			<groupId>com.google.apis</groupId>
+			<artifactId>google-api-services-youtube</artifactId>
+		</dependency>
+
+		<!-- paypal -->
+		<dependency>
+			<groupId>com.paypal.sdk</groupId>
+			<artifactId>rest-api-sdk</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+
+		<!-- shipstation依赖 -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>2.8</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-jackson</artifactId>
+			<version>2.8</version>
+		</dependency>
+    </dependencies>
+
+
+	
+	<build>  
+	    <resources>  
+	        <resource>  
+	            <directory>src/main/resources</directory>  
+	            <includes>  
+	                <include>**/*.properties</include>  
+	                <include>**/*.xml</include>  
+	                <include>**/*.tld</include>  
+	            </includes>  
+	            <filtering>false</filtering>  
+	        </resource>  
+	        <resource>  
+	            <directory>src/main/java</directory>  
+	            <includes>  
+	                <include>**/*.properties</include>  
+	                <include>**/*.xml</include>  
+	                <include>**/*.tld</include>  
+	            </includes>  
+	            <filtering>false</filtering>  
+	        </resource>  
+	    </resources>  
+	</build>
+</project>

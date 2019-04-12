@@ -1,0 +1,39 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="${item.id}">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="主键" value="${item.id}" underline="true"/>
+                            <#input id="accountType" name="第三方账号类型" value="${item.accountType}" underline="true"/>
+                            <#input id="accountNickname" name="第三方账号昵称" value="${item.accountNickname}" underline="true"/>
+                            <#input id="account" name="第三方账号" value="${item.account}" underline="true"/>
+                            <#input id="validateStatus" name="验证状态" value="${item.validateStatus}" underline="true"/>
+                            <#input id="enable" name="是否启用" value="${item.enable}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="bindTime" name="绑定时间" value="${item.bindTime}" underline="true"/>
+                            <#input id="unbindTime" name="解除绑定时间" value="${item.unbindTime}" underline="true"/>
+                            <#input id="memberId" name="会员ID" value="${item.memberId}" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" value="${item.gmtCreate}" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" value="${item.gmtModified}" underline="true"/>
+                            <#input id="remark" name="备注" value="${item.remark}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberThirdpartAccountInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberThirdpartAccountInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/memberThirdpartAccount/memberThirdpartAccount_info.js"></script>
+@}

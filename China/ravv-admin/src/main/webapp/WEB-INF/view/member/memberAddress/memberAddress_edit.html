@@ -1,0 +1,44 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="${item.id}">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="主键" value="${item.id}" underline="true"/>
+                            <#input id="name" name="名称" value="${item.name}" underline="true"/>
+                            <#input id="lastname" name="姓" value="${item.lastname}" underline="true"/>
+                            <#input id="middleName" name="父名" value="${item.middleName}" underline="true"/>
+                            <#input id="firstname" name="名字" value="${item.firstname}" underline="true"/>
+                            <#input id="areaName" name="地区名" value="${item.areaName}" underline="true"/>
+                            <#input id="areaId" name="地区ID" value="${item.areaId}" underline="true"/>
+                            <#input id="address" name="详细地址" value="${item.address}" underline="true"/>
+                            <#input id="zip" name="邮编" value="${item.zip}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="mobile" name="联系电话" value="${item.mobile}" underline="true"/>
+                            <#input id="deliveryDay" name="送货日期" value="${item.deliveryDay}" underline="true"/>
+                            <#input id="deliveryTime" name="送货时间" value="${item.deliveryTime}" underline="true"/>
+                            <#input id="defaultAddr" name="是否默认地址" value="${item.defaultAddr}" underline="true"/>
+                            <#input id="memberId" name="会员ID" value="${item.memberId}" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" value="${item.gmtCreate}" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" value="${item.gmtModified}" underline="true"/>
+                            <#input id="remark" name="备注" value="${item.remark}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberAddressInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberAddressInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/memberAddress/memberAddress_info.js"></script>
+@}

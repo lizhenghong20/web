@@ -1,0 +1,52 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="支付单号" underline="true"/>
+                            <#input id="money" name="金额" underline="true"/>
+                            <#input id="curMoney" name="货币金额" underline="true"/>
+                            <#input id="status" name="支付状态" underline="true"/>
+                            <#input id="payMethod" name="付款方式" underline="true"/>
+                            <#input id="payType" name="支付类型" underline="true"/>
+                            <#input id="payedTime" name="支付完成时间" underline="true"/>
+                            <#input id="operatorId" name="操作员" underline="true"/>
+                            <#input id="account" name="平台对应的账号" underline="true"/>
+                            <#input id="bank" name="银行" underline="true"/>
+                            <#input id="payAccount" name="支付账户" underline="true"/>
+                            <#input id="currencyCode" name="货币编码" underline="true"/>
+                            <#input id="paycost" name="手续费"/>
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="ip" name="支付IP" underline="true"/>
+                            <#input id="payBeginTime" name="支付开始时间" underline="true"/>
+                            <#input id="payConfirmTime" name="支付确认时间" underline="true"/>
+                            <#input id="memo" name="支付注释" underline="true"/>
+                            <#input id="returnUrl" name="返回URL" underline="true"/>
+                            <#input id="disabled" name="取消该笔支付" underline="true"/>
+                            <#input id="tradeNo" name="交易编号" underline="true"/>
+                            <#input id="memberId" name="会员ID" underline="true"/>
+                            <#input id="orderId" name="订单ID" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" underline="true"/>
+                            <#input id="remark" name="备注" underline="true"/>
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberPaymentLogInfoDlg.addSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberPaymentLogInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/memberPaymentLog/memberPaymentLog_info.js"></script>
+@}

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.farwalker.ravv.service.order.returns.dao.IOrderReturnsDao">
+
+
+	<select id="getMyReturns" resultType="cn.farwalker.ravv.service.order.returns.model.MemberOrderReturnsVo">
+		SELECT
+			ort.*, sum(ord.refund_qty) AS returnCount
+		FROM
+			order_returns ort
+		LEFT JOIN order_returns_detail ord ON ord.returns_id = ort.id
+      <where>
+	  	<if test="memberId != null">
+	      	AND ort.buyer_id = #{memberId}
+	  	</if>
+	  	<if test="returnsTypeList != null">
+	    	AND ort.returns_type in
+	      	<foreach collection="returnsTypeList" item="item" index="index" open="(" close=")" separator=",">
+	  			#{item}
+	        </foreach>
+		</if>
+    	<if test="statusList != null">
+	      	AND ort.status IN
+	      	<foreach collection="statusList" item="item" index="index" open="(" close=")" separator=",">
+	            #{item}
+	        </foreach>
+      	</if>
+      	<if test="closeStatusList != null and isReturnFinish == true">
+	      	AND ort.status IN
+	      	<foreach collection="closeStatusList" item="item" index="index" open="(" close=")" separator=",">
+	            #{item}
+	        </foreach>
+      	</if>
+      	<if test="closeStatusList != null and isReturnFinish == false">
+	      	AND ort.status NOT IN
+	      	<foreach collection="closeStatusList" item="item" index="index" open="(" close=")" separator=",">
+	            #{item}
+	        </foreach>
+      	</if>
+      	<if test="orderId != null">
+      		AND ort.order_id = #{orderId}
+      	</if>
+      </where>
+     	GROUP BY ort.id
+      	ORDER BY ort.gmt_create DESC
+      	limit #{start},#{size}
+     
+    </select>
+    
+    
+    <sql id="getMyOrderFieldList">
+		<if test="orderFieldList">
+			order by
+			<foreach collection="orderFieldList" item="column" separator=",">
+				${column}
+			</foreach>
+		</if>
+	</sql>
+	
+	
+	<select id="getSkuInfoByReturnsId" resultType="cn.farwalker.ravv.service.goodssku.skudef.model.GoodsSkuVo">
+		SELECT
+			g.goods_name AS goodsName,
+			gsd.*
+		FROM
+			order_returns orr
+		LEFT JOIN order_returns_detail ord ON orr.id = ord.returns_id
+		LEFT JOIN goods g ON g.id = ord.goods_id
+		LEFT JOIN goods_sku_def gsd ON gsd.id = ord.sku_id
+		<where>
+			<if test="returnsId != null">
+				orr.id = #{returnsId}
+				and g.id is not null
+				and gsd.id is not null
+			</if>
+		</where>
+	</select>
+
+
+	
+	<select id="getOrderReturnsInfo" resultType="cn.farwalker.ravv.service.order.returns.model.OrderReturnsVo">
+    	SELECT
+			ort.*, sum(ord.refund_qty) AS reGoodsTotal
+		FROM
+			order_returns ort
+		LEFT JOIN order_returns_detail ord ON ord.returns_id = ort.id
+		<where>
+			<if test="returnsId != null">
+				ort.id = #{returnsId}
+			</if>
+		</where>
+		GROUP BY ort.id
+		LIMIT 1
+    </select>
+	
+</mapper>

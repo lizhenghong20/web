@@ -1,0 +1,64 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="会员ID" underline="true"/>
+                            <#input id="name" name="名称" underline="true"/>
+                            <#input id="password" name="密码" underline="true"/>
+                            <#input id="payPassword" name="支付密码" underline="true"/>
+                            <#input id="regIp" name="注册IP" underline="true"/>
+                            <#input id="registerTime" name="注册时间" underline="true"/>
+                            <#input id="status" name="审核状态" underline="true"/>
+                            <#input id="area" name="所属地区" underline="true"/>
+                            <#input id="address" name="地址" underline="true"/>
+                            <#input id="mobile" name="手机" underline="true"/>
+                            <#input id="tel" name="固定电话" underline="true"/>
+                            <#input id="zip" name="邮编" underline="true"/>
+                            <#input id="memberType" name="会员类型" underline="true"/>
+                            <#input id="sex" name="性别" underline="true"/>
+                            <#input id="birthday" name="出生年月" underline="true"/>
+                            <#input id="email" name="邮箱" underline="true"/>
+                            <#input id="nickName" name="昵称" underline="true"/>
+                            <#input id="lastname" name="姓氏" underline="true"/>
+                            <#input id="middleName" name="副名"/>
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="firstname" name="名字" underline="true"/>
+                            <#input id="favCurrencyId" name="喜好的货币ID" underline="true"/>
+                            <#input id="favCurrencyName" name="喜好的货币名称" underline="true"/>
+                            <#input id="favLang" name="喜好的语言" underline="true"/>
+                            <#input id="orderNum" name="订单数" underline="true"/>
+                            <#input id="loginCount" name="登录次数" underline="true"/>
+                            <#input id="point" name="积分" underline="true"/>
+                            <#input id="deposit" name="当前预存款" underline="true"/>
+                            <#input id="advance" name="账户余额" underline="true"/>
+                            <#input id="advanceFreeze" name="冻结金额" underline="true"/>
+                            <#input id="pointFreeze" name="冻结金额" underline="true"/>
+                            <#input id="referralCode" name="推荐码" underline="true"/>
+                            <#input id="avator" name="头像" underline="true"/>
+                            <#input id="qrcode" name="二维码" underline="true"/>
+                            <#input id="levelId" name="等级ID" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" underline="true"/>
+                            <#input id="remark" name="备注" underline="true"/>
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberInfoDlg.addSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/member/member_info.js"></script>
+@}

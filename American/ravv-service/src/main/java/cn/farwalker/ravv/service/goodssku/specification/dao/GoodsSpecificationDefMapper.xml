@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.goodssku.specification.dao.IGoodsSpecificationDefDao">
+
+    <select id="selectGoodsSpecificationDefVosById" parameterType="java.lang.Long" resultType="cn.farwalker.ravv.service.goodssku.specification.model.GoodsSpecificationDefVo">
+        select gsd.*,bcpv.value_name,bcpv.property_id
+        from goods_specification_def gsd
+        left JOIN base_category_property_value bcpv  on gsd.property_value_id = bcpv.id
+        where gsd.goods_id = #{goodsId}
+
+    </select>
+</mapper>

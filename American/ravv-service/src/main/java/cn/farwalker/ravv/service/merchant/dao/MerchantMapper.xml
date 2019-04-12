@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.merchant.dao.IMerchantDao">
+    
+    <!--  订单数(有支付的都有效)
+	public Map<Long,Integer> getOrderCount( Long  merchantId,
+			Date startdate, Date enddate);
+	-->
+    <select id="getOrderCount" resultType="Integer">
+     select count(o.id) as orderCount from order_info o inner join order_paymemt p on o.id = p.order_id
+     	 where (p.pay_status ='PAID' or p.pay_status ='REFUND') 
+     	and (o.gmt_create BETWEEN #{startdate} and #{enddate} )
+     	and exists
+		(select og.id from order_goods og
+			inner join goods g on g.id = og.goods_id 
+			where o.id = og.order_id  and g.merchant_id  = #{merchantId}
+        )
+    </select>
+    
+    <!-- 订单商品数量(有支付的都有效)*/
+	public List<MerchantOrderVo> getGoodsCount(List<Long> merchantIds,
+			Date startdate, Date enddate);
+	-->
+	<select id="getGoodsCount" resultType="cn.farwalker.ravv.service.merchant.model.MerchantOrderVo">
+      select g.merchant_id as merchant_id, sum(og.quantity) as goodsCount from order_paymemt p 
+		INNER JOIN order_goods og on p.order_id = og.order_id
+		INNER JOIN goods g on g.id = og.goods_id
+		where (p.pay_status ='PAID' or p.pay_status ='REFUND') 
+		     	and (p.gmt_create BETWEEN #{startdate} and #{enddate} )
+		     	and g.merchant_id  in
+		        <foreach collection="merchantIds" item="item" index="index" open="(" close=")" separator=",">
+		            #{item}
+		        </foreach> 
+		group by g.merchant_id
+    </select>
+    
+     <!-- 完成订单数量（退一件都不统计）
+	public Integer getOrderFinish(Long merchantId, Date startdate, Date enddate)
+	-->
+	<select id="getOrderFinish" resultType="Integer">
+     select count(o.id) as orderFinish from order_info o inner join order_paymemt p on o.id = p.order_id
+     	 where (o.order_status ='TRADE_CLOSE'  ) 
+     	and (o.gmt_create BETWEEN #{startdate} and #{enddate} )
+		and not EXISTS (select r.id from order_returns r where r.order_id= o.id)
+     	and EXISTS 
+		(select og.id from order_goods og  inner join goods g on g.id = og.goods_id 
+			where g.merchant_id  = #{merchantId} and o.id = og.order_id
+        )
+    </select>
+    
+    <!-- 取消订单数量（没有发货，取消的订单）
+	public Integer getOrderCancel(Long merchantId, Date startdate, Date enddate);
+	-->
+	<select id="getOrderCancel" resultType="Integer">
+     select count(o.id) as orderCancel from order_info o inner join order_paymemt p on o.id = p.order_id
+     	 where o.order_status ='CANCEL' and (p.pay_status ='PAID' or p.pay_status ='REFUND')
+     	and (o.gmt_create BETWEEN #{startdate} and #{enddate} ) 
+     	and EXISTS 
+		(select og.id from order_goods og
+			inner join goods g on g.id = og.goods_id 
+			where o.id = og.order_id  and g.merchant_id  = #{merchantId}
+        )
+    </select>
+    
+    <!-- 退货/换货商品数量
+	public List<MerchantOrderVo> getGoodsReturn(List<Long> merchantIds, Date startdate, Date enddate);
+	--> 
+	<select id="getGoodsReturn" resultType="cn.farwalker.ravv.service.merchant.model.MerchantOrderVo">
+     select g.merchant_id as merchant_id, sum(CASE WHEN r.returns_type='ChangeGoods' THEN d.actual_refund_qty	ELSE 0 END ) as goodsChange
+		 ,sum(CASE WHEN r.returns_type='ReGoods' THEN d.actual_refund_qty	ELSE 0 END ) as goodsReturn
+		 from order_returns r INNER JOIN order_returns_detail d on r.id = d.returns_id 
+		INNER JOIN goods g on d.goods_id = g.id 
+		where r.`status`='finish' and (r.returns_type='ChangeGoods' or r.returns_type='ReGoods')
+			and (r.gmt_create BETWEEN #{startdate} and #{enddate} ) 
+			and g.merchant_id in  
+			<foreach collection="merchantIds" item="item" index="index" open="(" close=")" separator=",">
+	            #{item}
+	        </foreach> 
+	       GROUP BY g.merchant_id
+    </select>
+    
+    <!-- 订单关闭后的有效金额-订单总额（商品数量*单价
+	public List<MerchantOrderVo> getTotalOrderAmt(List<Long> merchantIds, Date startdate, Date enddate);
+	--> 
+	<select id="getTotalOrderAmt" resultType="cn.farwalker.ravv.service.merchant.model.MerchantOrderVo">
+     select g.merchant_id as merchant_id, sum(og.quantity * og.price) as totalAmt from order_info o
+        INNER JOIN order_paymemt p on o.id = p.order_id
+		INNER JOIN order_goods og on o.id = og.order_id
+		INNER JOIN goods g on g.id = og.goods_id
+		where o.order_status='trade_close' 
+		     	and (o.gmt_create BETWEEN #{startdate} and #{enddate} )
+				  and (p.pay_status ='PAID' or p.pay_status ='REFUND') 
+		     	and g.merchant_id  in
+		        <foreach collection="merchantIds" item="item" index="index" open="(" close=")" separator=",">
+		            #{item}
+		        </foreach> 
+		group by g.merchant_id
+    </select>
+    
+    <!-- 订单关闭后的有效金额-订单总额（商品数量*单价）
+	public List<MerchantOrderVo> getTotalOrderAmt(List<Long> merchantIds, Date startdate, Date enddate);
+	--> 
+	<select id="getTotalOrderAmt" resultType="cn.farwalker.ravv.service.merchant.model.MerchantOrderVo">
+     select g.merchant_id as merchant_id, sum(og.quantity * og.price) as totalAmt from order_info o
+        INNER JOIN order_paymemt p on o.id = p.order_id
+		INNER JOIN order_goods og on o.id = og.order_id
+		INNER JOIN goods g on g.id = og.goods_id
+		where o.order_status='trade_close' 
+		     	and (o.gmt_create BETWEEN #{startdate} and #{enddate} )
+				  and (p.pay_status ='PAID' or p.pay_status ='REFUND') 
+		     	and g.merchant_id  in
+		        <foreach collection="merchantIds" item="item" index="index" open="(" close=")" separator=",">
+		            #{item}
+		        </foreach> 
+		group by g.merchant_id
+    </select>
+    
+    <!-- 订单关闭后的有效金额-退货总额（商品数量*单价）
+	public List<MerchantOrderVo> getTotalReturnAmt(List<Long> merchantIds, Date startdate, Date enddate);
+	--> 
+	<select id="getTotalReturnAmt" resultType="cn.farwalker.ravv.service.merchant.model.MerchantOrderVo">
+     select g.merchant_id as merchant_id, sum(d.actual_refund_qty * d.refund_price) as totalAmt
+		 from order_returns r INNER JOIN order_returns_detail d on r.id = d.returns_id 
+		INNER JOIN goods g on d.goods_id = g.id 
+		where r.`status`='finish' and   r.returns_type='ReGoods'
+			and (r.gmt_create BETWEEN #{startdate} and #{enddate} ) 
+			and g.merchant_id in  
+			<foreach collection="merchantIds" item="item" index="index" open="(" close=")" separator=",">
+	            #{item}
+	        </foreach> 
+		GROUP BY g.merchant_id
+    </select>
+</mapper>

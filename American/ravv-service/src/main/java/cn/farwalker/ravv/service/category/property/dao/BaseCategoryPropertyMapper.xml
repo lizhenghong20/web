@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.farwalker.ravv.service.category.property.dao.IBaseCategoryPropertyDao">
+    
+  <select id="getProListTreeByCatId" resultType="cn.farwalker.waka.core.ZTreeNode">
+		SELECT
+			bcp.id AS id,
+			bcp.cat_id AS pid,
+			bcp. property_name AS `name`,
+			('false') AS isOpen,
+			('false') AS checked
+		FROM 
+			base_category_property bcp
+		<where>
+			<if test="catId != null and catId != 0">
+				bcp.cat_id = #{catId}
+			</if>
+		</where>
+		ORDER BY
+			bcp.sequence DESC
+	</select>
+    
+</mapper>

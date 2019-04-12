@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.order.ordergoods.dao.IOrderGoodsDao">
+
+    <select id="getAwaitingOrderList" parameterType="map" resultType="cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsBo">
+        select *
+        from order_goods
+        where order_id in
+        <foreach collection="orderList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and comment is null
+        order by gmt_modified desc
+    </select>
+
+    <select id="getPublishedOrderList" parameterType="map" resultType="cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsBo">
+        select *
+        from order_goods
+        where order_id in
+        <foreach collection="orderList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        and comment is not null
+        order by gmt_modified desc
+    </select>
+    
+    <select id="getOrderGoodsByMerchant" parameterType="map" resultType="cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsSimpleVo">
+		SELECT og.id,og.order_id AS orderId,og.goods_id AS goodsId,og.quantity,og.price,date_format(og.gmt_create, '%Y-%m') gmtCreate
+		FROM order_goods og
+		INNER JOIN goods g ON g.id = og.goods_id
+		INNER JOIN order_info oi ON oi.id = og.order_id
+		INNER JOIN order_paymemt p ON p.order_id = og.order_id
+		<where>
+			oi.order_status != 'cancel' AND p.pay_status = 'PAID'
+			<if test="merchantId != null and merchantId != ''">
+				and g.merchant_id = #{merchantId}
+			</if>
+			<if test="startdate != null">
+				and og.gmt_modified &gt;= #{startdate}
+			</if>
+			<if test="enddate != null">
+				and og.gmt_modified &lt;= #{enddate}
+			</if>
+		</where>
+		ORDER BY og.gmt_create DESC
+	</select>
+
+</mapper>

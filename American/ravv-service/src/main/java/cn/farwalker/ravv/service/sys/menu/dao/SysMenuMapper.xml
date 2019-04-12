@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.farwalker.ravv.service.sys.menu.dao.ISysMenuDao">
+   	<select id="getRoleCodeList" resultType="String">
+		SELECT DISTINCT sm.`code`
+		FROM sys_menu sm
+		LEFT JOIN sys_relation sr ON sr.menuid = sm.id
+		LEFT JOIN sys_role_user sru ON sru.roleid = sr.roleid
+		<where>
+    		<if test="userId != null and userId != ''">
+ 				and sru.userid = #{userId} 
+ 			</if>
+		</where>
+	</select>
+    
+</mapper>

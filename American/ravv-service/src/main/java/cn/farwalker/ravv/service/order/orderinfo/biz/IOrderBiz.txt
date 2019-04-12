@@ -1,0 +1,255 @@
+/**
+ * 
+ */
+package cn.farwalker.ravv.service.order.orderinfo.biz;
+
+
+/**
+ * 订单业务接口
+ * 
+ * @author mingxing.fmx
+ * 
+ */
+public interface IOrderBiz {
+
+	/**
+	 * 创建订单
+	 * @param order
+	 * @return
+	 */
+	//Long createOrder(OrderInfoBuyBo orderInfoVO);
+
+	/**
+	 * 生成代销订单,调用本接口需传入如下信息：
+	 * queryBaseOrdersOptions参数需设置是否接口中查询卖家信息、买家信息、商品信息。如果赋值为true则只需传入相应主键
+	 * ，否则传入相应对象信息
+	 * 
+	 * @param orderInfo
+	 * @return
+	 */
+	//public DefaultResult<BaseOrderDO> createAgentSalesOrder(BaseOrderDO baseOrderDo, QueryBaseOrdersOptions queryBaseOrdersOptions);
+
+	/**
+	 * 生成分销订单
+	 * 
+	 * @param orderInfo
+	 * @return
+	 */
+	//public DefaultResult<BaseOrderDO> createDistributionOrder(BaseOrderDO baseOrderDo, QueryBaseOrdersOptions queryBaseOrdersOptions);
+
+	/**
+	 * 订单审核,isPass==true表示审核通过，否则表示不通过
+	 * 
+	 * @param orderId
+	 * @return
+	 */
+	//public SubOrderResult<OrderInfoDO> reviewOrder(Long orderId, boolean isPass);
+
+	/**
+	 * 关闭订单
+	 * 
+	 * @param orderId
+	 * @return
+	 */
+	//public SubOrderResult<OrderInfoDO> closerOrder(Long orderId, String closedReason);
+
+	/**
+	 * 订单查询接口，返回主订单信息、商品信息、物流信息、资金信息
+	 * 
+	 * @param orderId
+	 * @param queryBaseOrdersOptions
+	 * @return
+	 */
+	//public BaseOrderDO queryBaseOrder(Long orderId);
+	
+	/**
+	 * 通过b2c订单id获取b2b主订单列表
+	 * 
+	 * @param orderId
+	 * @param queryBaseOrdersOptions
+	 * @return
+	 */
+	//public List<OrderDO> queryBaseOrderByB2cOrderId(String b2cOrderId);
+
+	/**
+	 * 通过订单号查询主订单对象
+	 * 
+	 * @param orderId
+	 * @return
+	 */
+	//public OrderInfoDO queryOrderInfoByOrderId(Long orderId);
+
+	/**
+	 * 修改主订单对象
+	 * 
+	 * @param orderInfo
+	 * @return
+	 */
+	//public DefaultResult<Integer> updateOrderInfo(OrderInfoDO orderInfo);
+
+	/**
+	 * 批量删除主订单对象 没有这种需求
+	 * 
+	 * @param orderInfoIdList
+	 * @return
+	 */
+	// public DefaultResult<Integer> deleteOrderInfos(List<Long>
+	// orderInfoIdList);
+
+	/**
+	 * 通过主订单id查询商品订单信息列表
+	 * 
+	 * @param orderId
+	 * @param orderGoodsId
+	 * @return
+	 */
+	//public List<OrderGoodsInfoDO> queryOrderGoodsInfoListByOrderId(Long orderId);
+
+	/**
+	 * 通过商品订单主键查询商品订单信息
+	 * 
+	 * @param orderId
+	 * @param orderGoodsId
+	 * @return
+	 */
+	//public OrderGoodsInfoDO queryOrderGoodsInfoByOrderGoodsId(Long orderGoodsId);
+
+	/**
+	 * 通过商品订单id查询商品订单信息
+	 * 
+	 * @param orderId
+	 * @param status 
+	 * @param orderGoodsId
+	 * @return
+	 */
+	//public List<OrderGoodsInfoDO> queryOrderGoodsInfoByOrderId(Long orderId, String status);
+
+	/**
+	 * 批量删除商品订单 没有这种需求
+	 * 
+	 * @param orderGoodsInfoIdList
+	 * @return
+	 */
+	// public SubOrderResult<Integer> deleteOrderGoodsInfos(
+	// List<Long> orderGoodsInfoIdList);
+
+	/**
+	 * 修改商品订单
+	 * 
+	 * @param orderGoodsInfo
+	 * @return
+	 */
+	//public DefaultResult<Integer> updateOrderGoodsInfo(OrderGoodsInfoDO orderGoodsInfo);
+
+	/**
+	 * 根据商品订单id获取订单状态
+	 * 
+	 * @param orderGoodsInfoId
+	 * @return
+	 */
+	//public Integer getOrderGoodsInfoStatusByOrderGoodsId(Long orderGoodsInfoId);
+
+	/**
+	 * 根据订单状态查询订单列表接口
+	 * 
+	 * @return
+	 */
+	//public DefaultResult<List<OrderInfoDO>> queryOrderListByOrderStatus(OrderStatusEnum orderStatus, Long buyerId);
+
+	/**
+	 * 分页查询订单列表
+	 * 
+	 * @param query
+	 * @return
+	 */
+	//public List<BaseOrderDO> queryBaseOrderForPage(QueryOrderDO query);
+
+	/**
+	 * 根据订单id查询资金订单信息
+	 * 
+	 * @param parseLong
+	 * @return
+	 */
+	//public List<OrderPayInfoDO> queryOrderPayInfoListByOrderId(Long orderId);
+
+	/**
+	 * 根据订单id查询物流订单信息
+	 * 
+	 * @param parseLong
+	 * @return
+	 */
+	//public List<OrderLogisticsInfoDO> queryOrderLogisticsInfoListByOrderId(Long orderId);
+
+	/**
+	 * 修改物流信息
+	 * 
+	 * @param tempOrderLogisticsInfo
+	 * @return
+	 */
+	//public DefaultResult<Integer> updateOrderLogisticsInfo(OrderLogisticsInfoDO orderLogisticsInfo);
+
+	/**
+	 * 修改资金订单洗信息
+	 * 
+	 * @param tempOrderPayInfo
+	 */
+	//public DefaultResult<Integer> updatePayInfo(OrderPayInfoDO orderPayInfo);
+
+	/**
+	 * 确认支付回调函数
+	 * 
+	 * @param orderId
+	 *            订单号
+	 * @param tradeNo
+	 *            支付宝交易号
+	 * @param buyerEmail
+	 *            支付宝付款账号
+	 * @return
+	 */
+	//public SubOrderResult<OrderInfoDO> orderConfirmPayOperation(Long orderId, String tradeNo, String buyerEmail);
+
+	/**
+	 * 确认发货回调函数
+	 * 
+	 * @param orderId
+	 *            订单号
+	 * @param tradeNo
+	 *            支付宝交易号
+	 * @param logisticsShipping
+	 *            物流方式
+	 * @param logisticsCompany
+	 *            物流公司
+	 * @param logisticsNo
+	 *            运单号
+	 * @param remark
+	 *            备注
+	 * @return
+	 */
+	//public SubOrderResult<OrderInfoDO> orderConfirmSendGoodsOperation(Long orderId, String tradeNo, Integer logisticsShipping, String logisticsCompany, String logisticsNo, String remark);
+
+	/**
+	 * 确认收货回调函数
+	 * 
+	 * @param orderId
+	 *            订单号
+	 * @param tradeNo
+	 *            支付宝交易号
+	 * @return
+	 */
+	//public SubOrderResult<OrderInfoDO> orderConfirmReceivedGoodsOperation(Long orderId, String tradeNo);
+	
+	/**
+	 * 供应商发货
+	 * @param logisticsCompany
+	 * @param logisticsNo
+	 * @param orderId
+	 * @param transportType
+	 * @param remark
+	 * @param operate
+	 * @param orderInfoVersion 
+	 * @return 
+	 * @throws Exception 
+	 */
+	//public Integer b2bSendGoodsToCustomer (String logisticsCompany, String logisticsNo, Long orderId, Integer transportType, String remark, Integer operate, Long orderInfoVersion) throws Exception;
+
+}

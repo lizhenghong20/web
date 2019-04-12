@@ -1,0 +1,40 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="${item.id}">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="主键" value="${item.id}" underline="true"/>
+                            <#input id="oldPoint" name="旧积分" value="${item.oldPoint}" underline="true"/>
+                            <#input id="newPoint" name="新积分" value="${item.newPoint}" underline="true"/>
+                            <#input id="changePoint" name="改变的积分" value="${item.changePoint}" underline="true"/>
+                            <#input id="consumePoint" name="消费的积分" value="${item.consumePoint}" underline="true"/>
+                            <#input id="reason" name="变化理由" value="${item.reason}" underline="true"/>
+                            <#input id="relatedId" name="关联ID" value="${item.relatedId}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="operatorId" name="操作者ID" value="${item.operatorId}" underline="true"/>
+                            <#input id="memberId" name="会员ID" value="${item.memberId}" underline="true"/>
+                            <#input id="pointRuleId" name="积分规则ID" value="${item.pointRuleId}" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" value="${item.gmtCreate}" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" value="${item.gmtModified}" underline="true"/>
+                            <#input id="remark" name="备注" value="${item.remark}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberPointLogInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberPointLogInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/memberPointLog/memberPointLog_info.js"></script>
+@}

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.farwalker.ravv.service.category.basecategory.dao.IBaseCategoryDao">
+	<select id="getCategoryIds" resultType="long">
+		select id from
+		base_category
+	</select>
+	
+	<select id="categoryListTree" resultType="cn.farwalker.waka.core.ZTreeNode">
+		SELECT
+			cat1.id AS id,
+			(
+				CASE
+				WHEN (cat2.id = 0 OR cat2.id IS NULL) THEN
+					0
+				ELSE
+					cat2.id
+				END
+			) AS pid,
+			cat1.cat_name AS name,
+			(
+				'false'
+			) as isOpen,
+			(
+				'false'
+			) AS checked
+		FROM
+			base_category cat1
+		LEFT JOIN base_category cat2 ON cat1.pid = cat2.id
+		LEFT JOIN (
+			SELECT
+				id
+			FROM
+				base_category
+			WHERE
+				id IN
+		<foreach collection="list" index="index" item="i" open="("
+			separator="," close=")">
+			#{i}
+		</foreach>
+		) cat3 on cat1.id = cat3.id
+		ORDER BY
+			cat1.sequence ASC
+	</select>
+
+</mapper>

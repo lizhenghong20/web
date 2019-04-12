@@ -1,0 +1,40 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="主键" underline="true"/>
+                            <#input id="oldPoint" name="旧积分" underline="true"/>
+                            <#input id="newPoint" name="新积分" underline="true"/>
+                            <#input id="changePoint" name="改变的积分" underline="true"/>
+                            <#input id="consumePoint" name="消费的积分" underline="true"/>
+                            <#input id="reason" name="变化理由" underline="true"/>
+                            <#input id="relatedId" name="关联ID"/>
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="operatorId" name="操作者ID" underline="true"/>
+                            <#input id="memberId" name="会员ID" underline="true"/>
+                            <#input id="pointRuleId" name="积分规则ID" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" underline="true"/>
+                            <#input id="remark" name="备注" underline="true"/>
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberPointLogInfoDlg.addSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberPointLogInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/memberPointLog/memberPointLog_info.js"></script>
+@}

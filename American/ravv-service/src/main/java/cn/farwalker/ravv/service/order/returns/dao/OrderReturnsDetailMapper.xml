@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.order.returns.dao.IOrderReturnsDetailDao">
+    <!-- 取得明细的状态(如果明细统一时，需要更新主表状态) -->
+    <select id="getReturnsDetailState" parameterType="map" resultType="cn.farwalker.ravv.service.order.returns.model.OrderReturnsDetailBo">
+        SELECT d.returns_id ,d.`status` FROM order_returns  r inner join order_returns_detail d on r.id = d.returns_id
+         where d.id in
+        <foreach collection="detailIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+    
+    
+    
+    <select id="getEffectiveReturnsDetail" parameterType="map" resultType="cn.farwalker.ravv.service.order.returns.model.OrderReturnsDetailBo">
+        SELECT
+			ord.*
+		FROM
+			order_returns_detail ord
+			LEFT JOIN order_returns orr ON orr.id = ord.returns_id
+        <where>
+        	<if test="orderId != null">
+				AND ord.order_id = #{orderId}
+        	</if>
+	        <if test="skuIdList != null">
+	        	AND ord.sku_id in
+	        	<foreach collection="skuIdList" item="item" index="index" open="(" close=")" separator=",">
+		            #{item}
+		        </foreach>
+        	</if>
+	        <if test="statusList != null">
+	        	AND orr.status in
+	        	<foreach collection="statusList" item="item" index="index" open="(" close=")" separator=",">
+	            	#{item}
+	        	</foreach>
+        	</if>
+        </where>
+    </select>
+    
+    <!-- 统计订单的每个商品的退货情况(带退货主表id) -->
+    <select id="getEffectiveReturnCount" parameterType="map" resultType="cn.farwalker.ravv.service.order.returns.model.OrderReturnsDetailBo">
+        SELECT
+			ord.order_id  ,ord.sku_id,sum(ord.refund_qty) AS refundQty,max(ord.returns_id) as returns_id
+		FROM
+			order_returns_detail ord
+			LEFT JOIN order_returns orr ON orr.id = ord.returns_id
+        <where>
+        	<if test="orderIdList != null">
+				AND ord.order_id in
+				<foreach collection="orderIdList" item="item" index="index" open="(" close=")" separator=",">
+		            #{item}
+		        </foreach>
+        	</if>
+	        <if test="statusList != null">
+	        	AND orr.status in
+	        	<foreach collection="statusList" item="item" index="index" open="(" close=")" separator=",">
+	            	#{item}
+	        	</foreach>
+        	</if>
+        </where>
+        GROUP BY ord.order_id,ord.sku_id
+    </select>
+    
+	<select id="getReturnsDetailList" parameterType="map" resultType="cn.farwalker.ravv.service.order.returns.model.OrderReturnsDetailBo">
+		SELECT * FROM order_returns_detail ords
+		INNER JOIN order_returns ors ON ors.id = ords.returns_id
+		<where>
+	     	<if test="orderId != null">
+	     		AND ords.order_id = #{orderId}
+	     	</if>
+	      	<if test="goodsId != null">
+	      		AND ords.goods_id = #{goodsId}
+	     	</if>
+	     	AND ors.returns_type != 'ChangeGoods' 
+	     	AND ors.`status` = 'finish'
+	     </where>
+	 </select>
+</mapper>

@@ -1,0 +1,37 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="${item.id}">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="主键" value="${item.id}" underline="true"/>
+                            <#input id="title" name="标题" value="${item.title}" underline="true"/>
+                            <#input id="content" name="内容" value="${item.content}" underline="true"/>
+                            <#input id="thumb" name="缩略内容" value="${item.thumb}" underline="true"/>
+                            <#input id="thumbImageUrl" name="缩略内容图片地址" value="${item.thumbImageUrl}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="category" name="分类" value="${item.category}" underline="true"/>
+                            <#input id="click" name="点击数" value="${item.click}" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" value="${item.gmtCreate}" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" value="${item.gmtModified}" underline="true"/>
+                            <#input id="remark" name="备注" value="${item.remark}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="ArticleInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="ArticleInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/article/article/article_info.js"></script>
+@}

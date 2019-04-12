@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.youtube.livevideo.dao.IYoutubeLiveVideoDao">
+    <select id="selectAllVideoByType" parameterType="map" resultType="cn.farwalker.ravv.service.youtube.livevideo.model.YoutubeLiveVideoBo">
+        SELECT  ylv.* from youtube_live_video ylv
+        left join youtube_live_anchor yla on ylv.anchor_member_id = yla.anchor_member_id
+        where
+        (yla.frozen_start > #{currentTime}
+          or yla.frozen_end <![CDATA[<]]> #{currentTime})
+          <if test="videoType == 'completed'.toString()">
+           and ylv.end_time <![CDATA[<]]> #{currentTime}
+          </if>
+        <if test="videoType == 'live'.toString()">
+          and ylv.start_time <![CDATA[<]]> #{currentTime}
+            and ylv.end_time > #{currentTime}
+        </if>
+        <if test="videoType == 'upcoming'.toString()">
+            and ylv.start_time > #{currentTime}
+        </if>
+        group by ylv.youtube_video_id
+        order by ylv.start_time
+
+    </select>
+</mapper>

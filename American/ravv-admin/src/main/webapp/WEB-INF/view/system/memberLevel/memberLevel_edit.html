@@ -1,0 +1,45 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="${item.id}">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="主键" value="${item.id}" underline="true"/>
+                            <#input id="name" name="等级名称" value="${item.name}" underline="true"/>
+                            <#input id="sequence" name="排序" value="${item.sequence}" underline="true"/>
+                            <#input id="discountRate" name="折扣率" value="${item.discountRate}" underline="true"/>
+                            <#input id="freeShipping" name="是否免邮费" value="${item.freeShipping}" underline="true"/>
+                            <#input id="icon" name="图标" value="${item.icon}" underline="true"/>
+                            <#input id="preId" name="前一级ID" value="${item.preId}" underline="true"/>
+                            <#input id="defaultLevel" name="默认等级" value="${item.defaultLevel}" underline="true"/>
+                            <#input id="depositFreezeTime" name="保证金解冻时间" value="${item.depositFreezeTime}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="deposit" name="保证金" value="${item.deposit}" underline="true"/>
+                            <#input id="morePoint" name="下一级积分" value="${item.morePoint}" underline="true"/>
+                            <#input id="needPoint" name="所需积分" value="${item.needPoint}" underline="true"/>
+                            <#input id="disabled" name="是否启用" value="${item.disabled}" underline="true"/>
+                            <#input id="remark" name="备注" value="${item.remark}" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" value="${item.gmtCreate}" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" value="${item.gmtModified}" underline="true"/>
+                            <#input id="options" name="位标志" value="${item.options}" underline="true"/>
+                            <#input id="feature" name="KV扩展" value="${item.feature}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberLevelInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberLevelInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/system/memberLevel/memberLevel_info.js"></script>
+@}

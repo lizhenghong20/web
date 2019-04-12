@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.youtube.livegoods.dao.IYoutubeLiveGoodsDao">
+    <select id="selectGoodsByVideoIdList" resultType="cn.farwalker.ravv.service.youtube.livevideo.model.YoutubeRelatedGoodsVo" parameterType="map">
+        select ylg.goods_id as goods_id,goods.goods_name as goods_name,gi.img_url as goods_major_url
+        from youtube_live_goods as ylg
+        left JOIN goods on ylg.goods_id = goods.id
+        left JOIN  goods_image as gi on goods.id = gi.goods_id
+        where goods.goods_status like 'online'
+        and gi.img_position like 'MAJOR'
+        and ylg.video_id in 
+        <foreach collection="videoIdList" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        group by ylg.goods_id
+    </select>
+</mapper>

@@ -1,0 +1,47 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="${item.id}">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="预存款日志ID" value="${item.id}" underline="true"/>
+                            <#input id="memberId" name="会员ID" value="${item.memberId}" underline="true"/>
+                            <#input id="orderId" name="订单ID" value="${item.orderId}" underline="true"/>
+                            <#input id="paymentId" name="会员支付ID" value="${item.paymentId}" underline="true"/>
+                            <#input id="advanceType" name="预付款类型" value="${item.advanceType}" underline="true"/>
+                            <#input id="title" name="记录显示标题" value="${item.title}" underline="true"/>
+                            <#input id="money" name="出入金额" value="${item.money}" underline="true"/>
+                            <#input id="message" name="管理备注" value="${item.message}" underline="true"/>
+                            <#input id="bizTime" name="交易时间" value="${item.bizTime}" underline="true"/>
+                            <#input id="paymethod" name="支付方式" value="${item.paymethod}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="memo" name="业务摘要" value="${item.memo}" underline="true"/>
+                            <#input id="importMoney" name="存入金额" value="${item.importMoney}" underline="true"/>
+                            <#input id="explodeMoney" name="支出金额" value="${item.explodeMoney}" underline="true"/>
+                            <#input id="memberAdvance" name="当前余额" value="${item.memberAdvance}" underline="true"/>
+                            <#input id="enable" name="是否有效" value="${item.enable}" underline="true"/>
+                            <#input id="frozen" name="是否冻结" value="${item.frozen}" underline="true"/>
+                            <#input id="unfreezeTime" name="解冻时间" value="${item.unfreezeTime}" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" value="${item.gmtCreate}" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" value="${item.gmtModified}" underline="true"/>
+                            <#input id="remark" name="备注" value="${item.remark}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberAdvanceLogInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberAdvanceLogInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/memberAdvanceLog/memberAdvanceLog_info.js"></script>
+@}

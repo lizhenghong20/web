@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.farwalker.ravv.service.sale.profitallot.dao.ISaleProfitAllotDao">
+
+	<select id="profitAllotInfoList" resultType="cn.farwalker.ravv.service.sale.profitallot.model.ProfitAllotInfoVo">
+		SELECT m.id,m.firstname,m.lastname,m.avator,spa.amt,date_format(spa.gmt_modified, '%Y-%m-%d %T') returnedTime,spa.gmt_modified AS gmtModified
+		FROM sale_profit_allot spa
+		LEFT JOIN member m ON m.id = spa.subordinate_id
+		<where>
+			<if test="memberId != null and memberId != ''">
+				and spa.member_id = #{memberId}
+			</if>
+			<if test="status != null and status != ''">
+				and spa.status = #{status}
+			</if>
+		</where>
+		ORDER BY spa.gmt_modified DESC
+	</select>
+	
+	<select id="getMonthRebatedlist" resultType="cn.farwalker.ravv.service.sale.profitallot.model.ProfitAllotInfoVo">
+		SELECT m.id,m.firstname,m.lastname,m.avator,spa.amt,date_format(spa.gmt_modified, '%Y-%m') returnedTime,spa.gmt_modified AS gmtModified
+		FROM sale_profit_allot spa
+		LEFT JOIN member m ON m.id = spa.member_id
+		<where>
+			<if test="memberId != null and memberId != ''">
+				and spa.member_id = #{memberId}
+			</if>
+			<if test="status != null and status != ''">
+				and spa.status = #{status}
+			</if>
+			<if test="firstDay != null">
+				and spa.gmt_modified &gt;= #{firstDay}
+			</if>
+			<if test="lastDay != null">
+				and spa.gmt_modified &lt;= #{lastDay}
+			</if>
+		</where>
+		ORDER BY spa.gmt_modified DESC
+	</select>
+
+</mapper>

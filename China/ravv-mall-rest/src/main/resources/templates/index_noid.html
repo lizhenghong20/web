@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8" />
+    <title>Insert title here</title>
+</head>
+<body>
+<form method="post" th:action="@{/paypal/payment}">
+    orderId: <input type="text" name="orderId" value="12231456"/>
+    orderTotal: <input type="text" name="orderTotal" value="500"/>
+    subTotal: <input type="text" name="subTotal" value="460"/>
+    tax: <input type="text" name="tax" value="30"/>
+    shipping: <input type="text" name="shipping" value="10"/>
+    <!--memberId: <input type="text" name="memberId" value="1064352767273717762"/>-->
+    <!--successUrl: <input type="text" name="successUrl" value=""/>-->
+    <!--failUrl: <input type="text" name="failUrl" value=""/>-->
+    <!--cancelUrl: <input type="text" name="cancelUrl" value=""/>-->
+
+        <br />
+        <button type="submit"><img src="images/paypal.jpg" width="100px;" height="30px;"/></button>
+</form>
+</body>
+</html>

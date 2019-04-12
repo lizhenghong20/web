@@ -1,0 +1,48 @@
+##########################################################
+##################  所有profile共有的配置  #################
+##########################################################
+
+###################  waka配置  ###################
+waka:
+  swagger-open: true #是否开启swagger (true/false)
+  kaptcha-open: false #是否开启登录时验证码 (true/false)
+  file-upload-path: /data/images/standard  #文件上传目录(不配置的话为java.io.tmpdir目录)
+  muti-datasource-open: false #是否开启多数据源(true/false)
+  spring-session-open: false #是否开启spring session,如果是多机环境需要开启(true/false)
+  session-invalidate-time: 1800 #session失效时间(只在单机环境下生效，多机环境在SpringSessionConfig类中配置) 单位：秒
+  session-validation-interval: 900 #多久检测一次失效的session(只在单机环境下生效) 单位：秒
+
+###################  项目启动端口  ###################
+server:
+  port: 8090
+
+##########################################################
+###################  测试环境的profile  ###################
+##########################################################
+spring:
+  profiles: daily
+  redis:
+    host: localhost
+    port: 6379
+    password:
+  datasource:
+    url: jdbc:mysql://120.77.217.189:3306/ravv?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    username: ravv
+    password: Ravv1688
+    db-name: ravv
+    filters: log4j,wall,mergeStat
+
+logging:
+  level.root: info
+  level.cn.farwalker: debug
+  path: logs/
+  file: standard.log
+  
+# 七牛云配置
+# bucket是创建的存储空间名
+# path对应存储空间的访问域名
+qiniu:
+  accessKey: WzBxS_J24IbwqQh3Tfh8reDLtQEsLAwQTQlxN1UM
+  secretKey: EavzGisDWHA41QFeXcfS9Q1eH1b7l2ikVaXAj3Av
+  bucket: standard
+  path: http://idv093d.qiniudns.com

@@ -1,0 +1,47 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="预存款日志ID" underline="true"/>
+                            <#input id="memberId" name="会员ID" underline="true"/>
+                            <#input id="orderId" name="订单ID" underline="true"/>
+                            <#input id="paymentId" name="会员支付ID" underline="true"/>
+                            <#input id="advanceType" name="预付款类型" underline="true"/>
+                            <#input id="title" name="记录显示标题" underline="true"/>
+                            <#input id="money" name="出入金额" underline="true"/>
+                            <#input id="message" name="管理备注" underline="true"/>
+                            <#input id="bizTime" name="交易时间" underline="true"/>
+                            <#input id="paymethod" name="支付方式"/>
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="memo" name="业务摘要" underline="true"/>
+                            <#input id="importMoney" name="存入金额" underline="true"/>
+                            <#input id="explodeMoney" name="支出金额" underline="true"/>
+                            <#input id="memberAdvance" name="当前余额" underline="true"/>
+                            <#input id="enable" name="是否有效" underline="true"/>
+                            <#input id="frozen" name="是否冻结" underline="true"/>
+                            <#input id="unfreezeTime" name="解冻时间" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" underline="true"/>
+                            <#input id="remark" name="备注" underline="true"/>
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberAdvanceLogInfoDlg.addSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberAdvanceLogInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/memberAdvanceLog/memberAdvanceLog_info.js"></script>
+@}

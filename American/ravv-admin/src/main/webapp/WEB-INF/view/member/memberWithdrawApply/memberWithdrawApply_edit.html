@@ -1,0 +1,45 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="${item.id}">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="提现申请ID" value="${item.id}" underline="true"/>
+                            <#input id="memberId" name="会员ID" value="${item.memberId}" underline="true"/>
+                            <#input id="bankId" name="银行卡ID" value="${item.bankId}" underline="true"/>
+                            <#input id="bankName" name="银行名称" value="${item.bankName}" underline="true"/>
+                            <#input id="bankType" name="银行卡类型" value="${item.bankType}" underline="true"/>
+                            <#input id="cardNumber" name="银行卡号" value="${item.cardNumber}" underline="true"/>
+                            <#input id="applyNo" name="申请编号" value="${item.applyNo}" underline="true"/>
+                            <#input id="applyFee" name="申请提现金额" value="${item.applyFee}" underline="true"/>
+                            <#input id="paycost" name="手续费" value="${item.paycost}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="percentage" name="手续费百分比" value="${item.percentage}" underline="true"/>
+                            <#input id="applyTime" name="申请时间" value="${item.applyTime}" underline="true"/>
+                            <#input id="checkTime" name="审核时间" value="${item.checkTime}" underline="true"/>
+                            <#input id="checkerId" name="审核人ID" value="${item.checkerId}" underline="true"/>
+                            <#input id="checkerName" name="审核人姓名" value="${item.checkerName}" underline="true"/>
+                            <#input id="withdrawTime" name="完成提现时间" value="${item.withdrawTime}" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" value="${item.gmtCreate}" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" value="${item.gmtModified}" underline="true"/>
+                            <#input id="remark" name="备注" value="${item.remark}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberWithdrawApplyInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberWithdrawApplyInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/memberWithdrawApply/memberWithdrawApply_info.js"></script>
+@}

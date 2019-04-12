@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.flash.sku.dao.IFlashGoodsSkuDao">
+
+    <select id="selectGoodsSkuListByFlashSaleId" parameterType="map" resultType="cn.farwalker.ravv.service.flash.sku.model.FlashGoodsSkuVo">
+        select fgs.goods_id,fgs.sale_count,fgs.inventory,min(fgs.price) as price,fgs.property_value_ids,fgs.goods_sku_def_id,
+        gp.price as origin_price,gsd.image_url as goods_image_url,fs.endtime,fg.sequence,
+        goods.goods_name as goods_name,goods.keyword as key_words,gi.img_url as goods_image_url_major
+        from flash_goods_sku fgs
+        left join flash_sale fs on fgs.flash_sale_id = fs.id
+        left join flash_goods fg on fg.goods_id = fgs.goods_id
+        left join goods_price gp on fgs.goods_id = gp.goods_id and fgs.goods_sku_def_id = gp.sku_id
+        left join goods_image gi on fgs.goods_id = gi.goods_id
+        left join goods on fgs.goods_id = goods.id
+        left join goods_sku_def gsd on fgs.goods_sku_def_id = gsd.id
+        WHERE fgs.flash_sale_id  =  #{flashSaleId}
+        and goods.goods_status like 'online'
+        and gi.img_position Like 'MAJOR'
+        Group by fgs.goods_id
+        order by fg.sequence Desc
+    </select>
+
+
+</mapper>

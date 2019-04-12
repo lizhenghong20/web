@@ -1,0 +1,1508 @@
+package cn.farwalker.ravv.service.order.orderinfo.biz.impl;
+
+import org.springframework.stereotype.Service;
+
+import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderServer;
+
+//
+//import java.util.ArrayList;
+//import java.util.Date;
+//import java.util.HashMap;
+//import java.util.List;
+//import java.util.Map;
+//
+//import javax.annotation.Resource;
+//
+//import org.apache.commons.lang.StringUtils;
+//import org.slf4j.LoggerFactory;
+//import org.springframework.beans.BeanUtils;
+//import org.springframework.stereotype.Service;
+//import org.springframework.transaction.annotation.Transactional;
+//
+//import com.google.common.collect.HashBasedTable;
+//import com.google.common.collect.Table;
+//
+//import IMemberBiz;
+//import cn.farwalker.ravv.service.ordergoods.biz.IOrderGoodsBiz;
+//import cn.farwalker.ravv.service.ordergoods.model.OrderGoodsBo;
+//import cn.farwalker.ravv.service.orderinfo.biz.IOrderBiz;
+//import cn.farwalker.ravv.service.orderinfo.biz.IOrderInfoBiz;
+//import cn.farwalker.ravv.service.orderinfo.constants.OrderStatusEnum;
+//import cn.farwalker.ravv.service.orderinfo.constants.OrderTypeEnum;
+//import cn.farwalker.ravv.service.orderinfo.model.OrderInfoBo;
+//import cn.farwalker.ravv.service.orderinfo.model.OrderInfoBuyBo;
+//import cn.farwalker.ravv.service.orderoperationlog.contants.BehaviorEnum;
+//import cn.farwalker.ravv.service.orderoperationlog.contants.ResultEnum;
+//import cn.farwalker.standard.common.persistence.model.OrderOperationLog;
+//import cn.farwalker.standard.modular.order.service.IOrderOperationLogService;
+//import cn.farwalker.standard.modular.order.service.impl.OrderOperationLogServiceImpl;
+@Service
+public class OrderBizImpl   {
+//
+//	@Resource
+//	private IMemberBiz memberBiz;
+//
+//	@Resource
+//	private IOrderGoodsBiz orderGoodsBiz;
+//
+//	@Resource
+//	private IOrderInfoBiz orderInfoBiz;
+//
+//	@Resource
+//	private IOrderOperationLogService orderOperationLogService;
+//
+//	private final static String COMMA = ",";
+//
+//	private final static String COLON = ":";
+//
+//	private final static org.slf4j.Logger log = LoggerFactory.getLogger(OrderBizImpl.class);
+//
+//	@Override
+//	@Transactional
+//	public Long createOrder(OrderInfoBuyBo orderInfoVO) {
+//		//处理skuIdQuantity（ goodsId:skuId:数量）为skuMap
+//		orderInfoVO.setSkuMap(assembleSkuMap(orderInfoVO.getSkuIdQuantity()));
+//		//处理goodsIdAndSellerIdStr为goodsIdAndSellerIdMapList
+//		orderInfoVO.setGoodsIdAndSellerIdMapList(strToMapList(orderInfoVO.getGoodsIdAndSellerIdStr()));
+//
+//		//Long buyerId = orderInfoVO.getBuyerId();
+//		//MemberBo member = memberBiz.selectById(buyerId);
+//
+//		// 收益 分销 规则
+//
+//		// 创建主订单
+//		OrderInfoBo orderInfo = new OrderInfoBo();
+//		{
+//			BeanUtils.copyProperties(orderInfoVO, orderInfo);
+//			// 通过id获取卖家名称卖家名称
+//			//orderInfoVO.setBuyerNick(member.getName());
+//			//TODO orderCode
+//			//orderInfo.setOrderCode(orderCode);
+//			//TODO 订单状态需确定
+//			orderInfo.setOrderStatus(OrderStatusEnum.CREATED_UNREVIEW.getKey());
+//			//TODO 订单状态需确定
+//			orderInfo.setOrderType(OrderTypeEnum.NORMAL.getKey());
+//			//TODO outTradeNo
+//			//orderInfo.setOutTradeNo(outTradeNo);
+//			//TODO 根据时区设置订单过期时间
+//			//orderInfo.setTimeoutDate(timeoutDate);
+//			//TODO userSource
+////			orderInfo.setUserSource(userSource);
+//		}
+//		orderInfoBiz.insert(orderInfo);
+//
+//		//TODO 订单操作日志 order_operation_log
+//		OrderOperationLog orderOperation = new OrderOperationLog();
+//		orderOperation.setOperatorId(orderInfo.getBuyerId());
+//		orderOperation.setOperatorName(orderInfo.getBuyerNick());
+//		orderOperation.setBehavior(BehaviorEnum.CREATEORDER.getKey());
+//		orderOperation.setResult(ResultEnum.CREATEORDER.getKey());
+//		orderOperation.setLogText(ResultEnum.CREATEORDER.getDesc());
+//		orderOperation.setOrderId(orderInfo.getId());
+//		orderOperation.setOperationTime(new Date());
+//		orderOperationLogService.insert(orderOperation);
+//
+//
+//		// TODO 添加供应商对应的orderGoods
+//		List<OrderGoodsBo> orderGoodsList = new ArrayList<>();
+//		orderGoodsBiz.insertBatch(orderGoodsList);
+//
+//		return orderInfo.getId();
+//	}
+//
+//	/**
+//	 * 解析传入的 （goodsId:skuId:数量）
+//	 *
+//	 * @param skuIdQuantity
+//	 * @return
+//	 */
+//	private static Table<Long, Long, Integer> assembleSkuMap(String skuIdQuantity) {
+//		Table<Long, Long, Integer> skuMap = HashBasedTable.create();
+//		String[] skuKVs = skuIdQuantity.split(COMMA);
+//		String[] kv = null;
+//		Long goodsId = null;
+//		Long skuId = null;
+//		Integer quanlity = null;
+//		for (String skuKV : skuKVs) {
+//			kv = skuKV.split(COLON);
+//			goodsId = Long.valueOf(kv[0]);
+//			skuId = Long.valueOf(kv[1]);
+//			quanlity = Integer.valueOf(kv[2]);
+//			skuMap.put(goodsId, skuId, quanlity);
+//		}
+//		return skuMap;
+//	}
+//
+//	/**
+//	 * 拆分商品id和对应商铺sellerId，若sellerid为空，则找到对应的goodsOwnerId
+//	 *
+//	 * @param goodsIdAndSellerIdStr
+//	 * @return
+//	 */
+//	private List<Map<Long, Long>> strToMapList(String goodsIdAndSellerIdStr) {
+//		if (StringUtils.isNotEmpty(goodsIdAndSellerIdStr)) {
+//			List<Map<Long, Long>> mapList = new ArrayList<>();
+//			String[] strList = StringUtils.split(goodsIdAndSellerIdStr, ',');
+//			if (strList != null && strList.length > 0) {
+//				for (String str : strList) {
+//					Map<Long, Long> map = new HashMap<>();
+//					String[] ids = StringUtils.split(str, ':');
+//					if (ids != null && ids.length > 0) {
+//						if (ids[0] != null && ids[1] != null) {
+//							map.put(Long.valueOf(ids[0]), Long.valueOf(ids[1]));
+//							mapList.add(map);
+//						} else {
+//							Long goodsId = Long.valueOf(ids[0]);
+//							// 供应商直销 TODO 获取供应商id
+//							Long merchantId = 0l;
+//							map.put(goodsId, merchantId);
+//							mapList.add(map);
+//						}
+//					}
+//				}
+//			}
+//			return mapList;
+//		}
+//		return null;
+//	}
+//
+//	// QueryBaseOrdersOptions queryBaseOrdersOptions) {
+//	// // 代销采购单不需要审核，自动通过,只有支付完成后才进行拆单，所以是已付款代发货状态
+//	// return createOrder(baseOrder, queryBaseOrdersOptions,
+//	// OrderTypeEnum.AGENT_SALES,
+//	// OrderStatusEnum.PAID_UNSENDGOODS.getStatus());
+//	// }
+//	//
+//	// @Override
+//	// public DefaultResult<BaseOrderDO> createDistributionOrder(BaseOrderDO
+//	// baseOrder,
+//	// QueryBaseOrdersOptions queryBaseOrdersOptions) {
+//	// return createOrder(baseOrder, queryBaseOrdersOptions,
+//	// OrderTypeEnum.DISTRIBUTION,
+//	// OrderStatusEnum.CREATED_UNREVIEW.getStatus());
+//	// }
+//	//
+//	// //
+//	// // @Override
+//	// // public SubOrderResult<Integer> deleteOrderGoodsInfos(
+//	// // List<Long> orderGoodsInfoIdList) {
+//	// // SubOrderResult<Integer> result = new SubOrderResult<Integer>();
+//	// // Integer num = 0;
+//	// // for (Long orderGoodsInfoId : orderGoodsInfoIdList) {
+//	// // Integer orderGoodsInfoStatus =
+//	// // getOrderGoodsInfoStatusByOrderGoodsId(orderGoodsInfoId);
+//	// // if (orderGoodsInfoStatus == null) {
+//	// // result.addSubOrderErrorMsg(orderGoodsInfoId,
+//	// // "FIND_ORDER_ERROR", "根据订单ID获取订单对象失败");
+//	// // continue;
+//	// // }
+//	// // if (orderGoodsInfoStatus >= OrderStatusEnum.PAID_UNSENDGOODS
+//	// // .getStatus()) {
+//	// // result.addSubOrderErrorMsg(orderGoodsInfoId,
+//	// // "UPDATE_ORDERGOODSINFO_ERROR", "此订单已付款，不能再修改");
+//	// // continue;
+//	// // }
+//	// // num = num
+//	// // + orderGoodsInfoDAO
+//	// // .deleteOrderGoodsInfoDOByPrimaryKey(orderGoodsInfoId);
+//	// // }
+//	// // result.setModule(num);
+//	// // return result;
+//	// // }
+//	// @Transactional
+//	// private DefaultResult<BaseOrderDO> createOrder(BaseOrderDO baseOrder,
+//	// QueryBaseOrdersOptions queryBaseOrdersOptions,
+//	// OrderTypeEnum orderType, int orderStatus) {
+//	// TransactionDefinition def = new
+//	// DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//	// TransactionStatus status = transactionManager.getTransaction(def);
+//	//
+//	// SubOrderResult<BaseOrderDO> result = new SubOrderResult<BaseOrderDO>();
+//	// try {
+//	// // 检查参数的正确性
+//	// checkParBaseOrderDO(baseOrder, result, queryBaseOrdersOptions);
+//	// if (result.isFailure()) {
+//	// return result;
+//	// }
+//	//
+//	// // 1、生成主订单
+//	// OrderInfoDO orderInfo = baseOrder.getOrder();
+//	// orderInfo.setOrderType(orderType.getType());
+//	// orderInfo.setOrderStatus(orderStatus);
+//	// orderInfo.setVersion(TradeConstants.OrderInfoConstants.DEFAULT_VERSION);
+//	// orderInfo.setFeatureMap(baseOrder.getFeatureMap());
+//	// orderInfo.setFeature(AttributeUtil.toString(baseOrder.getFeatureMap()));
+//	// // 设置分销商及供应商信息
+//	//
+//	// // if (queryBaseOrdersOptions.isQueryBuyerInfo()) {
+//	// // BaseUserDO buyer = iUserBiz.queryBaseUserInfo(orderInfo
+//	// // .getBuyerId());
+//	// // if (buyer == null) {
+//	// // result.addErrorMsg("USER_QUERY_ERROR", "查询用户异常");
+//	// // return result;
+//	// // }
+//	// // orderInfo.setBuyerNick(StringUtils.getDefaultString(
+//	// // buyer.getUserNick(), ""));
+//	// // } else {
+//	// // orderInfo.setBuyerId(baseOrder.getBuyer().getUserId());
+//	// // orderInfo.setBuyerNick(StringUtils.getDefaultString(baseOrder
+//	// // .getBuyer().getUserNick(), ""));
+//	// // }
+//	// // 获取供应商相关信息
+//	// BaseUserDO seller = iUserBiz.queryBaseUserInfo(orderInfo.getSellerId());
+//	// // 获取卖家信息
+//	// if (seller == null) {
+//	// result.addErrorMsg("USER_QUERY_ERROR", "查询用户异常");
+//	// return result;
+//	// }
+//	// orderInfo.setSellerNick(seller.getUserNick());
+//	// orderInfo.setBuyerNick(baseOrder.getBuyer().getUserAccountInfoDO().getUserNick());
+//	// orderInfo.setOrderCode("M" + baseOrder.getOrderId().toString());
+//	// log.debug("新增B2B订单 -> " + JSON.toJSONString(orderInfo));
+//	// Long orderId = orderInfoDAO.insertOrderInfoDO(orderInfo);
+//	// baseOrder.setOrderId(orderId);
+//	//
+//	// /**
+//	// * 2、遍历主订单中的分项订单信息， 2.1、生成订单货品信息、 2.2、生成物流信息 2.3、生成资金订单信息
+//	// */
+//	// createSubOrderInfos(baseOrder, queryBaseOrdersOptions, orderInfo, orderId,
+//	// orderType, seller);
+//	//
+//	// // 3、生成一条汇总资金订单
+//	// createOrderPayInfo(baseOrder, seller);
+//	//
+//	// // 4、生成一条汇总物流信息
+//	// createOrderLogistics(baseOrder);
+//	//
+//	// // 5、调整库存信息
+//	// updateGoodsInventoryInfo(baseOrder, result);
+//	//
+//	// // 可能减库存会返回失败，下单失败
+//	// if (result.isFailure()) {
+//	// status.setRollbackOnly();
+//	// transactionManager.rollback(status);
+//	// return result;
+//	// }
+//	// result.setModule(baseOrder);
+//	// transactionManager.commit(status);
+//	// } catch (Exception e) {
+//	// Logger.exp("TRADE", "创建b2b订单操作失败", e, baseOrder);
+//	// status.setRollbackOnly();
+//	// transactionManager.rollback(status);
+//	// throw new RuntimeException(e);
+//	// }
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public SubOrderResult<OrderInfoDO> reviewOrder(Long orderId, boolean isPass)
+//	// {
+//	// SubOrderResult<OrderInfoDO> result = new SubOrderResult<OrderInfoDO>();
+//	//
+//	// TransactionDefinition def = new
+//	// DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//	// TransactionStatus transactionStatus = transactionManager.getTransaction(def);
+//	//
+//	// OrderInfoDO orderInfo = null;
+//	// try {
+//	// Integer status = isPass ? OrderStatusEnum.REVIEWADOPT_UNPAID.getStatus()
+//	// : OrderStatusEnum.REVIEW_REJECT.getStatus();
+//	//
+//	// // 调整子订单状态
+//	// List<OrderGoodsInfoDO> orderGoodsInfoList =
+//	// this.queryOrderGoodsInfoListByOrderId(orderId);
+//	// if (CollectionUtils.isEmpty(orderGoodsInfoList)) {
+//	// result.addErrorMsg("FIND_ORDERGOODS_ERROR", "根据订单ID获取子订单对象失败");
+//	// return result;
+//	// }
+//	// for (OrderGoodsInfoDO orderGoodsInfo : orderGoodsInfoList) {
+//	// if (orderGoodsInfo.getOrderStatus().intValue() !=
+//	// OrderStatusEnum.CREATED_UNREVIEW.getStatus()) {
+//	// result.addSubOrderErrorMsg(StringUtils.getNotNullString(orderGoodsInfo.getOrderGoodsId()),
+//	// "ORDER_REVIEWSTAATUS_ERROR", "子订单状态必须为已创建，待审核");
+//	// }
+//	// orderGoodsInfo.setOrderStatus(status);
+//	// updateOrderGoodsInfo(orderGoodsInfo);
+//	// }
+//	//
+//	// orderInfo = orderInfoDAO.findOrderInfoDOByPrimaryKey(orderId);
+//	// if (null == orderInfo) {
+//	// result.addErrorMsg("FIND_ORDER_ERROR", "根据订单ID获取订单对象失败");
+//	// return result;
+//	// }
+//	// if (orderInfo.getOrderStatus().intValue() !=
+//	// OrderStatusEnum.CREATED_UNREVIEW.getStatus()) {
+//	// result.addErrorMsg("ORDER_REVIEWSTAATUS_ERROR", "订单状态必须为已创建，待审核");
+//	// }
+//	// orderInfo.setOrderStatus(status);
+//	// updateOrderInfo(orderInfo);
+//	// result.setModule(orderInfo);
+//	//
+//	// transactionManager.commit(transactionStatus);
+//	// } catch (DaoException e) {
+//	// Logger.exp("TRADE", "审核订单操作失败", e, orderInfo);
+//	// transactionStatus.setRollbackOnly();
+//	// transactionManager.rollback(transactionStatus);
+//	// throw new RuntimeException(e);
+//	// }
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public SubOrderResult<OrderInfoDO> closerOrder(Long orderId, String
+//	// closedReason) {
+//	// SubOrderResult<OrderInfoDO> result = new SubOrderResult<OrderInfoDO>();
+//	//
+//	// TransactionDefinition def = new
+//	// DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//	// TransactionStatus transactionStatus = transactionManager.getTransaction(def);
+//	//
+//	// // 调整主订单状态
+//	// OrderInfoDO orderInfo = null;
+//	// try {
+//	// // 更新子订单状态
+//	// List<OrderGoodsInfoDO> orderGoodsInfoList =
+//	// this.queryOrderGoodsInfoListByOrderId(orderId);
+//	// if (CollectionUtils.isEmpty(orderGoodsInfoList)) {
+//	// result.addErrorMsg("FIND_ORDERGOODS_ERROR", "根据订单ID获取子订单对象失败");
+//	// return result;
+//	// }
+//	// for (OrderGoodsInfoDO orderGoodsInfo : orderGoodsInfoList) {
+//	// if (orderGoodsInfo.getOrderStatus().intValue() >=
+//	// OrderStatusEnum.PAID_UNSENDGOODS.getStatus()) {
+//	// result.addSubOrderErrorMsg(StringUtils.getNotNullString(orderGoodsInfo.getOrderGoodsId()),
+//	// "ORDER_REVIEWSTAATUS_ERROR", "子订单已付款，不能关闭");
+//	// }
+//	// orderGoodsInfo.setClosedReason(closedReason);
+//	// orderGoodsInfo.setOrderStatus(OrderStatusEnum.TRADE_CLOSE.getStatus());
+//	// updateOrderGoodsInfo(orderGoodsInfo);
+//	// }
+//	//
+//	// orderInfo = orderInfoDAO.findOrderInfoDOByPrimaryKey(orderId);
+//	// if (null == orderInfo) {
+//	// result.addErrorMsg("FIND_ORDER_ERROR", "根据订单ID获取订单对象失败");
+//	// return result;
+//	// }
+//	// if (orderInfo.getOrderStatus().intValue() >=
+//	// OrderStatusEnum.PAID_UNSENDGOODS.getStatus()) {
+//	// result.addErrorMsg("ORDER_REVIEWSTAATUS_ERROR", "订单已付款，不能关闭");
+//	// }
+//	// orderInfo.setClosedReason(closedReason);
+//	// orderInfo.setOrderFinishedTime(new Date());
+//	// orderInfo.setOrderStatus(OrderStatusEnum.TRADE_CLOSE.getStatus());
+//	// updateOrderInfo(orderInfo);
+//	// result.setModule(orderInfo);
+//	//
+//	// transactionManager.commit(transactionStatus);
+//	// } catch (DaoException e) {
+//	// Logger.exp("TRADE", "关闭订单操作失败", e, orderInfo);
+//	// transactionStatus.setRollbackOnly();
+//	// transactionManager.rollback(transactionStatus);
+//	// throw new RuntimeException(e);
+//	// }
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public BaseOrderDO queryBaseOrder(Long orderId) {
+//	// // 1、查询主订单信息
+//	// OrderInfoDO orderInfo = queryOrderInfoByOrderId(orderId);
+//	// if (orderInfo == null) {
+//	// return null;
+//	// }
+//	//
+//	// // 查询商品信息
+//	// OrderGoodsInfoDO orderGoodsInfoDO = new OrderGoodsInfoDO();
+//	// orderGoodsInfoDO.setOrderId(orderId);
+//	// List<OrderGoodsInfoDO> orderGoodsInfoList =
+//	// orderGoodsInfoDAO.findListByExample(orderGoodsInfoDO);
+//	// // 查询资金订单信息
+//	// OrderPayInfoDO orderPayInfoDOExample = new OrderPayInfoDO();
+//	// orderPayInfoDOExample.setOrderId(orderId);
+//	// List<OrderPayInfoDO> orderPayInfoList =
+//	// orderPayInfoDAO.findListByExample(orderPayInfoDOExample);
+//	// // 查询物流订单信息
+//	// OrderLogisticsInfoDO logisticsInfo = new OrderLogisticsInfoDO();
+//	// logisticsInfo.setOrderId(orderId);
+//	// List<OrderLogisticsInfoDO> logisticsInfoList =
+//	// orderLogisticsInfoDAO.findListByExample(logisticsInfo);
+//	// if (CollectionUtils.isEmpty(orderGoodsInfoList) ||
+//	// CollectionUtils.isEmpty(orderPayInfoList)
+//	// || CollectionUtils.isEmpty(logisticsInfoList)) {
+//	// return null;
+//	// }
+//	//
+//	// OrderLogisticsInfoDO mainOrderLogisticsInfo = null; // 主物流订单
+//	// OrderPayInfoDO mainOrderPayInfo = null;// 主资金订单
+//	// Map<Long, OrderLogisticsInfoDO> logisticMap = new HashMap<Long,
+//	// OrderLogisticsInfoDO>();
+//	// Map<Long, OrderPayInfoDO> payMap = new HashMap<Long, OrderPayInfoDO>();
+//	// for (OrderLogisticsInfoDO tmp : logisticsInfoList) {
+//	// if
+//	// (tmp.getOrderGoodsId().equals(TradeConstants.OrderInfoConstants.baseOrder)) {
+//	// mainOrderLogisticsInfo = tmp;
+//	// } else {
+//	// logisticMap.put(tmp.getOrderGoodsId(), tmp);
+//	// }
+//	// }
+//	// for (OrderPayInfoDO tmp : orderPayInfoList) {
+//	// if
+//	// (tmp.getOrderGoodsId().equals(TradeConstants.OrderInfoConstants.baseOrder)) {
+//	// mainOrderPayInfo = tmp;
+//	// } else {
+//	// payMap.put(tmp.getOrderGoodsId(), tmp);
+//	// }
+//	// }
+//	// List<BaseSubOrderInfoDO> subOrderList = new ArrayList<BaseSubOrderInfoDO>();
+//	// for (OrderGoodsInfoDO orderGoodsInfo : orderGoodsInfoList) {
+//	// subOrderList.add(new BaseSubOrderInfoDO(orderGoodsInfo,
+//	// payMap.get(orderGoodsInfo.getOrderGoodsId()),
+//	// logisticMap.get(orderGoodsInfo.getOrderGoodsId())));
+//	// }
+//	//
+//	// return new BaseOrderDO(orderInfo, subOrderList, mainOrderLogisticsInfo,
+//	// mainOrderPayInfo);
+//	// }
+//	//
+//	// @Override
+//	// public List<OrderDO> queryBaseOrderByB2cOrderId(String b2cOrderId) {
+//	//
+//	// if(StringUtils.isNotEmpty(b2cOrderId)) {
+//	// OrderDO orderDO = new OrderDO();
+//	// orderDO .setFeature(b2cOrderId);
+//	// return orderInfoDAO.findListByOrderDO(orderDO);
+//	// }
+//	// return null;
+//	//
+//	// }
+//	//
+//	//
+//	// /**
+//	// * 获取主物流信息
+//	// *
+//	// * @param orderId
+//	// * @return
+//	// */
+//	// @Override
+//	// public List<OrderLogisticsInfoDO> queryOrderLogisticsInfoListByOrderId(Long
+//	// orderId) {
+//	// OrderLogisticsInfoDO orderLogisticsInfoDO = new OrderLogisticsInfoDO();
+//	// orderLogisticsInfoDO.setOrderId(orderId);
+//	// // orderLogisticsInfoDO
+//	// // .setOrderGoodsId(TradeConstants.OrderInfoConstants.baseOrder);
+//	// List<OrderLogisticsInfoDO> orderLogisticsInfoList = orderLogisticsInfoDAO
+//	// .findListByExample(orderLogisticsInfoDO);
+//	// if (orderLogisticsInfoList == null || orderLogisticsInfoList.size() == 0) {
+//	// return null;
+//	// }
+//	// return orderLogisticsInfoList;
+//	// }
+//	//
+//	// /**
+//	// * 获取主订单资金对象
+//	// *
+//	// * @param orderId
+//	// * @return
+//	// */
+//	// @SuppressWarnings("unused")
+//	// private OrderPayInfoDO getOrderPayInfo(Long orderId) {
+//	// OrderPayInfoDO orderPayInfoDO = new OrderPayInfoDO();
+//	// orderPayInfoDO.setOrderId(orderId);
+//	// orderPayInfoDO.setOrderGoodsId(TradeConstants.OrderInfoConstants.baseOrder);
+//	// List<OrderPayInfoDO> orderPayInfoDOList =
+//	// orderPayInfoDAO.findListByExample(orderPayInfoDO);
+//	// if (orderPayInfoDOList == null || orderPayInfoDOList.size() == 0) {
+//	// return null;
+//	// }
+//	// return orderPayInfoDOList.get(0);
+//	// }
+//	//
+//	// /**
+//	// * 根据订单id查询分项订单资金列表
+//	// *
+//	// * @param orderId
+//	// * @return
+//	// */
+//	// @Override
+//	// public List<OrderPayInfoDO> queryOrderPayInfoListByOrderId(Long orderId) {
+//	// OrderPayInfoDO orderPayInfoDO = new OrderPayInfoDO();
+//	// orderPayInfoDO.setOrderId(orderId);
+//	// List<OrderPayInfoDO> orderPayInfoDOList =
+//	// orderPayInfoDAO.findListByExample(orderPayInfoDO);
+//	// return orderPayInfoDOList;
+//	// }
+//	//
+//	// @Override
+//	// public DefaultResult<List<OrderInfoDO>>
+//	// queryOrderListByOrderStatus(OrderStatusEnum orderStatus, Long buyerId) {
+//	// DefaultResult<List<OrderInfoDO>> result = new
+//	// DefaultResult<List<OrderInfoDO>>();
+//	// OrderInfoDO orderInfoDOExample = new OrderInfoDO();
+//	// orderInfoDOExample.setOrderStatus(orderStatus.getStatus());
+//	// orderInfoDOExample.setBuyerId(buyerId);
+//	// List<OrderInfoDO> orderInfoList =
+//	// orderInfoDAO.findListByExample(orderInfoDOExample);
+//	// if (orderInfoList == null || orderInfoList.size() == 0) {
+//	// result.addErrorMsg("QUERY_BY_ORDERSTATUS_NULL", "通过订单状态查询订单为空");
+//	// } else {
+//	// result.setModule(orderInfoList);
+//	// }
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public OrderInfoDO queryOrderInfoByOrderId(Long orderId) {
+//	// if (orderId == null || orderId == 0) {
+//	// return null;
+//	// }
+//	// return orderInfoDAO.findOrderInfoDOByPrimaryKey(orderId);
+//	// }
+//	//
+//	// @Override
+//	// public DefaultResult<Integer> updateOrderInfo(OrderInfoDO orderInfo) {
+//	// DefaultResult<Integer> result = new DefaultResult<Integer>();
+//	// if (orderInfo == null) {
+//	// result.addErrorMsg("UPDATE_ORDER_INFO_NULL", "更新订单对象为空");
+//	// return result;
+//	// }
+//	// orderInfo.setGmtModified(new Date());
+//	// Integer number = orderInfoDAO.updateOrderInfoDO(orderInfo);
+//	// result.setModule(number);
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public OrderGoodsInfoDO queryOrderGoodsInfoByOrderGoodsId(Long orderGoodsId)
+//	// {
+//	// return orderGoodsInfoDAO.findOrderGoodsInfoDOByPrimaryKey(orderGoodsId);
+//	// }
+//	//
+//	// // @Override
+//	// // @Transactional
+//	// // public SubOrderResult<Integer> deleteOrderInfos(List<Long>
+//	// // orderInfoIdList) {
+//	// // SubOrderResult<Integer> result = new SubOrderResult<Integer>();
+//	// // checkDeleteOrderInfosPar(orderInfoIdList, result);
+//	// // if (result.isFailure()) {
+//	// // return result;
+//	// // }
+//	// // Integer deleteNum = 0;
+//	// // for (Long orderInfoId : orderInfoIdList) {
+//	// // // 1、删除主订单信息
+//	// // deleteNum = deleteNum
+//	// // + orderInfoDAO.deleteOrderInfoDOByPrimaryKey(orderInfoId);
+//	// // // 2、获取商品订单信息，并将库存加回去
+//	// // OrderGoodsInfoDO orderGoodsInfoQuery = new OrderGoodsInfoDO();
+//	// // orderGoodsInfoQuery.setOrderId(orderInfoId);
+//	// // List<OrderGoodsInfoDO> orderGoodsInfoList = orderGoodsInfoDAO
+//	// // .findListByExample(orderGoodsInfoQuery);
+//	// // for (OrderGoodsInfoDO orderGoodsInfo : orderGoodsInfoList) {
+//	// // goodsBiz.updateSkuInventory(orderGoodsInfo.getGoodsId(),
+//	// // orderGoodsInfo.getSkuId(), orderGoodsInfo.getQuantity()
+//	// // .intValue());
+//	// // }
+//	// // // 3、删除商品订单信息
+//	// // orderGoodsInfoDAO.deleteOrderGoodsInfoDOByOrderId(orderInfoId);
+//	// // // 4、删除资金订单信息
+//	// // orderPayInfoDAO.deleteOrderPayInfoDOByOrderId(orderInfoId);
+//	// // // 5、删除物流信息
+//	// // orderLogisticsInfoDAO
+//	// // .deleteOrderLogisticsInfoDOByOrderId(orderInfoId);
+//	// // }
+//	// // result.setModule(deleteNum);
+//	// // return result;
+//	// // }
+//	//
+//	// @Override
+//	// public List<OrderGoodsInfoDO> queryOrderGoodsInfoListByOrderId(Long orderId)
+//	// {
+//	// OrderGoodsInfoDO orderGoodsInfoDO = new OrderGoodsInfoDO();
+//	// orderGoodsInfoDO.setOrderId(orderId);
+//	// return orderGoodsInfoDAO.findListByExample(orderGoodsInfoDO);
+//	// }
+//	//
+//	// @Override
+//	// public DefaultResult<Integer> updateOrderGoodsInfo(OrderGoodsInfoDO
+//	// orderGoodsInfo) {
+//	// DefaultResult<Integer> result = new DefaultResult<Integer>();
+//	// if (orderGoodsInfo == null) {
+//	// result.addErrorMsg("UPDATE_ORDERGOODS_INFO_NULL", "更新子订单对象为空");
+//	// return result;
+//	// }
+//	// orderGoodsInfo.setGmtModified(new Date());
+//	// result.setModule(orderGoodsInfoDAO.updateOrderGoodsInfoDO(orderGoodsInfo));
+//	// return result;
+//	// }
+//	//
+//	// /**
+//	// * 根据商品订单id获取订单状态
+//	// *
+//	// * @param orderGoodsInfoId
+//	// * @return
+//	// */
+//	// @Override
+//	// public Integer getOrderGoodsInfoStatusByOrderGoodsId(Long orderGoodsInfoId) {
+//	// if (orderGoodsInfoId == null) {
+//	// return null;
+//	// }
+//	// OrderGoodsInfoDO orderGoodsInfoDO =
+//	// orderGoodsInfoDAO.findOrderGoodsInfoDOByPrimaryKey(orderGoodsInfoId);
+//	// if (orderGoodsInfoDO == null) {
+//	// return null;
+//	// }
+//	// return getOrderGoodsInfoStatusByOrderId(orderGoodsInfoDO.getOrderId());
+//	// }
+//	// //
+//	// // @Override
+//	// // public SubOrderResult<Integer> deleteOrderGoodsInfos(
+//	// // List<Long> orderGoodsInfoIdList) {
+//	// // SubOrderResult<Integer> result = new SubOrderResult<Integer>();
+//	// // Integer num = 0;
+//	// // for (Long orderGoodsInfoId : orderGoodsInfoIdList) {
+//	// // Integer orderGoodsInfoStatus =
+//	// // getOrderGoodsInfoStatusByOrderGoodsId(orderGoodsInfoId);
+//	// // if (orderGoodsInfoStatus == null) {
+//	// // result.addSubOrderErrorMsg(orderGoodsInfoId,
+//	// // "FIND_ORDER_ERROR", "根据订单ID获取订单对象失败");
+//	// // continue;
+//	// // }
+//	// // if (orderGoodsInfoStatus >= OrderStatusEnum.PAID_UNSENDGOODS
+//	// // .getStatus()) {
+//	// // result.addSubOrderErrorMsg(orderGoodsInfoId,
+//	// // "UPDATE_ORDERGOODSINFO_ERROR", "此订单已付款，不能再修改");
+//	// // continue;
+//	// // }
+//	// // num = num
+//	// // + orderGoodsInfoDAO
+//	// // .deleteOrderGoodsInfoDOByPrimaryKey(orderGoodsInfoId);
+//	// // }
+//	// // result.setModule(num);
+//	// // return result;
+//	// // }
+//	//
+//	// /**
+//	// * 生成一条汇总物流信息
+//	// *
+//	// * @param baseOrder
+//	// */
+//	// private void createOrderLogistics(BaseOrderDO baseOrder) {
+//	// OrderLogisticsInfoDO orderLogisticsInfo =
+//	// baseOrder.createOrderLogisticsInfo();
+//	// orderLogisticsInfo.setVersion(TradeConstants.OrderInfoConstants.DEFAULT_VERSION);
+//	// orderLogisticsInfoDAO.insertOrderLogisticsInfoDO(orderLogisticsInfo);
+//	// }
+//	//
+//	// /**
+//	// * 生成分项订单信息
+//	// *
+//	// * @param baseOrder
+//	// * @param queryBaseOrdersOptions
+//	// * @param orderInfo
+//	// * @param orderId
+//	// * @param orderType
+//	// * @param seller
+//	// */
+//	// private void createSubOrderInfos(BaseOrderDO baseOrder,
+//	// QueryBaseOrdersOptions queryBaseOrdersOptions,
+//	// OrderInfoDO orderInfo, long orderId, OrderTypeEnum orderType, BaseUserDO
+//	// seller) {
+//	// List<BaseSubOrderInfoDO> subOrderInfoList = baseOrder.getSubOrderInfoList();
+//	// // 遍历订单货品，生成订单货品信息，并插入数据库
+//	// for (BaseSubOrderInfoDO subOrderInfo : subOrderInfoList) {
+//	//
+//	// // 1、生成商品订单
+//	// createOrderGoodsInfo(queryBaseOrdersOptions, orderInfo, orderId,
+//	// subOrderInfo, orderType);
+//	//
+//	// // 2、生成物流信息
+//	// createLogisticsInfo(baseOrder, subOrderInfo);
+//	//
+//	// // 3、生成商品订单对应的资金订单
+//	// createOrderGoodsPayInfo(subOrderInfo, seller);
+//	//
+//	// }
+//	//
+//	// }
+//	//
+//	// /**
+//	// * 生成商品订单信息
+//	// *
+//	// * @param queryBaseOrdersOptions
+//	// * @param orderInfo
+//	// * @param orderId
+//	// * @param subOrderInfo
+//	// * @param orderType
+//	// */
+//	// private void createOrderGoodsInfo(QueryBaseOrdersOptions
+//	// queryBaseOrdersOptions, OrderInfoDO orderInfo,
+//	// long orderId, BaseSubOrderInfoDO subOrderInfo, OrderTypeEnum orderType) {
+//	// OrderGoodsInfoDO orderGoodsInfo = subOrderInfo.getOrderGoods();
+//	// // 从主订单中获取买卖双方id
+//	// orderGoodsInfo.setBuyerId(orderInfo.getBuyerId());
+//	// orderGoodsInfo.setBuyerNick(orderInfo.getBuyerNick());
+//	// orderGoodsInfo.setSellerId(orderInfo.getSellerId());
+//	// orderGoodsInfo.setSellerNick(orderInfo.getSellerNick());
+//	// orderGoodsInfo.setOrderId(orderId);
+//	// orderGoodsInfo.setOrderStatus(orderInfo.getOrderStatus());
+//	// orderGoodsInfo.setOrderType(orderType.getType());
+//	// orderGoodsInfo.setVersion(TradeConstants.OrderInfoConstants.DEFAULT_VERSION);
+//	// orderGoodsInfo.setOrderCode(orderInfo.getOrderCode());
+//	//
+//	// if (queryBaseOrdersOptions.isQueryGoodsInfo()) {
+//	// // 查询商品信息
+//	// SkuDetailInfoDO baseGoods =
+//	// goodsBiz.querySkuDetail(subOrderInfo.getGoodsId(), subOrderInfo.getSkuId());
+//	// orderGoodsInfo.setGoodsName(baseGoods.getGoodsBasicInfo().getGoodsName());
+//	// orderGoodsInfo.setGoodsBrandId(baseGoods.getGoodsBasicInfo().getGoodsBrandId());
+//	// orderGoodsInfo.setGoodsBrandName(baseGoods.getGoodsBasicInfo().getGoodsBrandName());
+//	// orderGoodsInfo.setGoodsCode(baseGoods.getGoodsBasicInfo().getGoodsCode());
+//	// orderGoodsInfo.setGoodsDescUrl(baseGoods.getGoodsBasicInfo().getGoodsDescUrl());
+//	// if (baseGoods.getImageDO() != null) {
+//	// // 商品主图信息
+//	// orderGoodsInfo.setPicUrl(baseGoods.getImageDO().getImgUrl());
+//	// }
+//	// // 价格信息
+//	// GoodsPriceInfoDO goodsPriceInfo = baseGoods.getPrice();
+//	// // 成本价不需要
+//	// // orderGoodsInfo.setCostPrice(goodsPriceInfo.getCostPrice().longValue());//
+//	// // TODO
+//	// // 设置商品上原采购价
+//	// // if
+//	// // (orderType.getType().equals(OrderTypeEnum.AGENT_SALES.getType()))
+//	// // {
+//	// //
+//	// orderGoodsInfo.setStdSalePrice(goodsPriceInfo.getAgentStandardPrice().longValue());//
+//	// // TODO
+//	// // } else {
+//	// //
+//	// orderGoodsInfo.setStdSalePrice(goodsPriceInfo.getDelStandardPrice().longValue());//
+//	// // TODO
+//	// // }
+//	// // TODO 注意，此处订单价格是直接将double转为long型！！！！
+//	// if (queryBaseOrdersOptions.isQueryGoodsPrice()) {
+//	// Double actualPrice = goodsPriceInfo.getLowRetailPrice() * 100;
+//	// orderGoodsInfo.setActualSalePrice(actualPrice.longValue());
+//	// }
+//	//
+//	// // 商品库存单位定义信息
+//	// GoodsSkuDefDO baseGoodsSku = baseGoods.getSku();
+//	// // 如果存在sku，则设置
+//	// if (baseGoodsSku != null) {
+//	// orderGoodsInfo.setSkuId(baseGoodsSku.getSkuId());
+//	// orderGoodsInfo.setPropertyDefType(new
+//	// Integer(baseGoodsSku.getPropertyDefType()).byteValue());
+//	// orderGoodsInfo.setPropertyDef(baseGoodsSku.getPropertyDef());
+//	// orderGoodsInfo.setPropertyDefDesc(goodsBiz.getSkuTextDes(baseGoodsSku.getPropertyDef(),
+//	// ":", ";"));
+//	// orderGoodsInfo.setUnitId(baseGoodsSku.getUnitId());
+//	// orderGoodsInfo.setUnitName(baseGoodsSku.getUnitName());
+//	// }
+//	// }
+//	//
+//	// Long orderGoodsId = orderGoodsInfoDAO.insertOrderGoodsInfoDO(orderGoodsInfo);
+//	// subOrderInfo.setOrderGoodsId(orderGoodsId);
+//	// }
+//	//
+//	// /**
+//	// * 生成物流信息
+//	// *
+//	// * @param baseOrder
+//	// * @param subOrderInfo
+//	// */
+//	// private void createLogisticsInfo(BaseOrderDO baseOrder, BaseSubOrderInfoDO
+//	// subOrderInfo) {
+//	// OrderLogisticsInfoDO orderLogisticsInfo =
+//	// subOrderInfo.getOrderLogisticsInfo();
+//	// orderLogisticsInfo.setLogisticsStatus(LogisticsStatusEnum.UNSEND_OUT_GOODS.getStatus());
+//	// orderLogisticsInfo.setOrderId(baseOrder.getOrderId());
+//	// orderLogisticsInfo.setOrderGoodsId(subOrderInfo.getOrderGoodsId());
+//	// orderLogisticsInfo.setVersion(TradeConstants.OrderInfoConstants.DEFAULT_VERSION);
+//	// orderLogisticsInfoDAO.insertOrderLogisticsInfoDO(orderLogisticsInfo);
+//	// }
+//	//
+//	// /**
+//	// * 生成订单资金信息
+//	// *
+//	// * @param subOrderInfo
+//	// * @param seller
+//	// */
+//	// private void createOrderGoodsPayInfo(BaseSubOrderInfoDO subOrderInfo,
+//	// BaseUserDO seller) {
+//	// // 进行应付金额的计算并设置
+//	// OrderPayInfoDO orderPayInfo = subOrderInfo.createOrderPayInfo();
+//	// orderPayInfo.setPayStatus(OrderPayStatusEnum.UNPAYED.getStatus());
+//	// orderPayInfo.setOrderId(subOrderInfo.getOrderId());
+//	// orderPayInfo.setOrderGoodsId(subOrderInfo.getOrderGoodsId());
+//	// //
+//	// orderPayInfo.setSellerAlipayNo(seller.getUserBasicInfoDO().getAlipayAccount());
+//	// orderPayInfo.setVersion(TradeConstants.OrderInfoConstants.DEFAULT_VERSION);
+//	// orderPayInfoDAO.insertOrderPayInfoDO(orderPayInfo);
+//	// }
+//	//
+//	// /**
+//	// * 生成主资金订单信息
+//	// *
+//	// * @param baseOrder
+//	// * @param seller
+//	// */
+//	// private void createOrderPayInfo(BaseOrderDO baseOrder, BaseUserDO seller) {
+//	// OrderPayInfoDO orderPayInfo = baseOrder.createOrderPayInfo();
+//	// //
+//	// orderPayInfo.setSellerAlipayNo(seller.getUserBasicInfoDO().getAlipayAccount());
+//	// orderPayInfo.setVersion(TradeConstants.OrderInfoConstants.DEFAULT_VERSION);
+//	// orderPayInfoDAO.insertOrderPayInfoDO(orderPayInfo);
+//	// }
+//	//
+//	// /**
+//	// * 更新库存信息
+//	// *
+//	// * @param baseOrder
+//	// */
+//	// private void updateGoodsInventoryInfo(BaseOrderDO baseOrder,
+//	// SubOrderResult<BaseOrderDO> result) {
+//	// List<BaseSubOrderInfoDO> baseSubOrderInfoList =
+//	// baseOrder.getSubOrderInfoList();
+//	// for (BaseSubOrderInfoDO tempBaseSubOrderInfo : baseSubOrderInfoList) {
+//	// BooleanResult rlst =
+//	// goodsBiz.updateSkuInventory(tempBaseSubOrderInfo.getGoodsId(),
+//	// tempBaseSubOrderInfo.getSkuId(),
+//	// -tempBaseSubOrderInfo.getQuantity().intValue());
+//	// if (rlst.isFailure()) {
+//	// result.addErrorMsg("UPDATE_INVENTORY_FAILURE", "下单减库存失败！");
+//	// return;
+//	// }
+//	// }
+//	// }
+//	//
+//	// /**
+//	// * 检查参数正确性： 1）买家id必须有 2）卖家id必须有 3）至少有一个商品 4）每个分订单对象商品id、库存单位skuid必须有；
+//	// * 5)必须设置物流信息
+//	// *
+//	// * @param baseOrderDo
+//	// * @param result
+//	// * @param queryBaseOrdersOptions
+//	// * @return
+//	// */
+//	// private void checkParBaseOrderDO(BaseOrderDO baseOrder,
+//	// SubOrderResult<BaseOrderDO> result,
+//	// QueryBaseOrdersOptions queryBaseOrdersOptions) {
+//	// if (queryBaseOrdersOptions.isQueryBuyerInfo()) {
+//	// if (baseOrder.getBuyerId() == null || baseOrder.getBuyerId() == 0) {
+//	// // 如果是接口查询买者信息，则买者id不能为空
+//	// result.addErrorMsg(TradeConstants.ErrorCode.BUYER_ID_NULL, "买家id不能为空");
+//	// }
+//	// } else {
+//	// if (baseOrder.getBuyer() == null) {
+//	// // 如果非接口查询买者信息，则买者不能为空
+//	// result.addErrorMsg(TradeConstants.ErrorCode.BUYER_NULL, "买家不能为空");
+//	// }
+//	// }
+//	//
+//	// List<BaseSubOrderInfoDO> baseSubOrderList = baseOrder.getSubOrderInfoList();
+//	// if (baseOrder.isSuborderListNull()) {
+//	// // 分订单列表为空
+//	// result.addErrorMsg(TradeConstants.ErrorCode.SUBORDERINFO_LIST_NULLOREMPTY,
+//	// "子订单信息不存在");
+//	// }
+//	//
+//	// for (BaseSubOrderInfoDO tempBaseSubOrder : baseSubOrderList) {
+//	// if (tempBaseSubOrder == null) {
+//	// // 分订单对象为空
+//	// result.addErrorMsg(TradeConstants.ErrorCode.SUB_ORDER_NULL, "子订单为空");
+//	// break;
+//	// }
+//	// // 如果实际采购价是从前端传过来，不需要我们从商品上去取，必须吧实际销售价格传进来
+//	// if (!queryBaseOrdersOptions.isQueryGoodsPrice()
+//	// && NumberUtils.isNullOrZero(tempBaseSubOrder.getActualSalePrice())) {
+//	// // 分订单实际售卖价格未填写
+//	// result.addErrorMsg("ACTUAL_SALE_PRICE_NULL", "商品的实际销售价格未填写");
+//	// break;
+//	// }
+//	// // 判断物流信息是否存在，必须每个物流信息都存在 暂时不检查
+//	// // if (!tempBaseSubOrder.createOrderValidate()) {
+//	// // result.addErrorMsg(TradeConstants.ErrorCode.ORDER_LOGISTICSINFO_NULL,
+//	// // "订单物流信息必须存在");
+//	// // break;
+//	// // }
+//	// // 商品id必传
+//	// if (NumberUtils.isNullOrZero(tempBaseSubOrder.getGoodsId())) {
+//	// // 订单商品对象商品id或者库存单位对象id为空
+//	// result.addErrorMsg(TradeConstants.ErrorCode.GOODSID_NULL, "订单的商品id不能为空");
+//	// break;
+//	// }
+//	//
+//	// // 校验库存量
+//	// SkuDetailInfoDO skuDetail =
+//	// goodsBiz.querySkuDetail(tempBaseSubOrder.getGoodsId(),
+//	// tempBaseSubOrder.getSkuId());
+//	// if (skuDetail == null) {
+//	// // 订单商品不存在
+//	// result.addErrorMsg("SUB_ORDER_GOODS_NOT_EXIST", "子单的商品不存在");
+//	// break;
+//	// }
+//	// GoodsInventoryInfoDO goodsInventoryInfo = skuDetail.getInventory();
+//	// if (goodsInventoryInfo == null
+//	// ||
+//	// goodsInventoryInfo.getSaleStockNum().compareTo(tempBaseSubOrder.getQuantity())
+//	// < 0) {
+//	// result.addErrorMsg(TradeConstants.ErrorCode.STOCKNUM_LESSTHAN_QUANTITY,
+//	// "子单商品的库存不足");
+//	// break;
+//	// }
+//	// baseOrder.setSellerId(skuDetail.getGoodsBasicInfo().getUserId());
+//	// baseOrder.setSellerNick(skuDetail.getGoodsBasicInfo().getUserNick());
+//	// }
+//	// }
+//	//
+//	// /**
+//	// * 根据订单id查询分析订单信息
+//	// *
+//	// * @param orderId
+//	// * @return
+//	// */
+//	// @SuppressWarnings("unused")
+//	// private List<BaseSubOrderInfoDO> getBaseSubOrderInfoDOListByOrderId(Long
+//	// orderId) {
+//	// if (orderId == null) {
+//	// return null;
+//	// }
+//	//
+//	// // 查询商品信息
+//	// OrderGoodsInfoDO orderGoodsInfoDO = new OrderGoodsInfoDO();
+//	// orderGoodsInfoDO.setOrderId(orderId);
+//	// List<OrderGoodsInfoDO> orderGoodsInfoList =
+//	// orderGoodsInfoDAO.findListByExample(orderGoodsInfoDO);
+//	// // 查询资金订单信息
+//	// OrderPayInfoDO orderPayInfoDOExample = new OrderPayInfoDO();
+//	// orderPayInfoDOExample.setOrderId(orderId);
+//	// List<OrderPayInfoDO> orderPayInfoList =
+//	// orderPayInfoDAO.findListByExample(orderPayInfoDOExample);
+//	// // 查询物流订单信息
+//	// OrderLogisticsInfoDO logisticsInfo = new OrderLogisticsInfoDO();
+//	// logisticsInfo.setOrderId(orderId);
+//	// List<OrderLogisticsInfoDO> logisticsInfoList =
+//	// orderLogisticsInfoDAO.findListByExample(logisticsInfo);
+//	// if (CollectionUtils.isEmpty(orderGoodsInfoList) ||
+//	// CollectionUtils.isEmpty(orderPayInfoList)
+//	// || CollectionUtils.isEmpty(logisticsInfoList)) {
+//	// return null;
+//	// }
+//	//
+//	// OrderLogisticsInfoDO mainOrderLogisticsInfo = null; // 主物流订单
+//	// OrderPayInfoDO mainOrderPayInfo = null;// 主资金订单
+//	// Map<Long, OrderLogisticsInfoDO> logisticMap = new HashMap<Long,
+//	// OrderLogisticsInfoDO>();
+//	// Map<Long, OrderPayInfoDO> payMap = new HashMap<Long, OrderPayInfoDO>();
+//	// for (OrderLogisticsInfoDO tmp : logisticsInfoList) {
+//	// if
+//	// (tmp.getOrderGoodsId().equals(TradeConstants.OrderInfoConstants.baseOrder)) {
+//	// mainOrderLogisticsInfo = tmp;
+//	// } else {
+//	// logisticMap.put(tmp.getOrderGoodsId(), tmp);
+//	// }
+//	// }
+//	// for (OrderPayInfoDO tmp : orderPayInfoList) {
+//	// if
+//	// (tmp.getOrderGoodsId().equals(TradeConstants.OrderInfoConstants.baseOrder)) {
+//	// mainOrderPayInfo = tmp;
+//	// } else {
+//	// payMap.put(tmp.getOrderGoodsId(), tmp);
+//	// }
+//	// }
+//	// List<BaseSubOrderInfoDO> result = new ArrayList<BaseSubOrderInfoDO>();
+//	// for (OrderGoodsInfoDO orderGoodsInfo : orderGoodsInfoList) {
+//	// result.add(new BaseSubOrderInfoDO(orderGoodsInfo,
+//	// payMap.get(orderGoodsInfo.getOrderGoodsId()),
+//	// logisticMap.get(orderGoodsInfo.getOrderGoodsId())));
+//	// }
+//	//
+//	// return result;
+//	// }
+//	//
+//	// /**
+//	// * 对欲删除的订单做校验
+//	// *
+//	// * @param orderInfoIdList
+//	// * @param result
+//	// */
+//	// // private void checkDeleteOrderInfosPar(List<Long> orderInfoIdList,
+//	// // SubOrderResult<Integer> result) {
+//	// // if (orderInfoIdList == null || orderInfoIdList.size() == 0) {
+//	// // result.addErrorMsg("DELETE_ORDER_LIST_NULL", "删除订单对象列表不能为空");
+//	// // }
+//	// // for (Long orderInfoId : orderInfoIdList) {
+//	// // OrderInfoDO orderInfo = orderInfoDAO
+//	// // .findOrderInfoDOByPrimaryKey(orderInfoId);
+//	// // if (orderInfo == null) {
+//	// // result.addSubOrderErrorMsg(orderInfoId, "DELETE_ORDER_NULL",
+//	// // "删除订单对象不存在");
+//	// // }
+//	// // if (orderInfo.getOrderStatus() >= OrderStatusEnum.PAID_UNSENDGOODS
+//	// // .getStatus()) {
+//	// // result.addSubOrderErrorMsg(orderInfoId,
+//	// // "DELETE_ORDER_STATUS_ERROR", "删除订单对象已付款，不能删除");
+//	// // }
+//	// // }
+//	// // }
+//	//
+//	// private Integer getOrderGoodsInfoStatusByOrderId(Long orderId) {
+//	// OrderInfoDO orderInfoDO = orderInfoDAO.findOrderInfoDOByPrimaryKey(orderId);
+//	// if (orderInfoDO != null) {
+//	// return orderInfoDO.getOrderStatus().intValue();
+//	// }
+//	// return null;
+//	// }
+//	//
+//	// @Override
+//	// public List<BaseOrderDO> queryBaseOrderForPage(QueryOrderDO query) {
+//	// List<BaseOrderDO> orders = new ArrayList<BaseOrderDO>();
+//	// List<Long> orderIds = orderGoodsInfoDAO.findPageOrderIdsByQuery(query);
+//	// if (CollectionUtils.isNotEmpty(orderIds)) {
+//	// for (Long orderId : orderIds) {
+//	// BaseOrderDO baseOrder = queryBaseOrder(orderId);
+//	// if (baseOrder != null) {
+//	// orders.add(queryBaseOrder(orderId));
+//	// }
+//	// }
+//	// }
+//	// return orders;
+//	// }
+//	//
+//	// @Override
+//	// public DefaultResult<Integer> updateOrderLogisticsInfo(OrderLogisticsInfoDO
+//	// orderLogisticsInfo) {
+//	// DefaultResult<Integer> result = new DefaultResult<Integer>();
+//	// result.setModule(orderLogisticsInfoDAO.updateOrderLogisticsInfoDO(orderLogisticsInfo));
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public DefaultResult<Integer> updatePayInfo(OrderPayInfoDO orderPayInfo) {
+//	// DefaultResult<Integer> result = new DefaultResult<Integer>();
+//	// result.setModule(orderPayInfoDAO.updateOrderPayInfoDO(orderPayInfo));
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public SubOrderResult<OrderInfoDO> orderConfirmSendGoodsOperation(Long
+//	// orderId, String tradeNo,
+//	// Integer logisticsShipping, String logisticsCompany, String logisticsNo,
+//	// String remark) {
+//	// SubOrderResult<OrderInfoDO> result = new SubOrderResult<OrderInfoDO>();
+//	// OrderInfoDO orderInfo = queryOrderInfoByOrderId(orderId);
+//	// if
+//	// (OrderStatusEnum.SENDGOODS_UNCONFIRM.getStatus().equals(orderInfo.getOrderStatus()))
+//	// {
+//	// return result;
+//	// }
+//	// TransactionDefinition def = new
+//	// DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//	// TransactionStatus transactionStatus = transactionManager.getTransaction(def);
+//	// try {
+//	//
+//	// if
+//	// (!OrderStatusEnum.PAID_UNSENDGOODS.compare(orderInfo.getOrderStatus().intValue()))
+//	// {
+//	// Logger.exp(WakaModule.ALIPAY, "订单号：" + orderId + "为已发货，但系统订单状态非【已付款，待发货】",
+//	// null, tradeNo);
+//	// result.addErrorMsg("ORDER_STATUS_ERROR", "订单号：" + orderId +
+//	// "为已发货，但系统订单状态非【已付款，待发货】");
+//	// return result;
+//	// }
+//	//
+//	// // 调整主订单信息
+//	// orderInfo.setDbGmtModified(new Date());
+//	// orderInfo.setOrderStatus(OrderStatusEnum.SENDGOODS_UNCONFIRM.getStatus());
+//	// orderInfo.setOutTradeNo(tradeNo);
+//	// updateOrderInfo(orderInfo);
+//	//
+//	// // 调整分项订单信息
+//	// List<OrderGoodsInfoDO> orderGoodsInfoList =
+//	// queryOrderGoodsInfoListByOrderId(orderId);
+//	// if (CollectionUtils.isEmpty(orderGoodsInfoList)) {
+//	// Logger.exp(WakaModule.ALIPAY, "发货回调处理中查询分项订单失败", null, tradeNo);
+//	// result.addErrorMsg("QUERY_ORDERGOODSINFOLIST_ERROR", "发货回调处理中查询分项订单失败");
+//	// return result;
+//	// }
+//	// int opCount = 0;
+//	// for (OrderGoodsInfoDO tempOrderGoodsInfo : orderGoodsInfoList) {
+//	// if
+//	// (!OrderStatusEnum.PAID_UNSENDGOODS.compare(tempOrderGoodsInfo.getOrderStatus().intValue()))
+//	// {
+//	// Logger.exp(WakaModule.ALIPAY,
+//	// "订单号：" + tempOrderGoodsInfo.getOrderGoodsId() + "为已发货，但系统订单状态非【已付款，待发货】",
+//	// null, tradeNo);
+//	// result.addSubOrderErrorMsg(StringUtils.getNotNullString(tempOrderGoodsInfo.getOrderGoodsId()),
+//	// "ORDER_STATUS_ERROR",
+//	// "订单号：" + tempOrderGoodsInfo.getOrderGoodsId() + "为已发货，但系统订单状态非【已付款，待发货】");
+//	// return result;
+//	// }
+//	//
+//	// tempOrderGoodsInfo.setOrderStatus(OrderStatusEnum.SENDGOODS_UNCONFIRM.getStatus());
+//	// updateOrderGoodsInfo(tempOrderGoodsInfo);
+//	//
+//	// opCount++; // 最后一个子单执行完后修改主单信息
+//	// McbfSellsOrderDO sellsOrderDO = new McbfSellsOrderDO();
+//	// sellsOrderDO.setSellsId(tempOrderGoodsInfo.getTshOrdersId());
+//	// sellsOrderDO.setLogisCmp(logisticsCompany);
+//	// sellsOrderDO.setLogisCode(logisticsNo);
+//	// sellsOrderDO.setLogisType(logisticsShipping);
+//	// if (StringUtils.isNotBlank(remark)) {
+//	// sellsOrderDO.setOrderRemark(remark);
+//	// }
+//	// DefaultResult<Integer> tshResult = updateTshSellsOrder(sellsOrderDO,
+//	// opCount == orderGoodsInfoList.size());
+//	// if (tshResult.isFailure()) {
+//	// Logger.exp(WakaModule.TSH, "发货回调处理中销售单同步异常", null, sellsOrderDO);
+//	// result.addError(tshResult.getErrorMsg());
+//	// return result;
+//	// }
+//	// }
+//	//
+//	// // 调整物流信息
+//	// List<OrderLogisticsInfoDO> orderLogisticsInfoList =
+//	// queryOrderLogisticsInfoListByOrderId(orderId);
+//	// if (CollectionUtils.isEmpty(orderLogisticsInfoList)) {
+//	// Logger.exp(WakaModule.ALIPAY, "发货回调处理中查询物流信息失败", null, tradeNo);
+//	// result.addErrorMsg("QUERY_ORDERLOGISTICSINFOLIST_ERROR", "发货回调处理中查询物流信息失败");
+//	// return result;
+//	// }
+//	// for (OrderLogisticsInfoDO tempOrderLogisticsInfo : orderLogisticsInfoList) {
+//	// tempOrderLogisticsInfo.setLogisticsStatus(LogisticsStatusEnum.SEND_OUT_GOODS.getStatus());
+//	// tempOrderLogisticsInfo.setSendGoodsTime(new Date());
+//	// tempOrderLogisticsInfo.setLogisticsShipping(logisticsShipping);
+//	// tempOrderLogisticsInfo.setLogisticsCompany(logisticsCompany);
+//	// tempOrderLogisticsInfo.setLogisticsNo(logisticsNo);
+//	// // 物流备注
+//	// if (StringUtils.isNotBlank(remark)) {
+//	// tempOrderLogisticsInfo.setRemark(remark);
+//	// }
+//	// updateOrderLogisticsInfo(tempOrderLogisticsInfo);
+//	// }
+//	// result.setModule(orderInfo);
+//	// transactionManager.commit(transactionStatus);
+//	// } catch (Exception e) {
+//	// Logger.exp("TRADE", "确认发货操作失败", e, orderInfo);
+//	// transactionStatus.setRollbackOnly();
+//	// transactionManager.rollback(transactionStatus);
+//	// throw new RuntimeException(e);
+//	// }
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public SubOrderResult<OrderInfoDO> orderConfirmPayOperation(Long orderId,
+//	// String tradeNo, String buyerEmail) {
+//	// SubOrderResult<OrderInfoDO> result = new SubOrderResult<OrderInfoDO>();
+//	// OrderInfoDO orderInfo = queryOrderInfoByOrderId(orderId);
+//	// // 如果状态已经变成已付款待发货，就直接返回了
+//	// if
+//	// (OrderStatusEnum.PAID_UNSENDGOODS.getStatus().equals(orderInfo.getOrderStatus()))
+//	// {
+//	// return result;
+//	// }
+//	// TransactionDefinition def = new
+//	// DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//	// TransactionStatus transactionStatus = transactionManager.getTransaction(def);
+//	// try {
+//	// if
+//	// (!OrderStatusEnum.REVIEWADOPT_UNPAID.compare(orderInfo.getOrderStatus().intValue()))
+//	// {
+//	// Logger.exp(WakaModule.ALIPAY, "支付宝请求同步订单号：" + orderId +
+//	// "为已支付等待发货，但系统订单状态非【审核通过，等待支付状态】", null,
+//	// tradeNo);
+//	// result.addErrorMsg("ORDER_STATUS_ERROR", "支付宝请求同步订单号：" + orderId +
+//	// "为已支付等待发货，但系统订单状态非【审核通过，等待支付状态】");
+//	// return result;
+//	// }
+//	//
+//	// // 调整主订单信息
+//	// orderInfo.setDbGmtModified(new Date());
+//	// orderInfo.setOrderStatus(OrderStatusEnum.PAID_UNSENDGOODS.getStatus());
+//	// orderInfo.setOutTradeNo(tradeNo);
+//	// updateOrderInfo(orderInfo);
+//	//
+//	// // 调整分项订单信息
+//	// List<OrderGoodsInfoDO> orderGoodsInfoList =
+//	// queryOrderGoodsInfoListByOrderId(orderId);
+//	// if (CollectionUtils.isEmpty(orderGoodsInfoList)) {
+//	// Logger.exp(WakaModule.ALIPAY, "支付确认回调处理中查询分项订单失败", null, tradeNo);
+//	// result.addErrorMsg("QUERY_ORDERGOODSINFOLIST_ERROR", "支付确认回调处理中查询分项订单失败");
+//	// return result;
+//	// }
+//	// for (OrderGoodsInfoDO tempOrderGoodsInfo : orderGoodsInfoList) {
+//	// if
+//	// (!OrderStatusEnum.REVIEWADOPT_UNPAID.compare(tempOrderGoodsInfo.getOrderStatus().intValue()))
+//	// {
+//	// Logger.exp(WakaModule.ALIPAY,
+//	// "支付宝请求同步分项订单号：" + tempOrderGoodsInfo.getOrderGoodsId() +
+//	// "为已支付等待发货，但系统订单状态非【审核通过，等待支付状态】",
+//	// null, tradeNo);
+//	// result.addSubOrderErrorMsg(StringUtils.getNotNullString(tempOrderGoodsInfo.getOrderGoodsId()),
+//	// "ORDER_STATUS_ERROR",
+//	// "支付宝请求同步分项订单号：" + tempOrderGoodsInfo.getOrderGoodsId() +
+//	// "为已支付等待发货，但系统订单状态非【审核通过，等待支付状态】");
+//	// return result;
+//	// }
+//	//
+//	// tempOrderGoodsInfo.setOrderStatus(OrderStatusEnum.PAID_UNSENDGOODS.getStatus());
+//	// updateOrderGoodsInfo(tempOrderGoodsInfo);
+//	// }
+//	//
+//	// // 调整资金订单信息
+//	// List<OrderPayInfoDO> orderPayInfoList =
+//	// queryOrderPayInfoListByOrderId(orderId);
+//	// if (CollectionUtils.isEmpty(orderGoodsInfoList)) {
+//	// Logger.exp(WakaModule.ALIPAY, "支付确认回调处理中查询资金订单失败", null, tradeNo);
+//	// result.addErrorMsg("QUERY_ORDERPAYINFOLIST_ERROR", "支付确认回调处理中查询资金订单失败");
+//	// return result;
+//	// }
+//	// for (OrderPayInfoDO tempOrderPayInfo : orderPayInfoList) {
+//	// tempOrderPayInfo.setPayStatus(PayStatusEnum.HAVE_PAY.getStatus());
+//	// tempOrderPayInfo.setBuyerAlipayNo(buyerEmail);
+//	// tempOrderPayInfo.setOuterPayOrderId(tradeNo);
+//	// updatePayInfo(tempOrderPayInfo);
+//	// }
+//	// result.setModule(orderInfo);
+//	//
+//	// transactionManager.commit(transactionStatus);
+//	// } catch (Exception e) {
+//	// Logger.exp("TRADE", "确认支付操作失败", e, orderInfo);
+//	// transactionStatus.setRollbackOnly();
+//	// transactionManager.rollback(transactionStatus);
+//	// throw new RuntimeException(e);
+//	// }
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public SubOrderResult<OrderInfoDO> orderConfirmReceivedGoodsOperation(Long
+//	// orderId, String tradeNo) {
+//	// SubOrderResult<OrderInfoDO> result = new SubOrderResult<OrderInfoDO>();
+//	// OrderInfoDO orderInfo = queryOrderInfoByOrderId(orderId);
+//	// if
+//	// (OrderStatusEnum.TRADE_COMPLETE.getStatus().equals(orderInfo.getOrderStatus()))
+//	// {
+//	// return result;
+//	// }
+//	// TransactionDefinition def = new
+//	// DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+//	// TransactionStatus transactionStatus = transactionManager.getTransaction(def);
+//	//
+//	// try {
+//	// if
+//	// (!OrderStatusEnum.SENDGOODS_UNCONFIRM.compare(orderInfo.getOrderStatus().intValue()))
+//	// {
+//	// Logger.exp(WakaModule.ALIPAY, "支付宝请求同步订单号：" + orderId +
+//	// "为已确认收货，但系统订单状态非【已发货，待确认收货状态】", null, tradeNo);
+//	// result.addErrorMsg("ORDER_STATUS_ERROR", "支付宝请求同步订单号：" + orderId +
+//	// "为已确认收货，但系统订单状态非【已发货，待确认收货状态】s");
+//	// return result;
+//	// }
+//	//
+//	// orderInfo.setDbGmtModified(new Date());
+//	// orderInfo.setOrderStatus(OrderStatusEnum.TRADE_COMPLETE.getStatus());
+//	// orderInfo.setOutTradeNo(tradeNo);
+//	// updateOrderInfo(orderInfo);
+//	//
+//	// // 调整分项订单信息
+//	// List<OrderGoodsInfoDO> orderGoodsInfoList =
+//	// queryOrderGoodsInfoListByOrderId(orderId);
+//	// if (CollectionUtils.isEmpty(orderGoodsInfoList)) {
+//	// Logger.exp(WakaModule.ALIPAY, "买家确认发货回调处理中查询分析订单失败", null, tradeNo);
+//	// return null;
+//	// }
+//	// for (OrderGoodsInfoDO tempOrderGoodsInfo : orderGoodsInfoList) {
+//	// if
+//	// (!OrderStatusEnum.SENDGOODS_UNCONFIRM.compare(tempOrderGoodsInfo.getOrderStatus().intValue()))
+//	// {
+//	// Logger.exp(WakaModule.ALIPAY,
+//	// "支付宝请求同步分项订单号：" + tempOrderGoodsInfo.getOrderGoodsId() +
+//	// "为已支付等待发货，但系统订单状态非【审核通过，等待支付状态】",
+//	// null, tradeNo);
+//	// result.addSubOrderErrorMsg(StringUtils.getNotNullString(tempOrderGoodsInfo.getOrderGoodsId()),
+//	// "ORDER_STATUS_ERROR",
+//	// "支付宝请求同步分项订单号：" + tempOrderGoodsInfo.getOrderGoodsId() +
+//	// "为已支付等待发货，但系统订单状态非【审核通过，等待支付状态】");
+//	// return result;
+//	// }
+//	//
+//	// tempOrderGoodsInfo.setOrderStatus(OrderStatusEnum.TRADE_COMPLETE.getStatus());
+//	// updateOrderGoodsInfo(tempOrderGoodsInfo);
+//	// }
+//	//
+//	// // 调整物流信息
+//	// List<OrderLogisticsInfoDO> orderLogisticsInfoList =
+//	// queryOrderLogisticsInfoListByOrderId(orderId);
+//	// if (CollectionUtils.isEmpty(orderLogisticsInfoList)) {
+//	// Logger.exp(WakaModule.ALIPAY, "发货回调处理中查询物流信息失败", null, tradeNo);
+//	// result.addErrorMsg("QUERY_ORDERLOGISTICSINFOLISTT_ERROR", "发货回调处理中查询物流信息失败");
+//	// return result;
+//	// }
+//	// for (OrderLogisticsInfoDO tempOrderLogisticsInfo : orderLogisticsInfoList) {
+//	// tempOrderLogisticsInfo.setLogisticsStatus(LogisticsStatusEnum.SIGN_RECEIVING.getStatus());
+//	// updateOrderLogisticsInfo(tempOrderLogisticsInfo);
+//	// }
+//	// result.setModule(orderInfo);
+//	//
+//	// transactionManager.commit(transactionStatus);
+//	// } catch (Exception e) {
+//	// Logger.exp("TRADE", "确认支付操作失败", e, orderInfo);
+//	// transactionStatus.setRollbackOnly();
+//	// transactionManager.rollback(transactionStatus);
+//	// throw new RuntimeException(e);
+//	// }
+//	// return result;
+//	// }
+//	//
+//	// /**
+//	// * 销售单同步数据
+//	// *
+//	// * @param sellsOrderDO
+//	// * @param flag
+//	// * 修改主销售单
+//	// * @return
+//	// */
+//	// public DefaultResult<Integer> updateTshSellsOrder(McbfSellsOrderDO
+//	// sellsOrderDO, boolean flag) {
+//	// DefaultResult<Integer> result = new DefaultResult<Integer>();
+//	// if (sellsOrderDO.getSellsId() == null) {
+//	// result.addErrorMsg("TSH_ORDER_ERROR", "发货回调处理中销售单数据异常");
+//	// return result;
+//	// }
+//	// McbfSellsOrderDO tshSellsOrderDO =
+//	// tshSellsDAO.findTshSellsDOById(sellsOrderDO.getSellsId());
+//	// if (tshSellsOrderDO == null) {
+//	// result.addErrorMsg("QUERY_TSHSELLS_ERROR", "发货回调处理中查询销售单失败");
+//	// return result;
+//	// }
+//	// // 校验是否处于待发货状态
+//	// if (tshSellsOrderDO.getLogisSate() != null &&
+//	// !tshSellsOrderDO.getLogisSate().equals(0)) {
+//	// result.addErrorMsg("QUERY_TSHSELLS_ERROR", "发货回调处理中销售单状态异常，发货失败");
+//	// return result;
+//	// }
+//	// // 0:未发货,1:发货,2:到货
+//	// tshSellsOrderDO.setLogisSate(1);
+//	// tshSellsOrderDO.setLogisCmp(sellsOrderDO.getLogisCmp());
+//	// tshSellsOrderDO.setLogisCode(sellsOrderDO.getLogisCode());
+//	// tshSellsOrderDO.setLogisType(sellsOrderDO.getLogisType());
+//	// if (StringUtils.isNotBlank(sellsOrderDO.getOrderRemark())) {
+//	// tshSellsOrderDO.setOrderRemark(sellsOrderDO.getOrderRemark());
+//	// }
+//	// Integer count = tshSellsDAO.updateTshSellsDO(tshSellsOrderDO);
+//	// // 循环到最后一个子单为true
+//	// if (flag) {
+//	// // 检查该销售主单下是否存在未发货的子单，如果存在则修改主单为部分发货，反之为全部发货
+//	// McbfSellsOrderDO queryDO = new McbfSellsOrderDO();
+//	// queryDO.setSellId(tshSellsOrderDO.getSellId());
+//	// queryDO.setLogisSate(0); // 未发货
+//	// List<McbfSellsOrderDO> sellsList = tshSellsDAO.findTshSellsListByDO(queryDO);
+//	// Integer logisState = (sellsList.size() > 0) ? 1 : 2; // 1:部分发货
+//	// // 2：全部发货
+//	// // 更新销售主单状态
+//	// count = tshSellsDAO.updateTshSellStateBySellId(tshSellsOrderDO.getSellId(),
+//	// logisState);
+//	// }
+//	// result.setModule(count);
+//	// return result;
+//	// }
+//	//
+//	// @Override
+//	// public List<OrderGoodsInfoDO> queryOrderGoodsInfoByOrderId(Long orderId,
+//	// String status) {
+//	// if (StringUtils.isNotEmpty(status)) {
+//	// for (OrderStatusEnum orderStatus : OrderStatusEnum.values()) {
+//	// if (status.equals(orderStatus.name())) {
+//	// if (OrderStatusEnum.valueOf(status) != null) {
+//	// return orderGoodsInfoDAO.findOrderGoodsInfoDOByOrderId(orderId,
+//	// OrderStatusEnum.valueOf(status).getStatus());
+//	// }
+//	// }
+//	// }
+//	// }
+//	// return orderGoodsInfoDAO.findOrderGoodsInfoDOByOrderId(orderId, null);
+//	// }
+//	//
+//	// @Transactional
+//	// @Override
+//	// public Integer b2bSendGoodsToCustomer(String logisticsCompany, String
+//	// logisticsNo, Long orderId,
+//	// Integer transportType, String remark, Integer operate, Long orderInfoVersion)
+//	// throws Exception {
+//	// // TODO 判断operate是不是第一次发货
+//	// // operate 0:第一次发货填写物流 1:修改物流操作 新增b2b物流信息,修改b2c物流状态及信息
+//	// // TODO b2b物流信息表每个商品都有一个物流，需要全改了
+//	// if (NumberUtils.isEmpty(orderId)) {
+//	// throw new Exception("订单orderId为空");
+//	// }
+//	//
+//	// OrderLogisticsInfoDO orderLogisticsInfoDO = new OrderLogisticsInfoDO();
+//	// // 物流公司
+//	// if (StringUtils.isNotBlank(logisticsCompany)) {
+//	// orderLogisticsInfoDO.setLogisticsCompany(logisticsCompany);
+//	// }
+//	// // 物流单号
+//	// if (StringUtils.isNotBlank(logisticsNo)) {
+//	// orderLogisticsInfoDO.setLogisticsNo(logisticsNo);
+//	// }
+//	// // 卖家留言
+//	// if (StringUtils.isNotBlank(remark)) {
+//	// orderLogisticsInfoDO.setRemark(remark);
+//	// }
+//	// // 储存物流类型
+//	// if (NumberUtils.isNotEmpty(transportType)) {
+//	// orderLogisticsInfoDO.setLogisticsShipping(transportType);
+//	// }
+//	//
+//	// // 发货状态
+//	// orderLogisticsInfoDO.setLogisticsStatus(LogisticsStatusEnum.SEND_OUT_GOODS.getStatus());
+//	//
+//	// OrderInfoDO orderInfoDO = new OrderInfoDO();
+//	// orderInfoDO.setVersion(orderInfoVersion);
+//	// if (NumberUtils.isNotEmpty(orderId)) {
+//	// orderInfoDO.setOrderId(orderId);
+//	// }
+//	// // 订单状态
+//	// orderInfoDO.setOrderStatus(OrderStatusEnum.SENDGOODS_UNCONFIRM.getStatus());
+//	// orderInfoDAO.updateOrderInfoDO(orderInfoDO);
+//	// List<OrderLogisticsInfoDO> orderLogisticsInfoList =
+//	// orderLogisticsInfoDAO.findByOrderId(orderId);
+//	// // 记录需要返回的当前发货状态
+//	// Integer logisticsStatus = 0;
+//	// // 循环更新发货状态
+//	// if (CollectionUtils.isNotEmpty(orderLogisticsInfoList)) {
+//	// for (OrderLogisticsInfoDO logisticInfo : orderLogisticsInfoList) {
+//	// if (logisticInfo != null) {
+//	// // 获取发货状态
+//	// logisticsStatus = logisticInfo.getLogisticsStatus();
+//	// // 乐观锁
+//	// orderLogisticsInfoDO.setVersion(logisticInfo.getVersion());
+//	// // 发货时间
+//	// orderLogisticsInfoDO.setSendGoodsTime(new Date());
+//	// // 获取对应商品物流信息的id
+//	// orderLogisticsInfoDO.setLogisticsId(logisticInfo.getLogisticsId());
+//	// // 因为每个商品有独立的一个物流信息，需要遍历所有物流信息id一个一个修改数据，主要是没有mybatis
+//	// orderLogisticsInfoDAO.updateOrderLogisticsInfoDO(orderLogisticsInfoDO);
+//	// }
+//	// }
+//	// }
+//	// List<OrderGoodsInfoDO> orderGoodsList =
+//	// orderGoodsInfoDAO.findOrderGoodsInfoDOByOrderId(orderId, null);
+//	// // 循环更新订单商品信息中的订单状态
+//	// if (CollectionUtils.isNotEmpty(orderGoodsList)) {
+//	// for (OrderGoodsInfoDO goodsInfo : orderGoodsList) {
+//	// if (goodsInfo != null) {
+//	// OrderGoodsInfoDO goodsInfoDO = new OrderGoodsInfoDO();
+//	// goodsInfoDO.setOrderGoodsId(goodsInfo.getOrderGoodsId());
+//	// goodsInfoDO.setVersion(goodsInfo.getVersion());
+//	// goodsInfoDO.setOrderStatus(OrderStatusEnum.SENDGOODS_UNCONFIRM.getStatus());
+//	// orderGoodsInfoDAO.updateOrderGoodsInfoDO(goodsInfoDO);
+//	// }
+//	// }
+//	// }
+//	// // 返回判断是否是发货还是修改物流信息
+//	// return logisticsStatus;
+//	// }
+//
+}

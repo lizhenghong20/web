@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.sys.message.dao.ISystemMessageDao">
+    <insert id="insertBatch" parameterType="cn.farwalker.ravv.service.sys.message.model.SystemMessageBo">
+        insert into system_message
+        (
+          type, publish_member_id, recieve_member_id, have_read,
+          icon, content, publish_time, title, link_url,
+          gmt_create, gmt_modified
+        )
+        values
+        <foreach collection="promotionList" item="item" index="index" separator=",">
+            (
+              #{item.type}, #{item.publishMemberId}, #{item.recieveMemberId}, #{item.haveRead},
+              #{item.icon}, #{item.content}, #{item.publishTime}, #{item.title}, #{item.linkUrl},
+              #{item.gmtCreate}, #{item.gmtModified}
+            )
+        </foreach>
+    </insert>
+</mapper>

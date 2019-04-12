@@ -1,0 +1,52 @@
+@layout("/common/_container.html"){
+<div class="ibox float-e-margins">
+    <div class="ibox-content">
+        <div class="form-horizontal">
+
+            <input type="hidden" id="id" value="${item.id}">
+
+            <div class="row">
+                <div class="col-sm-6 b-r">
+                            <#input id="id" name="支付单号" value="${item.id}" underline="true"/>
+                            <#input id="money" name="金额" value="${item.money}" underline="true"/>
+                            <#input id="curMoney" name="货币金额" value="${item.curMoney}" underline="true"/>
+                            <#input id="status" name="支付状态" value="${item.status}" underline="true"/>
+                            <#input id="payMethod" name="付款方式" value="${item.payMethod}" underline="true"/>
+                            <#input id="payType" name="支付类型" value="${item.payType}" underline="true"/>
+                            <#input id="payedTime" name="支付完成时间" value="${item.payedTime}" underline="true"/>
+                            <#input id="operatorId" name="操作员" value="${item.operatorId}" underline="true"/>
+                            <#input id="account" name="平台对应的账号" value="${item.account}" underline="true"/>
+                            <#input id="bank" name="银行" value="${item.bank}" underline="true"/>
+                            <#input id="payAccount" name="支付账户" value="${item.payAccount}" underline="true"/>
+                            <#input id="currencyCode" name="货币编码" value="${item.currencyCode}" underline="true"/>
+                            <#input id="paycost" name="手续费" value="${item.paycost}" />
+                </div>
+
+                <div class="col-sm-6">
+                            <#input id="ip" name="支付IP" value="${item.ip}" underline="true"/>
+                            <#input id="payBeginTime" name="支付开始时间" value="${item.payBeginTime}" underline="true"/>
+                            <#input id="payConfirmTime" name="支付确认时间" value="${item.payConfirmTime}" underline="true"/>
+                            <#input id="memo" name="支付注释" value="${item.memo}" underline="true"/>
+                            <#input id="returnUrl" name="返回URL" value="${item.returnUrl}" underline="true"/>
+                            <#input id="disabled" name="取消该笔支付" value="${item.disabled}" underline="true"/>
+                            <#input id="tradeNo" name="交易编号" value="${item.tradeNo}" underline="true"/>
+                            <#input id="memberId" name="会员ID" value="${item.memberId}" underline="true"/>
+                            <#input id="orderId" name="订单ID" value="${item.orderId}" underline="true"/>
+                            <#input id="gmtCreate" name="创建时间" value="${item.gmtCreate}" underline="true"/>
+                            <#input id="gmtModified" name="修改时间" value="${item.gmtModified}" underline="true"/>
+                            <#input id="remark" name="备注" value="${item.remark}" />
+                </div>
+            </div>
+
+            <div class="row btn-group-m-t">
+                <div class="col-sm-10">
+                    <#button btnCss="info" name="提交" id="ensure" icon="fa-check" clickFun="MemberPaymentLogInfoDlg.editSubmit()"/>
+                    <#button btnCss="danger" name="取消" id="cancel" icon="fa-eraser" clickFun="MemberPaymentLogInfoDlg.close()"/>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="${ctxPath}/static/modular/member/memberPaymentLog/memberPaymentLog_info.js"></script>
+@}

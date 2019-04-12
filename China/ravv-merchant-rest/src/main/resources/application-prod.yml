@@ -1,0 +1,57 @@
+waka:
+  auth-open: true #jwt鉴权机制是否开启(true或者false)
+  sign-open: true #签名机制是否开启(true或false)
+  file-upload-path: d:/tmp  #文件上传目录(不配置的话为java.io.tmpdir目录)
+  rest-domain-path: http://localhost:8080/
+
+server:
+  port: 9200 #项目端口
+  context-path: /ravv-merchant-rest/
+
+
+spring:
+  profiles: prod
+  datasource:
+      url: jdbc:mysql://52.53.127.206:3306/ravv_china?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+      username: root
+      password: Ravv_123
+      db-name: ravv
+      type: com.alibaba.druid.pool.DruidDataSource
+      filters: log4j,wall,mergeStat
+logging:
+  level.root: info
+  level.cn.farwalker: debug
+  path: logs/
+  file: merchant-dev-rest.log
+
+wechat:
+  appid: wx0bd79a512d56a83c
+  secret: 4bcc9519778c3b108822885658d5de31
+  token: 111
+  aesKey: wPofYpaaljbfribotOx0RfzUbGSmYN3QuoZ3JHIdDda
+  msgDataFormat: JSON
+  mchId: 1501826331
+  mchKey: 49fd664cbf3500fd0c1d57f9b3dc20ff
+  notifyUrl: https://weapp.standard.ketter.cn/wxpay/notify
+#  subAppId: dsfas
+#  subMchId: sdfadsf
+#  keyPath: sdfsdaf
+
+# 七牛云配置(chenjs@farwalker.cn)
+# bucket是创建的存储空间名
+# path对应存储空间的访问域名
+qiniu:
+  accessKey: Mh0L0MfFlVXhgauUXh17LWEyEmIApVdwJ9QrD2Rf
+  secretKey: fFydQAutvevF19DpyBs_yMY3V8oEcg2PFGMoEd6D
+  bucket: ravv
+  domain: http://ravv.img.shop.live
+
+
+# redis配置
+# 分支标志-branchKey
+# 共享缓存标记,整个redis共用-不同的项目都可以共用-shareKey
+cache:
+  branchKey: ravv
+  shareKey: shareRavv
+  redisServer: netsupper.top:7000 #不配置就是使用本地ehcache
+  redisPassword: Redis3312338 #redis密码

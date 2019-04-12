@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.youtube.liveanchor.dao.IYoutubeLiveAnchorDao">
+
+    <select id="selectAnchorList" resultType="cn.farwalker.ravv.service.youtube.liveanchor.model.YoutubeLiveAnchorVo">
+        SELECT  yla.*,member.firstname as first_name,member.lastname as last_name,member.avator as head_shot_url
+         from youtube_live_anchor yla
+        left join member on yla.anchor_member_id = member.id
+        where
+        (yla.frozen_start > #{currentTime}
+        or yla.frozen_end <![CDATA[<]]> #{currentTime})
+        <if test="anchorIdList != null">
+          and  yla.anchor_member_id  in 
+            <foreach collection="anchorIdList" item = "item" open = "(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        group by yla.anchor_member_id
+        order by yla.sequence DESC
+    </select>
+</mapper>

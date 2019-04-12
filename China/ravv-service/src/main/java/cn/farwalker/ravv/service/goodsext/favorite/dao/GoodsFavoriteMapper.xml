@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="cn.farwalker.ravv.service.goodsext.favorite.dao.IGoodsFavoriteDao">
+
+    <delete id="deleteFavoriteByBatch" parameterType="map">
+        delete from goods_favorite
+        where member_id = #{memberId}
+        and goods_id in
+        <foreach collection="goodsIdList" index="index" item="item" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </delete>
+
+</mapper>
