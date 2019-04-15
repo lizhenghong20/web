@@ -36,7 +36,7 @@ public class BaseAreaBo extends Model<BaseAreaBo> implements BaseBo{
         remark("remark"),
         countryCode("country_code"),
         fullPath("full_path"),
-        controlCity("control_city") ;
+        controlCity("control_city");
         private final String column;
         private Key(String k){
             this.column = k;
@@ -83,9 +83,8 @@ public class BaseAreaBo extends Model<BaseAreaBo> implements BaseBo{
     private String fullPath;
 
     @TableField("control_city")
-    @DDLColumn(name="control_city",comment="是否是直辖市（0不是，1是）",length=11)
+    @DDLColumn(name="control_city",comment="是否是直辖市",length=11)
     private Boolean controlCity;
-
     /** 区域ID*/
     public Long getId(){
         return id;
@@ -150,13 +149,13 @@ public class BaseAreaBo extends Model<BaseAreaBo> implements BaseBo{
     public void setFullPath(String fullPath){
         this.fullPath =fullPath;
     }
-
-    public Boolean getControlCity() {
+    /** 是否是直辖市*/
+    public Boolean getControlCity(){
         return controlCity;
     }
-
-    public void setControlCity(Boolean controlCity) {
-        this.controlCity = controlCity;
+    /** 是否是直辖市*/
+    public void setControlCity(Boolean controlCity){
+        this.controlCity =controlCity;
     }
     @Override
     protected Serializable pkVal(){
