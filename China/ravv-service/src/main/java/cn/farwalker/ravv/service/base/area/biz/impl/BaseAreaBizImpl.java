@@ -1,15 +1,11 @@
 package cn.farwalker.ravv.service.base.area.biz.impl;
 import java.util.List;
-
 import javax.annotation.Resource;
-
 import org.springframework.stereotype.Service;
-
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-
-import cn.farwalker.ravv.service.base.area.biz.IBaseAreaBiz;
-import cn.farwalker.ravv.service.base.area.dao.IBaseAreaDao;
 import cn.farwalker.ravv.service.base.area.model.BaseAreaBo;
+import cn.farwalker.ravv.service.base.area.dao.IBaseAreaDao;
+import cn.farwalker.ravv.service.base.area.biz.IBaseAreaBiz;
 
 /**
  * 地区<br/>

@@ -1,6 +1,5 @@
 package cn.farwalker.ravv.service.base.area.dao;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-
 import cn.farwalker.ravv.service.base.area.model.BaseAreaBo;
 
 /**

@@ -12,7 +12,6 @@ import cn.farwalker.ravv.service.member.pam.member.biz.IPamMemberBiz;
 import cn.farwalker.ravv.service.member.pam.member.model.PamMemberBo;
 import cn.farwalker.ravv.service.paypal.PaymentForm;
 import cn.farwalker.ravv.service.paypal.PaymentResultVo;
-import cn.farwalker.ravv.service.shipstation.biz.IShipStationService;
 import cn.farwalker.waka.core.HttpKit;
 import cn.farwalker.waka.core.JsonResult;
 import cn.farwalker.waka.core.RavvExceptionEnum;
@@ -72,9 +71,6 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 	private IMemberBiz memberBiz;
 	@Resource
 	private ISystemMessageService systemMessageService;
-
-	@Autowired
-	private IShipStationService iShipStationService;
 
 	@Autowired
 	private IMemberPaymentLogBiz iMemberPaymentLogBiz;

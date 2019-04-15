@@ -1,21 +1,15 @@
 package cn.farwalker.ravv.web;
 
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import cn.farwalker.ravv.common.constants.WebModelCodeEnum;
 import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderCreateService;
-import cn.farwalker.ravv.service.shipstation.biz.IShipStationService;
 import cn.farwalker.ravv.service.web.searchkeyhistory.biz.IWebSearchkeyHistoryBiz;
 import cn.farwalker.ravv.service.web.slider.constants.PageNameEnum;
 import cn.farwalker.ravv.service.web.webmodel.constants.ModelShowTypeEnum;
-import cn.farwalker.waka.core.HttpKit;
 import cn.farwalker.waka.core.WakaException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,9 +51,6 @@ public class WebController {
 
     @Autowired
     private IWebSearchkeyHistoryBiz iWebSearchkeyHistoryBiz;
-
-    @Autowired
-    private IShipStationService iShipStationService;
 
     @Autowired
     private IOrderCreateService iOrderCreateService;
@@ -220,80 +211,6 @@ public class WebController {
         }
     }
 
-    @RequestMapping("/ship")
-    public JsonResult<String> ship(Long orderId){
-        try{
-            if(orderId == 0 || orderId == null)
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            if(iShipStationService.addShipStationOrder(orderId))
-                return JsonResult.newSuccess("success");
-            else
-                return JsonResult.newFail("fail");
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }catch(Exception e){
-            log.error("",e);
-            return JsonResult.newFail(e.getMessage());
-        }
-    }
-
-    @RequestMapping("/cancel_order")
-    public JsonResult<String> cancelOrder(Long orderId){
-        try{
-            if(orderId == 0 || orderId == null)
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            if(iShipStationService.cancelOrder(orderId))
-                return JsonResult.newSuccess("success");
-            else
-                return JsonResult.newFail("fail");
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }catch(Exception e){
-            log.error("",e);
-            return JsonResult.newFail(e.getMessage());
-        }
-    }
-
-    @RequestMapping("/list_carriers")
-    public JsonResult<String> listCarriers(){
-        try{
-
-            if(iShipStationService.listCarriers())
-                return JsonResult.newSuccess("success");
-            else
-                return JsonResult.newFail("fail");
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }catch(Exception e){
-            log.error("",e);
-            return JsonResult.newFail(e.getMessage());
-        }
-    }
-
-    @RequestMapping("/list_services")
-    public JsonResult<String> listServices(){
-        try{
-
-            if(iShipStationService.listService())
-                return JsonResult.newSuccess("success");
-            else
-                return JsonResult.newFail("fail");
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }catch(Exception e){
-            log.error("",e);
-            return JsonResult.newFail(e.getMessage());
-        }
-    }
-
     @RequestMapping("/test_quartz")
     public JsonResult<String> testQuartz(Long orderId){
         try{
@@ -309,52 +226,4 @@ public class WebController {
         }
     }
 
-    
-    @RequestMapping("/test")
-    public JsonResult<Object> testTax(){
-    	try{
-    		//能正常计算税费
-    		//http://52.53.127.206:8080/ravv-mall-rest/web/test?from_country=US&from_state=OK&from_zip=74965&amount=50&shipping=0&to_zip=92093&from_city=Adairville&to_country=US&to_city=Sandiego&from_street=%E5%8D%97%E6%96%B9%E8%BD%AF%E4%BB%B6%E5%9B%AD&to_street=address&500&to_state=CA
-    		//校验邮政编码是否正确
-    		//https://usa.youbianku.com/zh-hans/zipcode/74965
-    		HttpServletRequest req = HttpKit.getRequest();
-    		Enumeration<String> names = req.getParameterNames();
-    		Map<String, Object> params = new HashMap<>();
-    		while(names.hasMoreElements()){
-    			String key = names.nextElement();
-    			String value = req.getParameter(key);
-    			params.put(key, value);
-    		}     
-        
-	        Taxjar client = new Taxjar(TaxUtil.getTaxToken());
-	        //被征税的总额 taxable_amount	Amount of the order to be taxed.
-	        //税金 amount_to_collect	Amount of sales tax to collect.
-	        //税率 rate Overall sales tax rate of the order (amount_to_collect ÷ taxable_amount).
-	        TaxResponse res = client.taxForOrder(params);
-	        
-	        //Float fx = res.tax.getAmountToCollect();
-	        //return new BigDecimal(fx);
-	        params.put("tax",res.tax);
-	        return JsonResult.newSuccess(params);
-                
-             
-    		
-	    	/**
-	    	 * 463428992@qq.com
-	    	 * 12345678asdf
-	    	 
-    		TaxUtil.Address from = new TaxUtil.Address("CA","92093");
-    		TaxUtil.Address to = new TaxUtil.Address("CA","90002");
-    		from.setCity("La Jolla");
-    		from.setStreet("9500 Gilman Drive");
-    		to.setCity("Los Angeles");
-    		from.setStreet("1335 E 103rd St1335 E 103rd St");
-    		
-    		String rs = TaxUtil.calcTaxJson(new BigDecimal(199.99),  from, to);
-			return JsonResult.newSuccess(rs);*/
-    	}
-    	catch(Exception e){
-    		return JsonResult.newFail("error:" + e.getMessage());
-    	}
-    }
 }

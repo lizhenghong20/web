@@ -59,6 +59,8 @@ public enum CountryCodeEnum implements IEnumJsons{
 	public static CountryCodeEnum value(String key){
 		if("USA".equals(key)){
 			return USA;
+		} else if("CHN".equals(key)){
+			return CHINA;
 		}
 		return null;
 	}

@@ -15,7 +15,6 @@ import cn.farwalker.ravv.service.payment.paymentlog.biz.IMemberPaymentLogBiz;
 import cn.farwalker.ravv.service.payment.paymentlog.model.MemberPaymentLogBo;
 import cn.farwalker.ravv.service.quartz.JobSchedulerFactory;
 import cn.farwalker.ravv.service.quartz.UpdateOrderStatusTaskJob;
-import cn.farwalker.ravv.service.shipstation.biz.IShipStationService;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import com.baomidou.mybatisplus.mapper.Condition;
@@ -75,9 +74,6 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 
 	@Resource
 	private IOrderPaymemtBiz orderPaymemtBiz;
-
-	@Autowired
-	private IShipStationService iShipStationService;
 
 	@Autowired
 	private IMemberPaymentLogBiz iMemberPaymentLogBiz;
