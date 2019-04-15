@@ -81,7 +81,7 @@ public class PamWechatMemberBo extends Model<PamWechatMemberBo> implements BaseB
 
     @TableField("sex")
     @DDLColumn(name="sex",comment="姓名",length=11)
-    private int sex;
+    private String sex;
 
     @TableField(value="gmt_create",strategy=FieldStrategy.NOT_EMPTY,fill=FieldFill.INSERT)
     @DDLColumn(name="gmt_create",comment="创建时间")
@@ -151,11 +151,11 @@ public class PamWechatMemberBo extends Model<PamWechatMemberBo> implements BaseB
         this.phone =phone;
     }
     /** 姓名*/
-    public int getSex(){
+    public String getSex(){
         return sex;
     }
     /** 姓名*/
-    public void setSex(int sex){
+    public void setSex(String sex){
         this.sex =sex;
     }
     /** 创建时间*/

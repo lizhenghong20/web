@@ -5,8 +5,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import cn.farwalker.ravv.common.constants.WechatLoginTypeEnum;
 import cn.farwalker.ravv.service.email.IEmailService;
+import cn.farwalker.ravv.service.member.pam.wechat.biz.IPamWechatMemberService;
 import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountService;
+import cn.farwalker.waka.components.wechatpay.common.exception.WxErrorException;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import org.slf4j.Logger;
@@ -30,6 +33,9 @@ public class AuthController{
 
     @Autowired
     private IPamMemberService iPamMemberService;
+
+    @Autowired
+    private IPamWechatMemberService pamWechatMemberService;
 
 
     /**
@@ -61,6 +67,24 @@ public class AuthController{
         catch(WakaException e){
             log.error("",e);
             return JsonResult.newFail(e.getCode(),e.getMessage());
+        }
+    }
+
+    @RequestMapping("/wechat_login")
+    public JsonResult<AuthLoginVo> wechatLogin(HttpServletRequest request, String code, WechatLoginTypeEnum loginType){
+        try{
+            //createMethodSinge创建方法
+            if(Tools.string.isEmpty(code)){
+                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+            }
+            AuthLoginVo vo = pamWechatMemberService.wechatLogin(code, loginType, request.getRemoteAddr());
+            return JsonResult.newSuccess(vo);
+        } catch(WakaException e){
+            log.error("",e);
+            return JsonResult.newFail(e.getCode(),e.getMessage());
+        } catch(WxErrorException e){
+            log.error("",e);
+            return JsonResult.newFail(e.getMessage());
         }
     }
 

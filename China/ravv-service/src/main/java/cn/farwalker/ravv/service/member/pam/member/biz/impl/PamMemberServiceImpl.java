@@ -163,6 +163,8 @@ public class PamMemberServiceImpl implements IPamMemberService {
         return "password update";
     }
 
+
+
     /**
      * @description: 修改密码验证旧密码
      * @param:
