@@ -14,8 +14,6 @@ public interface IPamMemberService {
 
     public String updatePass(String email, String newPassword, String activationCode);
 
-    public String verifiedInfoEmail(String email);
-
     public String verifiedOldPassword(Long memberId, String password);
 
     public String modifyPassword(Long memberId, String newPassword);

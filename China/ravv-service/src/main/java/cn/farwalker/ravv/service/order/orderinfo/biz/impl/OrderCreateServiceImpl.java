@@ -203,17 +203,6 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 		
 		freezeInventory(orderBos);
 		
-		//创建分润记录
-		if(CollectionUtils.isNotEmpty(orderBos)) {
-			List<OrderPaymemtBo> orderPayList = new ArrayList<>();
-			for(OrderAllObject order : orderBos) {
-				if(!order.orderBo.getOrderType().equals(OrderTypeEnum.MASTER)) {
-					orderPayList.add(order.paymentBo);
-				}
-			}
-			saleProfitAllotBiz.setProfitAllot(orderPayList, buyerId);
-		}
-		
 		deleteCart(buyerId,goodsSkuVo); //删除购物车的记录
 		return masterBo.paymentBo;
 	}

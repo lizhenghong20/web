@@ -73,12 +73,6 @@ public class ProfitAllotController {
     	//补全头像路径
     	promoteInfo.setAvator(QiniuUtil.getFullPath(promoteInfo.getAvator()));
     	
-    	//获取待返现总金额
-    	BigDecimal awaitingAmount =  saleProfitAllotBiz.getAwaitingAmount(member.getId());
-//    	BigDecimal returnedAmount = saleProfitAllotBiz.getReturnedAmount(member.getId());
-    	promoteInfo.setAwaitingAmount(awaitingAmount);
-//    	promoteInfo.setDistributionTotal(returnedAmount);
-    	
     	return JsonResult.newSuccess(promoteInfo);
     }
     

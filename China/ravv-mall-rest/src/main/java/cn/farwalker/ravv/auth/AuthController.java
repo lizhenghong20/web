@@ -31,11 +31,6 @@ public class AuthController{
     @Autowired
     private IPamMemberService iPamMemberService;
 
-    @Autowired
-    private IEmailService iEmailService;
-
-    @Autowired
-    private IMemberThirdpartAccountService iMemberThirdpartAccountService;
 
     /**
      * @description: 注册
@@ -68,10 +63,9 @@ public class AuthController{
             return JsonResult.newFail(e.getCode(),e.getMessage());
         }
     }
+
     @RequestMapping("/email_login")
     public JsonResult<AuthLoginVo> emailLogin( String email, String password){
-
-
         try{
             //createMethodSinge创建方法
             if(Tools.string.isEmpty(email)){
@@ -82,42 +76,6 @@ public class AuthController{
             }
             AuthLoginVo vo =iPamMemberService.emailLogin(email,password);
             return JsonResult.newSuccess(vo);
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    @RequestMapping("/facebook_login")
-    public JsonResult<AuthLoginVo> facebookLogin(String userID,String name){
-        try{
-            //createMethodSinge创建方法
-            if(Tools.string.isEmpty(userID)){
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            }
-            if(Tools.string.isEmpty(name)){
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            }
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.facebookLogin(userID,name));
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    @RequestMapping("/google_login")
-    public JsonResult<AuthLoginVo> googleLogin(String userID,String name){
-        try{
-            //createMethodSinge创建方法
-            if(Tools.string.isEmpty(userID)){
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            }
-            if(Tools.string.isEmpty(name)){
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            }
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.googleLogin(userID,name));
         }
         catch(WakaException e){
             log.error("",e);
@@ -170,29 +128,6 @@ public class AuthController{
         }
     }
 
-
-
-    /**
-     * @description: 发送验证码认证邮箱
-     * @param: email
-     * @return json
-     * @author Mr.Simple
-     * @date 2018/11/9 17:49
-     */
-    @RequestMapping("/email_verification")
-    public JsonResult<String> verifiedInfoEmail(String email){
-
-        try{
-            if(Tools.string.isEmpty(email))
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iPamMemberService.verifiedInfoEmail(email));
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
     /**
      * @description: 发送验证码修改密码（忘记密码时调用此接口）
      * @param: email
@@ -228,48 +163,6 @@ public class AuthController{
             if(Tools.string.isEmpty(email) || Tools.string.isEmpty(activationCode))
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             return JsonResult.newSuccess(iPamMemberService.updateAndValidatorForRegistered(email, activationCode));
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    /**
-     * @description: facebook第三方登录用户判断验证码
-     * @param: email,activationCode
-     * @return json
-     * @author Mr.Simple
-     * @date 2018/11/9 17:50
-     */
-    @RequestMapping("/validator_for_facebook")
-    public JsonResult<String> validatorForFacebook(String userID,String email, String activationCode){
-
-        try{
-            if(Tools.string.isEmpty(email) || Tools.string.isEmpty(activationCode)||Tools.string.isEmpty(userID))
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.validatorForFacebook(userID, email, activationCode));
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    /**
-     * @description: google第三方登录用户判断验证码
-     * @param: email,activationCode
-     * @return json
-     * @author Mr.Simple
-     * @date 2018/11/9 17:50
-     */
-    @RequestMapping("/validator_for_google")
-    public JsonResult<String> validatorForGoogle(String userID,String email, String activationCode){
-
-        try{
-            if(Tools.string.isEmpty(email) || Tools.string.isEmpty(activationCode)||Tools.string.isEmpty(userID))
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.validatorForGoogle(userID, email, activationCode));
         }
         catch(WakaException e){
             log.error("",e);
@@ -348,47 +241,6 @@ public class AuthController{
         catch(WakaException e){
             log.error("",e);
             return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-
-    @RequestMapping("/email_test")
-    public JsonResult<String> emailTest(String email){
-        try{
-            if(Tools.string.isEmpty(email))
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            iEmailService.asynSendEmail(email,"邮箱认证");
-            return JsonResult.newSuccess("success");
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    @RequestMapping("/test_mybatis")
-    public JsonResult<String> testMybatis(){
-        try{
-
-
-            return JsonResult.newSuccess(iPamMemberService.testResultType());
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    @RequestMapping("/test_param")
-    public JsonResult<String> test_param(){
-        try{
-
-
-            return JsonResult.newSuccess(iPamMemberService.testParamMap());
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getMessage());
         }
     }
 

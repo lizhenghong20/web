@@ -217,21 +217,6 @@ public class OrderTaskTimer implements ITimer {
 		// 批量更新订单状态
 		Boolean rs = orderBiz.updateBatchById(singOrderBos);
 
-		if (rs) {
-			// 非有拆单主单的订单id列表
-			List<OrderInfoBo> orderInfoList = new ArrayList<>();
-
-			for (OrderInfoBo bo : singOrderBos) {
-				if (!bo.getOrderType().equals(OrderTypeEnum.MASTER)) {
-					orderInfoList.add(bo);
-				}
-			}
-
-			// 订单关闭后更新最终分销金额
-			if (Tools.collection.isNotEmpty(orderInfoList)) {
-				saleProfitAllotBiz.updateFinalProfit(orderInfoList);
-			}
-		}
 	}
 
 	/**
@@ -296,7 +281,7 @@ public class OrderTaskTimer implements ITimer {
 					//如果退货商品不等于订单个数，判断订单是否关闭，如果关闭且所有退换单已执行完毕,执行分润；否则不执行
 					else {
 						if(OrderStatusEnum.TRADE_CLOSE.equals(orderInfo.getOrderStatus())){
-							saleProfitAllotBiz.updateFinalProfit(orderInfoList);
+//							saleProfitAllotBiz.updateFinalProfit(orderInfoList);
 						}
 					}
 				}
