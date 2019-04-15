@@ -23,6 +23,7 @@ import com.baomidou.mybatisplus.mapper.Condition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -52,6 +53,7 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
     private final static String appAppSecret = "2e971612c9223c421be272c336967afd";
 
     @Override
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
     public AuthLoginVo wechatLogin(String code, WechatLoginTypeEnum loginType, String ip) throws WxErrorException {
         //获取微信用户信息，官方建议使用unionId甄别用户信息
         WxMpUser userInfo = getWechatUserInfo(code, loginType);
