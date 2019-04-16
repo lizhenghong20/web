@@ -17,7 +17,6 @@ import cn.farwalker.waka.components.wechatpay.mp.bean.result.WxMpOAuth2AccessTok
 import cn.farwalker.waka.components.wechatpay.mp.bean.result.WxMpUser;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
-import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 import cn.farwalker.waka.util.Tools;
 import com.baomidou.mybatisplus.mapper.Condition;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +51,13 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
 
     private final static String appAppSecret = "2e971612c9223c421be272c336967afd";
 
+    /**
+     * @description: 微信登录
+     * @param: 
+     * @return authLoginVo
+     * @author Mr.Simple
+     * @date 2019/4/15 15:10
+     */ 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public AuthLoginVo wechatLogin(String code, WechatLoginTypeEnum loginType, String ip) throws WxErrorException {
@@ -73,7 +79,12 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
         authLoginVo.setToken(token);
         authLoginVo.setAccount(userInfo.getNickname());
         authLoginVo.setRandomKey(randomKey);
-        authLoginVo.setLoginType(LoginTypeEnum.WECHAT.getLabel());
+        if(wechatMemberBo.getPhone() == null){
+            authLoginVo.setBindPhone(false);
+        } else{
+            authLoginVo.setBindPhone(true);
+        }
+        authLoginVo.setHeadImgUrl(wechatMemberBo.getHeadImgUrl());
 
         return authLoginVo;
     }
