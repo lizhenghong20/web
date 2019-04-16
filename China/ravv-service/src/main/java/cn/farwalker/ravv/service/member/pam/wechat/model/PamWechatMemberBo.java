@@ -37,7 +37,7 @@ public class PamWechatMemberBo extends Model<PamWechatMemberBo> implements BaseB
         gmtCreate("gmt_create"),
         
         gmtModified("gmt_modified"),
-        ramark("ramark");
+        remark("remark");
         private final String column;
         private Key(String k){
             this.column = k;
@@ -91,9 +91,9 @@ public class PamWechatMemberBo extends Model<PamWechatMemberBo> implements BaseB
     @DDLColumn(name="gmt_modified",comment="修改时间")
     private Date gmtModified;
 
-    @TableField("ramark")
-    @DDLColumn(name="ramark",comment="备注",length=2000)
-    private String ramark;
+    @TableField("remark")
+    @DDLColumn(name="remark",comment="备注",length=2000)
+    private String remark;
     /** 主键*/
     public Long getId(){
         return id;
@@ -175,12 +175,12 @@ public class PamWechatMemberBo extends Model<PamWechatMemberBo> implements BaseB
         this.gmtModified =gmtModified;
     }
     /** 备注*/
-    public String getRamark(){
-        return ramark;
+    public String getRemark(){
+        return remark;
     }
     /** 备注*/
-    public void setRamark(String ramark){
-        this.ramark =ramark;
+    public void setRemark(String remark){
+        this.remark =remark;
     }
     @Override
     protected Serializable pkVal(){
