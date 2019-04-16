@@ -10,6 +10,8 @@ import cn.farwalker.ravv.service.member.pam.wechat.biz.IPamWechatMemberBiz;
 import cn.farwalker.ravv.service.member.pam.wechat.biz.IPamWechatMemberService;
 import cn.farwalker.ravv.service.member.pam.wechat.model.PamWechatMemberBo;
 import cn.farwalker.waka.auth.util.JwtTokenUtil;
+import cn.farwalker.waka.cache.CacheManager;
+import cn.farwalker.waka.components.thirdTools.CommonRpc;
 import cn.farwalker.waka.components.wechatpay.common.exception.WxErrorException;
 import cn.farwalker.waka.components.wechatpay.mp.api.WxMpInMemoryConfigStorage;
 import cn.farwalker.waka.components.wechatpay.mp.api.WxMpService;
@@ -21,11 +23,15 @@ import cn.farwalker.waka.util.Tools;
 import com.baomidou.mybatisplus.mapper.Condition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Member;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @Service
@@ -51,6 +57,8 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
 
     private final static String appAppSecret = "2e971612c9223c421be272c336967afd";
 
+    private static final Lock lock = new ReentrantLock(true);
+
     /**
      * @description: 微信登录
      * @param: 
@@ -74,19 +82,83 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
         final String randomKey = jwtTokenUtil.getRandomKey();
         final String token = jwtTokenUtil.generateToken(userInfo.getNickname(), wechatMemberBo.getMemberId(),
                                                         LoginTypeEnum.WECHAT.getLabel(), randomKey,true);
+        //获取member信息
+        MemberBo memberBo = memberBiz.selectById(wechatMemberBo.getMemberId());
         AuthLoginVo authLoginVo = new AuthLoginVo();
         authLoginVo.setLoginType(LoginTypeEnum.WECHAT.getLabel());
         authLoginVo.setToken(token);
-        authLoginVo.setAccount(userInfo.getNickname());
+        //如果用户没有修改，则使用微信名称
+        authLoginVo.setAccount(Tools.string.isEmpty(memberBo.getNickName()) ?
+                userInfo.getNickname() : memberBo.getNickName());
         authLoginVo.setRandomKey(randomKey);
         if(wechatMemberBo.getPhone() == null){
             authLoginVo.setBindPhone(false);
         } else{
             authLoginVo.setBindPhone(true);
         }
-        authLoginVo.setHeadImgUrl(wechatMemberBo.getHeadImgUrl());
+        //如果用户没有修改，则使用微信头像
+        authLoginVo.setHeadImgUrl(Tools.string.isEmpty(memberBo.getAvator()) ?
+                wechatMemberBo.getHeadImgUrl() : memberBo.getAvator());
 
         return authLoginVo;
+    }
+
+    @Override
+    public String sendActivationCode(String phone) {
+        sendSMS(phone);
+        return "验证码已发送";
+    }
+
+    /**
+     * @description: 实际发送验证码
+     * @param:
+     * @return void
+     * @author Mr.Simple
+     * @date 2019/4/16 16:30
+     */
+    @Async
+    @Override
+    public void sendSMS(String phone){
+        //生成激活码
+        String activationCode = Tools.salt.createActivationCode();
+        //将过期时间加入激活码中
+        String appendCode = Tools.timeValue.codeAppendTime(activationCode);
+        try{
+            lock.lock();
+            //存到redis
+            CacheManager.cache.put(phone, appendCode);
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            lock.unlock();
+        }
+        CommonRpc.sendSMS(phone, activationCode);
+    }
+
+    /**
+     * @description: 校验验证码并绑定到数据库
+     * @param:
+     * @return Boolean
+     * @author Mr.Simple
+     * @date 2019/4/16 16:30
+     */
+    @Override
+    public Boolean validatorActivationCode(Long memberId, String phone, String activationCode) {
+        //从redis根据邮箱取出验证码
+        String cacheCode = CacheManager.cache.get(phone);
+        String code = Tools.timeValue.getActivationCode(cacheCode);
+        //对比验证
+        if(!code.equals(activationCode)){
+            return false;
+        }
+        //将手机号绑定到数据库
+        PamWechatMemberBo pamWechatMemberBo = new PamWechatMemberBo();
+        pamWechatMemberBo.setPhone(phone);
+        if(!pamWechatMemberBiz.update(pamWechatMemberBo,
+                Condition.create().eq(PamWechatMemberBo.Key.memberId.toString(), memberId))){
+            throw new WakaException(RavvExceptionEnum.UPDATE_ERROR + "更新手机号失败");
+        }
+        return true;
     }
 
 

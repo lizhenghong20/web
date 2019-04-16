@@ -26,7 +26,7 @@ public class TimeValueUtil {
         //将过期时间加入激活码中
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         Date now = new Date();
-        Long time = 30 * 60 * 1000L;
+        Long time = 15 * 60 * 1000L;
         Date expiredTime = new Date(now.getTime() + time);
         String str = format.format(expiredTime);
         StringBuilder sBuilder = new StringBuilder(code);

@@ -286,6 +286,7 @@
             <dependency>
                 <groupId>com.aliyun</groupId>
                 <artifactId>aliyun-java-sdk-core</artifactId>
+                <version>${aliyun.version}</version>
             </dependency>
 
             <!--&lt;!&ndash;引入第三方jar-Mas jar&ndash;&gt;-->

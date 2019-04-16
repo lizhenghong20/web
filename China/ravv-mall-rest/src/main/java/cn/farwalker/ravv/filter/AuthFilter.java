@@ -67,8 +67,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		filterSet.add("/pay/get_paypal_url_by_order");
 		filterSet.add("/pay/is_pay_success");
 		filterSet.add("/pay/refund");
-		filterSet.add("/auth/verified_old_password");
-		filterSet.add("/auth/modify_password");
+		filterSet.add("/auth/validator");
 
 		////可登录可不登录的请求集合，必须写全路径。
 		Set<String> middleSet = new HashSet<>();

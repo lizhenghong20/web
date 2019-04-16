@@ -7,4 +7,10 @@ import cn.farwalker.waka.components.wechatpay.common.exception.WxErrorException;
 public interface IPamWechatMemberService {
 
     public AuthLoginVo wechatLogin(String code, WechatLoginTypeEnum loginType, String ip) throws WxErrorException;
+
+    public String sendActivationCode(String phone);
+
+    public void sendSMS(String phone);
+
+    public Boolean validatorActivationCode(Long memberId, String phone, String activationCode);
 }

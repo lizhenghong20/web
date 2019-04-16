@@ -60,53 +60,6 @@ public class EmailServiceImpl implements IEmailService {
     @Override
     public void asynSendEmail(String email, String message){
 
-        //生成激活码
-        String activationCode = Tools.salt.createActivationCode();
-        //将过期时间加入激活码中
-        String appendCode = Tools.timeValue.codeAppendTime(activationCode);
-        try{
-            lock.lock();
-            //存到redis
-            CacheManager.cache.put(email,appendCode);
-        }catch (Exception e){
-            e.printStackTrace();
-        }finally {
-            lock.unlock();
-        }
-
-        log.info("注入账号密码:{},{}",mailProperties.getProperty("username"),mailProperties.getProperty("password"));
-
-//        Session session = Session.getDefaultInstance(mailProperties, new Authenticator() {
-//                @Override
-//                protected PasswordAuthentication getPasswordAuthentication() {
-//                    return new PasswordAuthentication("notification@shop.live","shop.LIVE");
-//                }
-//            }
-//        );
-//        session.setDebug(true);
-//        MimeMessage sendMessage = new MimeMessage(session);
-//        try {
-//            sendMessage.setFrom(new InternetAddress(mailProperties.getProperty("username")));
-//            sendMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-//            sendMessage.setSubject("验证邮件");
-//            sendMessage.setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
-//            Transport transport = session.getTransport("smtp");
-//            transport.send(sendMessage);
-//            transport.close();
-//            log.info("邮件发送完成");
-//        } catch (MessagingException e) {
-//            e.printStackTrace();
-//        }
-        //发送验证码
-        SimpleMailMessage sendMessage = new SimpleMailMessage();
-        sendMessage.setFrom(mailProperties.getProperty("username"));
-        sendMessage.setTo(email);
-
-        sendMessage.setSubject("验证邮件");
-        sendMessage.setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
-
-        mail.send(sendMessage);
-
     }
 
 
