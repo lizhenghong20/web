@@ -97,7 +97,7 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
             authLoginVo.setBindPhone(true);
         }
         //如果用户没有修改，则使用微信头像
-        authLoginVo.setHeadImgUrl(Tools.string.isEmpty(memberBo.getAvator()) ?
+        authLoginVo.setAvator(Tools.string.isEmpty(memberBo.getAvator()) ?
                 wechatMemberBo.getHeadImgUrl() : memberBo.getAvator());
 
         return authLoginVo;
@@ -105,6 +105,12 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
 
     @Override
     public String sendActivationCode(String phone) {
+        //判断手机号有没有被绑定过
+        PamWechatMemberBo pamWechatMemberBo = pamWechatMemberBiz.selectOne(Condition.create()
+                                                        .eq(PamWechatMemberBo.Key.phone.toString(), phone));
+        if(pamWechatMemberBo != null){
+            throw new WakaException("该手机号已被绑定！");
+        }
         sendSMS(phone);
         return "验证码已发送";
     }
