@@ -50,10 +50,7 @@ public class MemeberAddressServiceImpl implements IMemberAddressService {
         if(queryBaseArea == null||queryBaseArea.getPid()==0)
             throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
         //拼出地址
-        String areaName = queryBaseArea.getName();
-        if(queryBaseArea.getPid() != 0){
-            areaName = areaName + "," +  iBaseAreaBiz.selectById(queryBaseArea.getPid()).getName();
-        }
+        String areaName = appendAreaName(queryBaseArea);
 
         //查询该用户是否第一次添加地址
         EntityWrapper<MemberAddressBo> firstAddress = new EntityWrapper<>();
@@ -90,11 +87,7 @@ public class MemeberAddressServiceImpl implements IMemberAddressService {
         if(queryBaseArea == null||queryBaseArea.getPid()==0)
             throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
         //拼出地址
-        String areaName = queryBaseArea.getName();
-        if(queryBaseArea.getPid() != 0){
-            areaName = areaName + "," +  iBaseAreaBiz.selectById(queryBaseArea.getPid()).getName();
-        }
-
+        String areaName = appendAreaName(queryBaseArea);
         MemberAddressBo query = iMemberAddressBiz.selectById(memberAddressBo.getId());
         if(query == null)
             throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
@@ -238,6 +231,29 @@ public class MemeberAddressServiceImpl implements IMemberAddressService {
                 }
             }
         }
+    }
+
+    private String appendAreaName(BaseAreaBo queryBaseArea){
+        BaseAreaBo first = new BaseAreaBo();
+        BaseAreaBo second = new BaseAreaBo();
+        StringBuffer stringBuffer = new StringBuffer(queryBaseArea.getName());
+        //查找上级
+        if(queryBaseArea.getPid() != 0){
+            first = iBaseAreaBiz.selectById(queryBaseArea.getPid());
+            if(first == null){
+                throw new WakaException(RavvExceptionEnum.SELECT_ERROR + "baseAreaBo.getId()" + queryBaseArea.getId());
+            }
+            stringBuffer.append(",").append(first.getName());
+            if(first.getPid() != 0){
+                second = iBaseAreaBiz.selectById(first.getPid());
+                if(second == null){
+                    throw new WakaException(RavvExceptionEnum.SELECT_ERROR + "first.getId()" + first.getId());
+                }
+                stringBuffer.append(",").append(second.getName());
+
+            }
+        }
+        return stringBuffer.toString();
     }
 
 
