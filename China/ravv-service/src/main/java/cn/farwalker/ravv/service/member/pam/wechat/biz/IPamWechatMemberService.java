@@ -13,4 +13,6 @@ public interface IPamWechatMemberService {
     public void sendSMS(String phone);
 
     public Boolean validatorActivationCode(Long memberId, String phone, String activationCode);
+
+
 }

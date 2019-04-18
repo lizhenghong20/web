@@ -59,7 +59,10 @@ public class MemeberAddressServiceImpl implements IMemberAddressService {
         //如果不是第一次添加地址，判断该次添加是否设置默认
         if(addressBoList.size() != 0){
             //如果该次添加设置默认，将之前默认设置为-1
-            isFirst(memberAddressBo);
+            if(memberAddressBo.getDefaultAddr() == 1){
+                isFirst(memberId);
+            }
+
             //插入该条记录
             memberAddressBo.setMemberId(memberId);
             memberAddressBo.setAreaName(areaName);
@@ -98,7 +101,9 @@ public class MemeberAddressServiceImpl implements IMemberAddressService {
         //如果不是第一次添加地址，判断该次添加是否设置默认
         if(addressBoList.size() > 1){
             //如果该次添加设置默认，将之前默认设置为-1
-            isFirst(memberAddressBo);
+            if(memberAddressBo.getDefaultAddr() == 1){
+                isFirst(memberId);
+            }
             //插入该条记录
             memberAddressBo.setMemberId(memberId);
             memberAddressBo.setAreaName(areaName);
@@ -215,22 +220,21 @@ public class MemeberAddressServiceImpl implements IMemberAddressService {
 
 
 
-    private void isFirst(MemberAddressBo memberAddressBo){
+    private void isFirst(Long memberId){
         //如果该次添加设置默认，将之前默认设置为-1
-        if(memberAddressBo.getDefaultAddr() == 1){
-            EntityWrapper<MemberAddressBo> addressQuery = new EntityWrapper<>();
-            addressQuery.eq(MemberAddressBo.Key.memberId.toString(), memberAddressBo.getMemberId());
-            addressQuery.eq(MemberAddressBo.Key.defaultAddr.toString(), 1);
-            List<MemberAddressBo> listDefault = iMemberAddressBiz.selectList(addressQuery);
-            if(listDefault.size() != 0){
-                for(MemberAddressBo item: listDefault){
-                    item.setDefaultAddr(-1);
-                    if(!iMemberAddressBiz.updateById(item)){
-                        throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
-                    }
+        EntityWrapper<MemberAddressBo> addressQuery = new EntityWrapper<>();
+        addressQuery.eq(MemberAddressBo.Key.memberId.toString(), memberId);
+        addressQuery.eq(MemberAddressBo.Key.defaultAddr.toString(), 1);
+        List<MemberAddressBo> listDefault = iMemberAddressBiz.selectList(addressQuery);
+        if(listDefault.size() != 0){
+            for(MemberAddressBo item: listDefault){
+                item.setDefaultAddr(-1);
+                if(!iMemberAddressBiz.updateById(item)){
+                    throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
                 }
             }
         }
+
     }
 
     private String appendAreaName(BaseAreaBo queryBaseArea){

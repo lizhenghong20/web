@@ -9,6 +9,8 @@ import cn.farwalker.ravv.service.member.pam.member.model.AuthLoginVo;
 import cn.farwalker.ravv.service.member.pam.wechat.biz.IPamWechatMemberBiz;
 import cn.farwalker.ravv.service.member.pam.wechat.biz.IPamWechatMemberService;
 import cn.farwalker.ravv.service.member.pam.wechat.model.PamWechatMemberBo;
+import cn.farwalker.ravv.service.payment.payconfig.biz.IPayConfigBiz;
+import cn.farwalker.ravv.service.payment.payconfig.model.PayConfigBo;
 import cn.farwalker.waka.auth.util.JwtTokenUtil;
 import cn.farwalker.waka.cache.CacheManager;
 import cn.farwalker.waka.components.thirdTools.CommonRpc;
@@ -45,6 +47,9 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
 
     @Autowired
     private IMemberBiz memberBiz;
+
+    @Autowired
+    private IPayConfigBiz payConfigBiz;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
@@ -211,14 +216,16 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
     }
 
     private WxMpOAuth2AccessToken getAccessToken(String code, WechatLoginTypeEnum loginType) throws WxErrorException {
-        WxMpInMemoryConfigStorage wxConfig = new WxMpInMemoryConfigStorage();
-        if(WechatLoginTypeEnum.APP.equals(loginType)){
-            wxConfig.setAppId(appAppId);
-            wxConfig.setSecret(appAppSecret);
-        } else if(WechatLoginTypeEnum.WEB.equals(loginType)){
-            wxConfig.setAppId(webAppId);
-            wxConfig.setSecret(webAppSecret);
+        //根据loginType从数据库读取appId,appSecret
+        PayConfigBo payConfigBo = payConfigBiz.selectOne(Condition.create()
+                                        .eq(PayConfigBo.Key.payType.toString(), loginType.toString()));
+        if(payConfigBo == null){
+            throw new WakaException("读取appId,appSecret出错");
         }
+        WxMpInMemoryConfigStorage wxConfig = new WxMpInMemoryConfigStorage();
+        wxConfig.setAppId(payConfigBo.getAppId());
+        wxConfig.setSecret(payConfigBo.getAppSecret());
+
         wxMpService.setWxMpConfigStorage(wxConfig);
         return wxMpService.oauth2getAccessToken(code);
     }

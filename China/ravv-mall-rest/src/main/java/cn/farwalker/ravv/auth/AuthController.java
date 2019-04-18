@@ -9,6 +9,7 @@ import cn.farwalker.ravv.common.constants.WechatLoginTypeEnum;
 import cn.farwalker.ravv.service.email.IEmailService;
 import cn.farwalker.ravv.service.member.pam.wechat.biz.IPamWechatMemberService;
 import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountService;
+import cn.farwalker.ravv.service.payment.payconfig.biz.IPayConfigService;
 import cn.farwalker.waka.components.wechatpay.common.exception.WxErrorException;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
@@ -36,6 +37,9 @@ public class AuthController{
 
     @Autowired
     private IPamWechatMemberService pamWechatMemberService;
+
+    @Autowired
+    private IPayConfigService payConfigService;
 
     @RequestMapping("/wechat_login")
     public JsonResult<AuthLoginVo> wechatLogin(HttpServletRequest request, String code, WechatLoginTypeEnum loginType){
@@ -118,6 +122,17 @@ public class AuthController{
             return JsonResult.newSuccess(iPamMemberService.validatorKaptcha(httpServletRequest,httpServletResponse,code));
         }
         catch(WakaException e){
+            log.error("",e);
+            return JsonResult.newFail(e.getCode(),e.getMessage());
+        }
+    }
+
+    @RequestMapping("/insert_pay")
+    public JsonResult<String> insertPay(){
+        try{
+
+            return JsonResult.newSuccess(payConfigService.addPayConfig());
+        } catch(WakaException e){
             log.error("",e);
             return JsonResult.newFail(e.getCode(),e.getMessage());
         }

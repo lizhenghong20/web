@@ -213,10 +213,6 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
         flowBo.setSources(String.valueOf(orderId));
         flowBo.setRemark("订单" + orderId + "支付" + amt);
         memberAccountFlowBiz.insert(flowBo);
-        //不需要多次扣除余额，在执行逻辑支付的时候扣除即可，此处删去
-//		BigDecimal advance = bo.getAdvance().subtract(amt);
-//		bo.setAdvance(advance);
-//		memberBiz.updateById(bo);
         return flowBo;
 	}
 	
@@ -261,11 +257,8 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 			vo.setBuyerPaymentType(platform);
 			upay = paymentBiz.update(vo,wrap);
 		}
-		//这里向shipstation发送订单
-//		boolean upshipstation;{
-//			upshipstation = iShipStationService.createShipStationOrder(orderId);
-//		}
-		if(upay && uporder /**&& upshipstation*/){
+
+		if(upay && uporder){
 			return true;
 		}
 		else{

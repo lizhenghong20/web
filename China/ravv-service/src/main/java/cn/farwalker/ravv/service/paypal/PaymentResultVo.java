@@ -10,4 +10,5 @@ public class PaymentResultVo {
     String url;
     Long orderId;
     String payType;
+    WechatPayForm wechatPayForm;
 }
