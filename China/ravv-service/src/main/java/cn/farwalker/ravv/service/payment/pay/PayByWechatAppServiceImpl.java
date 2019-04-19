@@ -80,7 +80,7 @@ public class PayByWechatAppServiceImpl implements IPayService {
                                                 .setScale(0, BigDecimal.ROUND_HALF_UP);
         Map<String, String> parameters = new HashMap<>();
         parameters.put("out_trade_no", String .valueOf(query.getOrderId()));
-        parameters.put("body", "商品");
+        parameters.put("body", "Shop.live-衣服");
         parameters.put("spbill_create_ip", ip);
         parameters.put("notify_url", payConfigBo.getNotifyUrl());
         parameters.put("trade_type", "APP");
@@ -98,7 +98,7 @@ public class PayByWechatAppServiceImpl implements IPayService {
 
         WechatPayForm wechatPayForm = new WechatPayForm();
         wechatPayForm.setPartnerid(result.get("partnerid"));
-        wechatPayForm.setPartnerid(result.get("prepayid"));
+        wechatPayForm.setPrepayid(result.get("prepayid"));
         wechatPayForm.setNoncestr(result.get("noncestr"));
         wechatPayForm.setTimestamp(result.get("timestamp"));
         wechatPayForm.setSign(result.get("sign"));

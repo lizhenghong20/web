@@ -998,6 +998,9 @@ public class WxMpServiceImpl implements WxMpService {
 			xstream.alias("xml", WxMpPrepayIdResult.class);
 			WxMpPrepayIdResult wxMpPrepayIdResult = (WxMpPrepayIdResult) xstream
 					.fromXML(responseContent);
+			if(!wxMpPrepayIdResult.getReturn_code().equals("SUCCESS")){
+				throw new WakaException("下单失败:" + wxMpPrepayIdResult.getReturn_msg());
+			}
 			return wxMpPrepayIdResult;
 		} catch (IOException e) {
 			throw new RuntimeException(
