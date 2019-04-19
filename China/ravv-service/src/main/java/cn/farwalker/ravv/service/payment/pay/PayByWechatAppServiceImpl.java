@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -74,13 +75,16 @@ public class PayByWechatAppServiceImpl implements IPayService {
         if(payConfigBo == null){
             throw new WakaException("支付配置查询出错");
         }
+        //订单总金额单位为分(乘上100)
+        BigDecimal totalFee = query.getShouldPayTotalFee().multiply(new BigDecimal(100))
+                                                .setScale(0, BigDecimal.ROUND_HALF_UP);
         Map<String, String> parameters = new HashMap<>();
         parameters.put("out_trade_no", String .valueOf(query.getOrderId()));
         parameters.put("body", "商品");
         parameters.put("spbill_create_ip", ip);
         parameters.put("notify_url", payConfigBo.getNotifyUrl());
         parameters.put("trade_type", "APP");
-        parameters.put("total_fee", String.valueOf(query.getShouldPayTotalFee()));
+        parameters.put("total_fee", String.valueOf(totalFee));
 
         // 设置微信支付参数
         WxMpInMemoryConfigStorage wxConfig = new WxMpInMemoryConfigStorage();
