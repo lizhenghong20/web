@@ -1,6 +1,5 @@
 package cn.farwalker.ravv.service.payment.pay;
 
-import cn.farwalker.ravv.common.constants.WechatLoginTypeEnum;
 import cn.farwalker.ravv.service.order.constants.PayStatusEnum;
 import cn.farwalker.ravv.service.order.constants.PaymentPlatformEnum;
 import cn.farwalker.ravv.service.payment.payconfig.biz.IPayConfigBiz;
@@ -54,7 +53,7 @@ public class RefundFromWechatServiceImpl implements IRefundService {
                 .eq(MemberPaymentLogBo.Key.orderId.toString(), refundForm.getOrderId())
                 .eq(MemberPaymentLogBo.Key.memberId.toString(),refundForm.getMemberId())
                 .eq(MemberPaymentLogBo.Key.status.toString(), PayStatusEnum.PAID.toString())
-                .eq(MemberPaymentLogBo.Key.payType.toString(), PaymentPlatformEnum.WECHATAPP.getKey()));
+                .eq(MemberPaymentLogBo.Key.payType.toString(), PaymentPlatformEnum.WechatApp.getKey()));
         if(queryLogBo == null)
             throw new WakaException("当前参数查询不到支付信息");
         if(refundForm.getRefundTotalAmount().doubleValue() != 0)

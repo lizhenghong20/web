@@ -20,8 +20,8 @@ public enum PaymentPlatformEnum implements IEnumJsons{
 	UNIONPAY("unionpay", "银联支付")*/
 	PayPal("PayPal","PayPal"),
 	Advance("Advance","账户余额"),
-	WECHATAPP("WechatApp","微信app支付"),
-	WECHATWEB("WechatWeb","微信网页支付")
+	WechatApp("WechatApp","微信app支付"),
+	WechatWeb("WechatWeb","微信网页支付")
 	;
 	private final String key,label;
 	PaymentPlatformEnum(String status, String name) {

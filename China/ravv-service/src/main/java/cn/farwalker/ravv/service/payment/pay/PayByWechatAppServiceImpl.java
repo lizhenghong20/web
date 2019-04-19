@@ -54,14 +54,14 @@ public class PayByWechatAppServiceImpl implements IPayService {
         if(query == null)
             throw new WakaException("can not find valid order");
         //更新用户选择的支付方式
-        query.setBuyerPaymentType(PaymentPlatformEnum.WECHATAPP);
+        query.setBuyerPaymentType(PaymentPlatformEnum.WechatApp);
         if(!orderPaymemtBiz.updateById(query)){
             throw new WakaException("支付方式更新失败");
         }
         String ip = Tools.clientIP.getRemoteHost(request);
         WechatPayForm wechatPayForm = getWechatPayInfo(query, ip);
         PaymentResultVo resultVo = new PaymentResultVo();
-        resultVo.setPayType(PaymentPlatformEnum.WECHATAPP.getKey());
+        resultVo.setPayType(PaymentPlatformEnum.WechatApp.getKey());
         resultVo.setOrderId(query.getOrderId());
         resultVo.setWechatPayForm(wechatPayForm);
 

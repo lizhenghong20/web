@@ -42,7 +42,7 @@ public class RefundServiceImpl implements IRefundService {
             return iRefundFromWallet.refund(refundForm);
         }
 
-        if(PaymentPlatformEnum.WECHATAPP.equals(payType)){
+        if(PaymentPlatformEnum.WechatApp.equals(payType)){
             return iRefundFromWechat.refund(refundForm);
         }
 
