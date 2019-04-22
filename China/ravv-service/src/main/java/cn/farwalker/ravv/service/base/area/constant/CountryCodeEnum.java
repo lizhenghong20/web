@@ -13,7 +13,7 @@ public enum CountryCodeEnum implements IEnumJsons{
 	/**
 	 * 中国
 	 */
-	CHINA("CHN", "China"),
+	CHINA("CHINA", "CHINA"),
 
 	/**
 	 * 美国
@@ -59,7 +59,7 @@ public enum CountryCodeEnum implements IEnumJsons{
 	public static CountryCodeEnum value(String key){
 		if("USA".equals(key)){
 			return USA;
-		} else if("CHN".equals(key)){
+		} else if("CHINA".equals(key)){
 			return CHINA;
 		}
 		return null;

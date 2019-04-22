@@ -1,12 +1,6 @@
 package cn.farwalker.ravv.paypal;
 
-import cn.farwalker.ravv.service.order.constants.PayStatusEnum;
-import cn.farwalker.ravv.service.order.constants.PaymentModeEnum;
-import cn.farwalker.ravv.service.order.paymemt.biz.IOrderPaymemtBiz;
-import cn.farwalker.ravv.service.order.paymemt.model.OrderPaymemtBo;
 import cn.farwalker.ravv.service.payment.wechatpaycallback.WechatPayCallbackService;
-import cn.farwalker.waka.core.WakaException;
-import com.baomidou.mybatisplus.mapper.Condition;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
