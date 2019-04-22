@@ -22,7 +22,7 @@ public interface IOrderPaymentService {
 	 * @param success 
 	 * @return 支付成功状态
 	 */ 
-	//public Boolean updatePaymentCallback(String paymentNo,Boolean success);
+	//public Boolean updateOrderAfterPay(String paymentNo,Boolean success);
 	
 	/**
 	 * 支付回调处理(支付成功时，需要更新库存)
@@ -31,7 +31,7 @@ public interface IOrderPaymentService {
 	 * @param paylogBo
 	 * @return 处理成功
 	 */
-	public Boolean updatePaymentCallback(Long orderId,PaymentPlatformEnum platform, MemberPaymentLogBo paylogBo);
+	public Boolean updateOrderAfterPay(Long orderId, PaymentPlatformEnum platform, MemberPaymentLogBo paylogBo);
 
 	/**
 	 * 执行支付处理，扣余额，写日志(不涉及第3方支付时，不需要回调，所以这个方法相当于支付成功后的回调）

@@ -27,7 +27,7 @@ public class OrderPayNotifyController {
     private WechatPayCallbackService wechatPayCallbackService;
 
     @RequestMapping("asyncWechatPay")
-    public void asyncWechatPay(HttpServletRequest request, HttpServletResponse response) throws IOException, DocumentException, DocumentException {
+    public void asyncWechatPay(HttpServletRequest request, HttpServletResponse response) throws Exception {
 //        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         log.info("############################### 微信支付异步接口 Start #############################");
         log.info(request.getRequestURI());
@@ -61,6 +61,8 @@ public class OrderPayNotifyController {
         wechatPayCallbackService.doSuccess(map);
 
         response.getWriter().print("success");
+
+
     }
 
 }

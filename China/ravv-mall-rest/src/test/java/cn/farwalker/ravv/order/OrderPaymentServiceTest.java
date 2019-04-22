@@ -33,7 +33,7 @@ public class OrderPaymentServiceTest {
 		Boolean b = Boolean.FALSE;
 		int i =0;
 		while(i++ < 3){
-			b = service.updatePaymentCallback(orderId,PaymentPlatformEnum.PayPal, logBo);
+			b = service.updateOrderAfterPay(orderId,PaymentPlatformEnum.PayPal, logBo);
 		}
 		Assert.assertTrue("支付回调处理(支付成功时，需要更新库存)", b.booleanValue());
 	}
@@ -48,7 +48,7 @@ public class OrderPaymentServiceTest {
 		Boolean b = Boolean.FALSE;
 		int i =0;
 		while(i++ < 3){
-			b = service.updatePaymentCallback(orderId,PaymentPlatformEnum.PayPal, logBo);
+			b = service.updateOrderAfterPay(orderId,PaymentPlatformEnum.PayPal, logBo);
 		}
 		Assert.assertTrue("支付回调处理(支付成功时，需要更新库存)", b.booleanValue());
 	}

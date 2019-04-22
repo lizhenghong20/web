@@ -4,5 +4,5 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 public interface WechatPayCallbackService {
-    public void doSuccess(Map<String, String> map);
+    public void doSuccess(Map<String, String> map) throws Exception;
 }

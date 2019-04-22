@@ -253,7 +253,7 @@ public class PaypalServiceImpl implements IPaypalService {
 
         if(!iMemberPaymentLogBiz.insert(memberPaymentLogBo))
             throw new WakaException(RavvExceptionEnum.INSERT_ERROR);
-        iOrderPaymentService.updatePaymentCallback(orderId,PaymentPlatformEnum.PayPal,memberPaymentLogBo);
+        iOrderPaymentService.updateOrderAfterPay(orderId,PaymentPlatformEnum.PayPal,memberPaymentLogBo);
 
     }
     public boolean isPaySuccess(Long memberId,Long orderId){

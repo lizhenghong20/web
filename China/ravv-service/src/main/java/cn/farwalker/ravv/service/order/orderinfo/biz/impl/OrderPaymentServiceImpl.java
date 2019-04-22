@@ -80,7 +80,7 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 	
 	@Override
 	@Transactional(readOnly = false, rollbackFor = Exception.class)
-	public Boolean updatePaymentCallback(Long orderId, PaymentPlatformEnum platform, MemberPaymentLogBo paylogBo){
+	public Boolean updateOrderAfterPay(Long orderId, PaymentPlatformEnum platform, MemberPaymentLogBo paylogBo){
 		log.info("系统支付回调:" + orderId + "," + Tools.json.toJson(paylogBo));
 
 
@@ -158,7 +158,7 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 		//更新余额和支付日志，逻辑上相当于执行支付
 		updateAdvanceAndPaymentLog(memberId,advance,paylogBo);
 
-		Boolean rd = updatePaymentCallback(paymentForm.getOrderId(), PaymentPlatformEnum.Advance, paylogBo);
+		Boolean rd = updateOrderAfterPay(paymentForm.getOrderId(), PaymentPlatformEnum.Advance, paylogBo);
 		PaymentResultVo resultVo = new PaymentResultVo();
 		resultVo.setPayType(PaymentPlatformEnum.Advance.getKey());
 		resultVo.setOrderId(paymentForm.getOrderId());

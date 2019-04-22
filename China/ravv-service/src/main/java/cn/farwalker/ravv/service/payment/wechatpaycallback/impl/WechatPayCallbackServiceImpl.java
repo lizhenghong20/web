@@ -2,7 +2,6 @@ package cn.farwalker.ravv.service.payment.wechatpaycallback.impl;
 
 import cn.farwalker.ravv.service.order.constants.PayStatusEnum;
 import cn.farwalker.ravv.service.order.constants.PaymentModeEnum;
-import cn.farwalker.ravv.service.order.constants.PaymentPlatformEnum;
 import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderPaymentService;
 import cn.farwalker.ravv.service.order.paymemt.biz.IOrderPaymemtBiz;
 import cn.farwalker.ravv.service.order.paymemt.model.OrderPaymemtBo;
@@ -70,6 +69,6 @@ public class WechatPayCallbackServiceImpl implements WechatPayCallbackService {
         if(!memberPaymentLogBiz.insert(memberPaymentLogBo)){
             throw new WakaException("memberPaymentLogBo插入出错");
         }
-        orderPaymentService.updatePaymentCallback(orderId, query.getBuyerPaymentType(), memberPaymentLogBo);
+        orderPaymentService.updateOrderAfterPay(orderId, query.getBuyerPaymentType(), memberPaymentLogBo);
     }
 }
