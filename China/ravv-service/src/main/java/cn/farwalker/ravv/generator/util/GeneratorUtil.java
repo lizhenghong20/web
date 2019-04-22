@@ -30,7 +30,7 @@ public class GeneratorUtil {
                 .setFileOverride(true);
 
         //数据源配置
-        String dbUrl = "jdbc:mysql://52.53.127.206:3306/ravv?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false";
+        String dbUrl = "jdbc:mysql://47.107.236.246:3306/ravv?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false";
         String username = "root";
         String password = "Ravv_123";
         String drivername = "com.mysql.jdbc.Driver";
