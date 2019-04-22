@@ -36,7 +36,7 @@ public class WechatPayCallbackServiceImpl implements WechatPayCallbackService {
 
     @Override
     public void doSuccess(Map<String, String> map) {
-        SimpleDateFormat sdf =   new SimpleDateFormat( " yyyy-MM-dd HH:mm:ss " );
+        SimpleDateFormat sdf = new SimpleDateFormat( "yyyyMMddHHmmss");
         Long orderId = Long.parseLong(map.get("out_trade_no"));
         String total_fee = map.get("total_fee");
         String transactionId = map.get("transaction_id");
