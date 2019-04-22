@@ -33,6 +33,7 @@ public class OrderPayNotifyController {
         log.info(request.getRequestURI());
         log.info("############################### 微信支付异步接口 End #############################");
 
+        String resXml = "";
         // 解析结果存储在HashMap
         Map<String, String> map = new HashMap<String, String>();
         InputStream inputStream = request.getInputStream();
@@ -55,14 +56,16 @@ public class OrderPayNotifyController {
         String strReturnCode = map.get("return_code");
         log.info("############################### return_code :" + strReturnCode);
         if (!"SUCCESS".equals(strReturnCode)) {
-            return;
+            return ;
         }
         //业务逻辑处理
         wechatPayCallbackService.doSuccess(map);
 
-        response.getWriter().print("success");
 
-
+        resXml = "<xml>\n" + "<return_code><![CDATA[SUCCESS]]></return_code>\n"
+                + "<return_msg><![CDATA[OK]]></return_msg>\n" + "</xml> ";
+        response.getWriter().print(resXml);
+        response.getWriter().flush();
     }
 
 }
