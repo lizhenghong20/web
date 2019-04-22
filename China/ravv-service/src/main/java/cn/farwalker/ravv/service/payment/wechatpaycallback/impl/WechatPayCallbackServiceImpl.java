@@ -53,8 +53,17 @@ public class WechatPayCallbackServiceImpl implements WechatPayCallbackService {
         OrderPaymemtBo query = orderPaymemtBiz.selectOne(Condition.create().eq(OrderPaymemtBo.Key.orderId.toString(),orderId)
                 .eq(OrderPaymemtBo.Key.payStatus.toString(), PayStatusEnum.UNPAY.toString())
                 .eq(OrderPaymemtBo.Key.payMode.toString(), PaymentModeEnum.ONLINE.toString()));
-        if(query == null)
-            throw new WakaException("can not find valid order");
+        if(query == null){
+            log.info("微信可能重复回调:" + orderId);
+            OrderPaymemtBo orderPaymemtBo = orderPaymemtBiz.selectOne(Condition.create().eq(OrderPaymemtBo.Key.orderId.toString(),orderId)
+                    .eq(OrderPaymemtBo.Key.payStatus.toString(), PayStatusEnum.PAID.toString())
+                    .eq(OrderPaymemtBo.Key.payMode.toString(), PaymentModeEnum.ONLINE.toString()));
+            if(orderPaymemtBo == null){
+                throw new WakaException("未找到该订单:" + orderId);
+            }
+            return;
+        }
+
         MemberPaymentLogBo memberPaymentLogBo =  new MemberPaymentLogBo();
         memberPaymentLogBo.setPayType(query.getBuyerPaymentType());
         memberPaymentLogBo.setStatus(PayStatusEnum.PAID);
