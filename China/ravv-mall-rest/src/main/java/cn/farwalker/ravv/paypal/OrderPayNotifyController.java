@@ -66,6 +66,7 @@ public class OrderPayNotifyController {
                 + "<return_msg><![CDATA[OK]]></return_msg>\n" + "</xml> ";
         response.getWriter().print(resXml);
         response.getWriter().flush();
+        response.getWriter().close();
     }
 
 }
