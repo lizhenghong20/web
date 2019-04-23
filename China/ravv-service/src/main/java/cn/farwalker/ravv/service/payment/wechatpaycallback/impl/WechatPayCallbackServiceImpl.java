@@ -2,7 +2,9 @@ package cn.farwalker.ravv.service.payment.wechatpaycallback.impl;
 
 import cn.farwalker.ravv.service.order.constants.PayStatusEnum;
 import cn.farwalker.ravv.service.order.constants.PaymentModeEnum;
+import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderInfoBiz;
 import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderPaymentService;
+import cn.farwalker.ravv.service.order.orderinfo.model.OrderInfoBo;
 import cn.farwalker.ravv.service.order.paymemt.biz.IOrderPaymemtBiz;
 import cn.farwalker.ravv.service.order.paymemt.model.OrderPaymemtBo;
 import cn.farwalker.ravv.service.payment.paymentlog.biz.IMemberPaymentLogBiz;
@@ -32,6 +34,9 @@ public class WechatPayCallbackServiceImpl implements WechatPayCallbackService {
 
     @Autowired
     private IOrderPaymentService orderPaymentService;
+
+    @Autowired
+    private IOrderInfoBiz orderInfoBiz;
 
     @Override
     public void doSuccess(Map<String, String> map) {
@@ -63,6 +68,11 @@ public class WechatPayCallbackServiceImpl implements WechatPayCallbackService {
             }
             return;
         }
+        //根据订单id查出memberId
+        OrderInfoBo orderInfoBo = orderInfoBiz.selectById(query.getOrderId());
+        if(orderInfoBo == null){
+            throw new WakaException("订单不存在");
+        }
 
         MemberPaymentLogBo memberPaymentLogBo =  new MemberPaymentLogBo();
         memberPaymentLogBo.setPayType(query.getBuyerPaymentType());
@@ -71,6 +81,7 @@ public class WechatPayCallbackServiceImpl implements WechatPayCallbackService {
         memberPaymentLogBo.setTotalAmount(fee);
         memberPaymentLogBo.setSubtotal(query.getGoodsTotalFee());
         memberPaymentLogBo.setShipping(query.getPostFee());
+        memberPaymentLogBo.setMemberId(orderInfoBo.getBuyerId());
         memberPaymentLogBo.setPayerId(openId);
         memberPaymentLogBo.setPaymentId(transactionId);
         memberPaymentLogBo.setPayedTime(payedTime);
