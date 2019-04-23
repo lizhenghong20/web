@@ -83,12 +83,13 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
             //执行插入逻辑
             wechatMemberBo = insertWechatUser(userInfo, ip);
         }
-        //执行登录逻辑
-        final String randomKey = jwtTokenUtil.getRandomKey();
-        final String token = jwtTokenUtil.generateToken(userInfo.getNickname(), wechatMemberBo.getMemberId(),
-                                                        LoginTypeEnum.WECHAT.getLabel(), randomKey,true);
         //获取member信息
         MemberBo memberBo = memberBiz.selectById(wechatMemberBo.getMemberId());
+        //执行登录逻辑
+        final String randomKey = jwtTokenUtil.getRandomKey();
+        final String token = jwtTokenUtil.generateToken(userInfo.getNickname(),
+                wechatMemberBo.getMemberId(), LoginTypeEnum.WECHAT.getLabel(), randomKey,true);
+
         AuthLoginVo authLoginVo = new AuthLoginVo();
         authLoginVo.setLoginType(LoginTypeEnum.WECHAT.getLabel());
         authLoginVo.setToken(token);
@@ -168,6 +169,13 @@ public class PamWechatMemberServiceImpl implements IPamWechatMemberService {
         if(!pamWechatMemberBiz.update(pamWechatMemberBo,
                 Condition.create().eq(PamWechatMemberBo.Key.memberId.toString(), memberId))){
             throw new WakaException(RavvExceptionEnum.UPDATE_ERROR + "更新手机号失败");
+        }
+        //更新数据库mobile字段
+        MemberBo memberBo = new MemberBo();
+        memberBo.setMobile(phone);
+        memberBo.setId(memberId);
+        if(!memberBiz.updateById(memberBo)){
+            throw new WakaException(RavvExceptionEnum.UPDATE_ERROR + "member表更新手机号失败");
         }
         return true;
     }

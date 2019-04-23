@@ -17,7 +17,4 @@ public class MemberExVo extends MemberBo{
     int favoriteCount = 0;
     int followingCount = 0;
     int viewCount = 0;
-    YoutubeLiveAnchorBo anchorInfo;
-    boolean isFrozen;
-    boolean isAnchor;
 }

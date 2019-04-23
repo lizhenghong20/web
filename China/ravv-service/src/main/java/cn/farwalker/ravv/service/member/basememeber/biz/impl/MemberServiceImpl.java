@@ -80,30 +80,6 @@ public class MemberServiceImpl implements IMemberService {
         viewCount = iGoodsViewLogBiz.selectCount(Condition.create().eq(GoodsViewLogBo.Key.memberId.toString(), memberId));
         if(viewCount != 0)
             memberInfoVo.setViewCount(viewCount);
-        int followingCount = 0;
-        followingCount = iYoutubeService.followedUnfrozenNumByFans(memberId);
-        if(followingCount != 0)
-            memberInfoVo.setFollowingCount(followingCount);
-        //查询是否是主播
-        if(iYoutubeService.isAnchorRegister(memberId)){
-            memberInfoVo.setAnchor(true);
-            //是主播，查询主播信息，查询是否冻结
-            YoutubeLiveAnchorBo anchorBo = iYoutubeLiveAnchorBiz.selectOne(Condition.create()
-                    .eq(YoutubeLiveAnchorBo.Key.anchorMemberId.toString(), memberId));
-            if(anchorBo == null){
-                throw new WakaException(RavvExceptionEnum.SELECT_ERROR + "主播不存在");
-            }
-            memberInfoVo.setAnchorInfo(anchorBo);
-            if(iYoutubeService.isAnchorFrozen(memberId)){
-                memberInfoVo.setFrozen(true);
-            }
-            else{
-                memberInfoVo.setFrozen(false);
-            }
-        }
-        else {
-            memberInfoVo.setAnchor(false);
-        }
 
         return memberInfoVo;
     }
