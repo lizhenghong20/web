@@ -38,33 +38,16 @@ public class MemberServiceImpl implements IMemberService {
     private IMemberBiz iMemberBiz;
 
     @Autowired
-    private IPamMemberBiz iPamMemberBiz;
-
-    @Autowired
     private IGoodsFavoriteBiz iGoodsFavoriteBiz;
 
     @Autowired
     private IGoodsViewLogBiz iGoodsViewLogBiz;
-
-    @Autowired
-    private IYoutubeService iYoutubeService;
-
-    @Autowired
-    private IYoutubeLiveAnchorBiz iYoutubeLiveAnchorBiz;
 
     @Override
     public MemberExVo getBasicInfo(Long memberId) {
         MemberExVo memberInfoVo = new MemberExVo();
         MemberBo memberBo = iMemberBiz.selectById(memberId);
         BeanUtils.copyProperties(memberBo, memberInfoVo);
-        if(memberInfoVo.getEmail() == null){
-            //从pam表里查出email
-            PamMemberBo pamMemberBo = iPamMemberBiz.selectOne(Condition.create()
-                    .eq(PamMemberBo.Key.memberId.toString(), memberId));
-            if(pamMemberBo == null)
-                throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR + "该用户不存在");
-            memberInfoVo.setEmail(pamMemberBo.getEmailAccount());
-        }
         if(memberBo.getBirthday() == null)
             memberInfoVo.setBirth(false);
         else
