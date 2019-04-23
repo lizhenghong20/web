@@ -40,6 +40,7 @@ import cn.farwalker.waka.core.base.controller.ControllerUtils;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 import cn.farwalker.waka.util.Tools;
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -259,6 +260,13 @@ public class AdminGoodsServiceImpl implements AdminGoodsService {
         wp.last("limit 20");
         List<MerchantBo> rs = merchantBiz.selectList(wp);
         return rs;
+    }
+
+    @Override
+    public List<MerchantBo> findAllMerchant() {
+        List<MerchantBo> allList = merchantBiz.selectList(Condition.create()
+                                        .isNotNull(MerchantBo.Key.name.toString()));
+        return allList;
     }
 
     @Override

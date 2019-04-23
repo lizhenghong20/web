@@ -350,6 +350,20 @@ public class GoodsBaseController{
 		}
 
 	}
+
+	@RequestMapping("/findAllMerchant")
+	public JsonResult<List<MerchantBo>> findAllMerchant() {
+		try {
+			return JsonResult.newSuccess(adminGoodsService.findAllMerchant());
+		} catch (WakaException e) {
+			log.error("删除记录", e);
+			return JsonResult.newFail(e.getMessage());
+		} catch (Exception e) {
+			log.error("", e);
+			return JsonResult.newFail(e.getMessage());
+		}
+
+	}
 	
 	/**
 	 * 获取供应商商品基础信息列表

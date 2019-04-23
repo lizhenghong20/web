@@ -43,6 +43,8 @@ public interface AdminGoodsService {
 
     List<MerchantBo> findMerchant(String search);
 
+    List<MerchantBo> findAllMerchant();
+
     Page<GoodsStoreVo> getMerchantGoods(Long merchantId, Boolean isAlarm,
                           List<QueryFilter> query, Integer start, Integer size, String sortfield);
 
