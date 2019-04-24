@@ -73,7 +73,6 @@ public class MemberServiceImpl implements IMemberService {
         //如果有图片，拆出路径
         if(memberInfo.getAvator() != null)
             memberInfo.setAvator(QiniuUtil.getRelativePath(memberInfo.getAvator()));
-        log.info("{}",memberInfo.getFirstname());
         Date now = new Date();
         memberInfo.setGmtModified(now);
         EntityWrapper<MemberBo> queryMember = new EntityWrapper<>();
