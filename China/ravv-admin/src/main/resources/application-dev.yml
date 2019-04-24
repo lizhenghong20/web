@@ -42,5 +42,5 @@ logging:
 qiniu:
   accessKey: Mh0L0MfFlVXhgauUXh17LWEyEmIApVdwJ9QrD2Rf
   secretKey: fFydQAutvevF19DpyBs_yMY3V8oEcg2PFGMoEd6D
-  bucket: ravv
-  domain: http://ravv.img.shop.live
+  bucket: ravv_china
+  domain: http://test.ravvchina.com
