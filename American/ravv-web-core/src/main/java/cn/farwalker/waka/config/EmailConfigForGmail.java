@@ -91,9 +91,9 @@ public class EmailConfigForGmail {
 
     private String auth = "true";
 
-    private String username = "simple.ding816@gmail.com";
+    private String username = "notification@shop.live";
 
-    private String password = "0816.hao";
+    private String password = "shop.LIVE";
 
 //    mail:
 //    smtp:
