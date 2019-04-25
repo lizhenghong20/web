@@ -37,15 +37,7 @@ wechat:
 #  subMchId: sdfadsf
 #  keyPath: sdfsdaf
 
-# 七牛云配置(chenjs@farwalker.cn)
-# bucket是创建的存储空间名
-# path对应存储空间的访问域名
-qiniu:
-  accessKey: jnIntrKoJKDbQX0wxya1VTNUTYE6DOx70SGwy_Bz
-  secretKey: vJUjlYuOHe8CUkh1322Ag-ggN7ugAZq9fu2I_lgY
-  bucket: ravv_china
-  domain: http://ravv.qiniu.farwalker.cn
-  
+
 # redis配置
 # 分支标志-branchKey
 # 共享缓存标记,整个redis共用-不同的项目都可以共用-shareKey

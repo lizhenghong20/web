@@ -44,14 +44,6 @@ wechat:
 #  subMchId: sdfadsf
 #  keyPath: sdfsdaf
 
-# 七牛云配置
-# bucket是创建的存储空间名
-# path对应存储空间的访问域名
-#qiniu:
-#  accessKey: jnIntrKoJKDbQX0wxya1VTNUTYE6DOx70SGwy_Bz
-#  secretKey: vJUjlYuOHe8CUkh1322Ag-ggN7ugAZq9fu2I_lgY
-#  bucket: ravv_china
-#  domain: http://ravv.qiniu.farwalker.cn
 
 # 七牛云配置
 # bucket是创建的存储空间名
