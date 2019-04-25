@@ -163,18 +163,7 @@ public class PamMemberServiceImpl implements IPamMemberService {
         return "password update";
     }
 
-    /**
-     * @description: 邮箱认证发送验证码
-     * @param: email
-     * @return string
-     * @author Mr.Simple
-     * @date 2018/11/9 15:20
-     */
-    @Override
-    public String verifiedInfoEmail(String email) {
-        iEmailService.asynSendEmail(email,"邮箱认证");
-        return "verification code had send";
-    }
+
 
     /**
      * @description: 修改密码验证旧密码

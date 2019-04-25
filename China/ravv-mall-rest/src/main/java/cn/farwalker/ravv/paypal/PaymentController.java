@@ -40,6 +40,10 @@ public class PaymentController {
     private IPayService payByWallet;
 
     @Autowired
+    @Qualifier("payByWechatAppServiceImpl")
+    private IPayService payByWechatApp;
+
+    @Autowired
     IMemberPaymentLogBiz iMemberPaymentLogBiz;
 
     @Autowired
@@ -131,10 +135,11 @@ public class PaymentController {
         }
         if(PaymentPlatformEnum.PayPal.getKey().equals(payType)){
             return payByPaypal;
-        }
-        else if(PaymentPlatformEnum.Advance.getKey().equals(payType)){
+        } else if(PaymentPlatformEnum.Advance.getKey().equals(payType)){
             return payByWallet;
-        }else{
+        } else if(PaymentPlatformEnum.WechatApp.getKey().equals(payType)){
+            return payByWechatApp;
+        } else{
             throw new WakaException("支付方式指定错误");
         }
 

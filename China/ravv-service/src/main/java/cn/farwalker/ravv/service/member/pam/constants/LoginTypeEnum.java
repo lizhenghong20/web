@@ -10,8 +10,8 @@ import cn.farwalker.waka.orm.EnumManager.IEnumJsons;
  */
 public enum LoginTypeEnum implements IEnumJsonn{
         EMAIL(1,"email"),
-        FACEBOOK(2,"facebook"),
-        GOOGLE(3,"google");
+        WECHAT(2,"wechat"),
+        PHONE(3,"phone");
        
     private final Integer key;
     private final String label;

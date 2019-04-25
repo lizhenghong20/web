@@ -50,10 +50,6 @@ public class AdminProfitallotServiceImpl implements AdminProfitallotService{
         //补全头像路径
         promoteInfo.setAvator(QiniuUtil.getFullPath(promoteInfo.getAvator()));
 
-        //获取待返现总金额
-        BigDecimal awaitingAmount =  saleProfitAllotBiz.getAwaitingAmount(member.getId());
-        promoteInfo.setAwaitingAmount(awaitingAmount);
-
         return promoteInfo;
     }
 

@@ -12,7 +12,6 @@ import cn.farwalker.ravv.service.member.pam.member.biz.IPamMemberBiz;
 import cn.farwalker.ravv.service.member.pam.member.model.PamMemberBo;
 import cn.farwalker.ravv.service.paypal.PaymentForm;
 import cn.farwalker.ravv.service.paypal.PaymentResultVo;
-import cn.farwalker.ravv.service.shipstation.biz.IShipStationService;
 import cn.farwalker.waka.core.HttpKit;
 import cn.farwalker.waka.core.JsonResult;
 import cn.farwalker.waka.core.RavvExceptionEnum;
@@ -74,9 +73,6 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 	private ISystemMessageService systemMessageService;
 
 	@Autowired
-	private IShipStationService iShipStationService;
-
-	@Autowired
 	private IMemberPaymentLogBiz iMemberPaymentLogBiz;
 
 	@Autowired
@@ -84,7 +80,7 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 	
 	@Override
 	@Transactional(readOnly = false, rollbackFor = Exception.class)
-	public Boolean updatePaymentCallback(Long orderId, PaymentPlatformEnum platform, MemberPaymentLogBo paylogBo){
+	public Boolean updateOrderAfterPay(Long orderId, PaymentPlatformEnum platform, MemberPaymentLogBo paylogBo){
 		log.info("系统支付回调:" + orderId + "," + Tools.json.toJson(paylogBo));
 
 
@@ -162,7 +158,7 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 		//更新余额和支付日志，逻辑上相当于执行支付
 		updateAdvanceAndPaymentLog(memberId,advance,paylogBo);
 
-		Boolean rd = updatePaymentCallback(paymentForm.getOrderId(), PaymentPlatformEnum.Advance, paylogBo);
+		Boolean rd = updateOrderAfterPay(paymentForm.getOrderId(), PaymentPlatformEnum.Advance, paylogBo);
 		PaymentResultVo resultVo = new PaymentResultVo();
 		resultVo.setPayType(PaymentPlatformEnum.Advance.getKey());
 		resultVo.setOrderId(paymentForm.getOrderId());
@@ -217,10 +213,6 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
         flowBo.setSources(String.valueOf(orderId));
         flowBo.setRemark("订单" + orderId + "支付" + amt);
         memberAccountFlowBiz.insert(flowBo);
-        //不需要多次扣除余额，在执行逻辑支付的时候扣除即可，此处删去
-//		BigDecimal advance = bo.getAdvance().subtract(amt);
-//		bo.setAdvance(advance);
-//		memberBiz.updateById(bo);
         return flowBo;
 	}
 	
@@ -265,11 +257,8 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 			vo.setBuyerPaymentType(platform);
 			upay = paymentBiz.update(vo,wrap);
 		}
-		//这里向shipstation发送订单
-//		boolean upshipstation;{
-//			upshipstation = iShipStationService.createShipStationOrder(orderId);
-//		}
-		if(upay && uporder /**&& upshipstation*/){
+
+		if(upay && uporder){
 			return true;
 		}
 		else{

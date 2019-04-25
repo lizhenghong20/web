@@ -14,4 +14,6 @@ public class AuthLoginVo implements Serializable{
     private String account;
     private String loginType;
     private String randomKey;
+    private String avator;
+    private Boolean bindPhone;
 }

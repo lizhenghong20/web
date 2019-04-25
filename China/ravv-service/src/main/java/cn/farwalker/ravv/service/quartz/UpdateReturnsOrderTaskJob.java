@@ -35,24 +35,9 @@ public class UpdateReturnsOrderTaskJob extends QuartzJobBean {
     @Autowired
     private IOrderReturnsBiz returnsBiz;
 
-    @Autowired
-    private IOrderReturnsDetailBiz returnsDetailBiz;
-
-    @Autowired
-    private IOrderGoodsService orderGoodsService;
-
-    @Autowired
-    private IOrderLogService orderLogService;
-
-    @Autowired
-    private IOrderInfoBiz orderInfoBiz;
-
-    @Autowired
-    private ISaleProfitAllotBiz saleProfitAllotBiz;
-
     private static final String OperatorText = "系统自动关闭";
 
-    //这里只执行换货逻辑分润
+    //这里只执行换货逻辑
     private void updateReturnsOrderStatus(Long returnsId){
         OrderReturnsBo bo = returnsBiz.selectById(returnsId);
         ReturnsGoodsStatusEnum status = bo.getStatus();
@@ -70,31 +55,6 @@ public class UpdateReturnsOrderTaskJob extends QuartzJobBean {
         }
         else if(status == ReturnsGoodsStatusEnum.finish) {
             log.info("退货已完成");
-        }
-        //判断主单(退的是子单)是否关闭，已关闭且没有退换货中的订单时，执行分销分润；否则不执行
-        OrderInfoBo orderInfo = orderInfoBiz.selectById(bo.getOrderId());
-        if(OrderStatusEnum.TRADE_CLOSE.equals(orderInfo.getOrderStatus())){
-            //根据订单号查询是否有退换货
-            List<OrderReturnsBo> orderReturnsList = returnsBiz.returnsByOrderId(orderInfo.getId());
-            if (Tools.collection.isNotEmpty(orderReturnsList)) {
-                Boolean isClose = true;
-                for (OrderReturnsBo returns : orderReturnsList) {
-                    if (!ReturnsGoodsStatusEnum.allowOrderClose(returns.getStatus())) {
-                        isClose = false;
-                        break;
-                    }
-                }
-                //close为false说明当前还有退换货单没有执行完成，不执行分润
-                if (isClose) {
-                    orderLogService.createLog(orderInfo.getId(), OperatorText, OperatorText,
-                                "已发货、签收（包含退换货完成）的订单(30)天自动关闭");
-                    List<OrderInfoBo> orderInfoBoList = new ArrayList<>();
-                    orderInfoBoList.add(orderInfo);
-                    //更新分润
-                    saleProfitAllotBiz.updateFinalProfit(orderInfoBoList);
-
-                }
-            }
         }
 
     }

@@ -15,7 +15,7 @@ spring:
       url: jdbc:mysql://120.77.217.189:3306/ravv?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
       username: ravv
       password: Ravv1688
-      db-name: ravv
+      db-name: ravv_china
       type: com.alibaba.druid.pool.DruidDataSource
       filters: log4j,wall,mergeStat
 logging:
@@ -43,7 +43,7 @@ wechat:
 qiniu:
   accessKey: jnIntrKoJKDbQX0wxya1VTNUTYE6DOx70SGwy_Bz
   secretKey: vJUjlYuOHe8CUkh1322Ag-ggN7ugAZq9fu2I_lgY
-  bucket: ravv
+  bucket: ravv_china
   domain: http://ravv.qiniu.farwalker.cn
   
 # redis配置

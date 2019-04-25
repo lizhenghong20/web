@@ -11,6 +11,7 @@ import cn.farwalker.waka.core.base.controller.ControllerUtils;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 import cn.farwalker.waka.util.Tools;
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.cangwu.frame.orm.core.annotation.LoadJoinValueImpl;
@@ -43,6 +44,14 @@ public class AdminMerchantServiceImpl implements AdminMerchantService {
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public Boolean create(MerchantBo vo) {
+        //名字去重
+        List<MerchantBo> merchantBoList = getBiz().selectList(Condition.create()
+                                            .eq(MerchantBo.Key.name.toString(), vo.getName())
+                                            .or()
+                                            .eq(MerchantBo.Key.account.toString(), vo.getAccount()));
+        if(merchantBoList.size() != 0){
+            throw new WakaException("供应商名称已存在或供应商账号已存在！");
+        }
         vo.setLogo(QiniuUtil.getRelativePath(vo.getLogo()));
         vo.setLicense(QiniuUtil.getRelativePath(vo.getLicense()));
         Boolean rs = getBiz().insert(vo);

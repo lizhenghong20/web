@@ -37,7 +37,7 @@ public class AdminBaseareaServiceImpl implements AdminBaseareaService{
             vo.setPid(0L);
             isAtRoot = true;
         }
-        vo.setLeaf(Boolean.TRUE);
+//        vo.setLeaf(Boolean.TRUE);
         //TODO 等级是否存储？
 
         Boolean rs =getBiz().insert(vo);
@@ -49,16 +49,16 @@ public class AdminBaseareaServiceImpl implements AdminBaseareaService{
             if (!isAtRoot) {
                 //将上级改为非子节点
                 BaseAreaBo baseArea = getBiz().selectById(vo.getPid());
-                baseArea.setLeaf(Boolean.FALSE);
+//                baseArea.setLeaf(Boolean.FALSE);
                 getBiz().updateById(baseArea);
 
                 fullPath = baseArea.getFullPath() + "/" + vo.getId();
-                fullPathName = baseArea.getFullName() + " " + vo.getName();
+//                fullPathName = baseArea.getFullName() + " " + vo.getName();
             }
 
             //存储区域全路径
             vo.setFullPath(fullPath);
-            vo.setFullName(fullPathName);
+//            vo.setFullName(fullPathName);
             getBiz().updateById(vo);
             return true;
         }
@@ -74,9 +74,6 @@ public class AdminBaseareaServiceImpl implements AdminBaseareaService{
         if(null == baseArea) {
             throw new WakaException("没有该区域数据");
         }
-        if(baseArea.getLeaf()==null || !baseArea.getLeaf()) {
-            throw new WakaException("该区域存在下级区域，不能删除");
-        }
         Boolean rs = getBiz().deleteById(id);
         if (rs) {
             if (null != baseArea.getPid() && !baseArea.getPid().equals(0L)) {
@@ -86,7 +83,6 @@ public class AdminBaseareaServiceImpl implements AdminBaseareaService{
                 if (areaList.size() == 0) {
                     BaseAreaBo BaseAreaBo = getBiz().selectById(baseArea.getPid());
                     if (null != BaseAreaBo) {
-                        BaseAreaBo.setLeaf(Boolean.TRUE);
                         getBiz().updateById(BaseAreaBo);
                     }
                 }
@@ -122,8 +118,6 @@ public class AdminBaseareaServiceImpl implements AdminBaseareaService{
         }
         baseArea.setCountryCode(vo.getCountryCode());
         baseArea.setName(vo.getName());
-        baseArea.setCode(vo.getCode());
-        baseArea.setShortName(vo.getShortName());
 
         Object rs =getBiz().updateById(baseArea);
         return rs;

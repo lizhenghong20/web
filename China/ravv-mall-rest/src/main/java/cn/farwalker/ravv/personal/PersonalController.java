@@ -98,54 +98,6 @@ public class PersonalController {
         }
     }
 
-    @RequestMapping("/youtube_follow")
-    public JsonResult<List<YoutubeLiveAnchorVo>> youtubeFollow(HttpSession session, int currentPage, int pageSize) {
-        try {
-            currentPage++;
-            long memberId = 0;
-            if(session.getAttribute("memberId") != null)
-                memberId = (Long)session.getAttribute("memberId");
-            else
-                throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR);
-            return JsonResult.newSuccess(iYoutubeService.getAllFollow(memberId, currentPage, pageSize));
-        } catch (WakaException e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getCode(), e.getMessage());
-        } catch (Exception e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getMessage());
-
-        }
-
-    }
-
-    /**
-     * @description: 获取推荐主播
-     * @param:
-     * @return
-     * @author Mr.Simple
-     * @date 2019/1/23 10:55
-     */
-    @RequestMapping("get_suggested_streamers")
-    public JsonResult<List<YoutubeLiveAnchorVo>> getSuggestedStreamers(HttpSession httpSession, Integer currentPage,Integer pageSize,Integer videoNum){
-        try {
-            currentPage++;
-            Long memberId = 0L;
-            if (httpSession.getAttribute("memberId") != null) {
-                memberId = (Long) httpSession.getAttribute("memberId");
-            }
-            if(currentPage < 0||pageSize < 0||videoNum < 0)
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return iYoutubeService.getSuggestedStreamers(memberId,currentPage,pageSize,videoNum);
-        } catch (WakaException e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getCode(), e.getMessage());
-        } catch (Exception e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getMessage());
-        }
-    }
-
     /**
      * @description: 查看浏览记录
      * @param: memberId

@@ -40,15 +40,7 @@ public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccoun
     @Autowired
     private IMemberThirdpartAccountBiz iMemberThirdpartAccountBiz;
 
-    public AuthLoginVo facebookLogin(String userID, String name){
 
-        return thirdLogin(userID, name, LoginTypeEnum.FACEBOOK);
-    }
-
-    @Override
-    public AuthLoginVo googleLogin(String userID, String name) {
-        return thirdLogin(userID, name, LoginTypeEnum.GOOGLE);
-    }
 
     public AuthLoginVo thirdLogin(String userID, String name, LoginTypeEnum loginType){
         MemberThirdpartAccountBo queryMember = new MemberThirdpartAccountBo();
@@ -87,15 +79,7 @@ public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccoun
     }
 
 
-    @Override
-    public String validatorForFacebook(String userID,String email, String activationCode) {
-        return validatorThirdLogin(userID, email, activationCode, LoginTypeEnum.FACEBOOK);
-    }
 
-    @Override
-    public String validatorForGoogle(String userID, String email, String activationCode) {
-        return validatorThirdLogin(userID, email, activationCode, LoginTypeEnum.GOOGLE);
-    }
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public String validatorThirdLogin(String userID,String email, String activationCode, LoginTypeEnum loginType) {

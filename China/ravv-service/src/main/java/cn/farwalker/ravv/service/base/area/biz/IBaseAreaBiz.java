@@ -1,6 +1,5 @@
 package cn.farwalker.ravv.service.base.area.biz;
 import com.baomidou.mybatisplus.service.IService;
-
 import cn.farwalker.ravv.service.base.area.model.BaseAreaBo;
 
 /**

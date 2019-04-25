@@ -84,7 +84,7 @@ public class AdminStorehouseServiceImpl implements AdminStorehouseService {
                 }
             }
         }
-
+        vo.setStatus(true);
         Boolean rs =getBiz().insert(vo);
 
         //保存仓库管理员

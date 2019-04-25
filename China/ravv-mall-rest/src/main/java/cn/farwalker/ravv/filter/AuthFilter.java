@@ -59,6 +59,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		releaseSet.add("/qiniu/token");
 		releaseSet.add("/style");
 		releaseSet.add("/style_control.css");
+		releaseSet.add("/order_pay_notify");
 
 		//必须进行token验证的请求集合，必须写全路径。
 		Set<String> filterSet = new HashSet<>();
@@ -67,8 +68,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		filterSet.add("/pay/get_paypal_url_by_order");
 		filterSet.add("/pay/is_pay_success");
 		filterSet.add("/pay/refund");
-		filterSet.add("/auth/verified_old_password");
-		filterSet.add("/auth/modify_password");
+		filterSet.add("/auth/validator");
 
 		////可登录可不登录的请求集合，必须写全路径。
 		Set<String> middleSet = new HashSet<>();

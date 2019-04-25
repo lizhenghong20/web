@@ -39,8 +39,10 @@ public class AreaFullVo {
 			}
 			//BaseAreaBo b =(areaId.toString().equals(ps) ? bo: biz.selectById(ps[i]));
 		}
-		
-		return new AreaFullVo(areas[0],areas[1],areas[2]);
+		if(ps.length == 2){
+			return new AreaFullVo(areas[0],areas[0],areas[1]);
+		} else
+			return new AreaFullVo(areas[0],areas[1],areas[2]);
 	}
 	
 
@@ -63,7 +65,10 @@ public class AreaFullVo {
 			Long id = new Long(ps[i]);
 			areas[i] = Tools.collection.getBo(rds, id);
 		}
-		return new AreaFullVo(areas[0],areas[1],areas[2]);
+		if(ps.length == 2){
+			return new AreaFullVo(areas[0],areas[0],areas[1]);
+		} else
+			return new AreaFullVo(areas[0],areas[1],areas[2]);
 	}
 	public AreaFullVo(){
 		

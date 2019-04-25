@@ -37,9 +37,6 @@ public class ShippingAddressController {
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());
-        } catch (TaxjarException e){
-            log.error("", e);
-            return  JsonResult.newFail(e.getStatusCode(), e.getMessage());
         } catch (Exception e) {
             log.error("", e);
             return JsonResult.newFail(e.getMessage());
@@ -60,9 +57,6 @@ public class ShippingAddressController {
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());
-        } catch (TaxjarException e){
-            log.error("", e);
-            return  JsonResult.newFail(e.getStatusCode(), e.getMessage());
         } catch (Exception e) {
             log.error("", e);
             return JsonResult.newFail(e.getMessage());
@@ -125,10 +119,10 @@ public class ShippingAddressController {
         }
     }
 
-    @RequestMapping("get_states")
-    public JsonResult<List<BaseAreaBo>> getStatus(){
+    @RequestMapping("get_province")
+    public JsonResult<List<BaseAreaBo>> getProvince(){
         try {
-            return JsonResult.newSuccess(iMemberAddressService.getStates());
+            return JsonResult.newSuccess(iMemberAddressService.getProvince());
 
         } catch (WakaException e) {
             log.error("", e);
@@ -146,6 +140,39 @@ public class ShippingAddressController {
             if(areaId == 0)
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             return JsonResult.newSuccess(iMemberAddressService.getCity(areaId));
+
+        } catch (WakaException e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getMessage());
+
+        }
+    }
+
+    @RequestMapping("get_area")
+    public JsonResult<List<BaseAreaBo>> getArea(Long areaId){
+        try {
+            if(areaId == 0)
+                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+            return JsonResult.newSuccess(iMemberAddressService.getArea(areaId));
+
+        } catch (WakaException e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getMessage());
+
+        }
+    }
+
+    @RequestMapping("set_fullpath")
+    public JsonResult<String> setFullPath(){
+        try {
+
+            return JsonResult.newSuccess(iMemberAddressService.setFullPath());
 
         } catch (WakaException e) {
             log.error("", e);

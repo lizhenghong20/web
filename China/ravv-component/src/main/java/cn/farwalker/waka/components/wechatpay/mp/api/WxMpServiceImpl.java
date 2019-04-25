@@ -998,6 +998,9 @@ public class WxMpServiceImpl implements WxMpService {
 			xstream.alias("xml", WxMpPrepayIdResult.class);
 			WxMpPrepayIdResult wxMpPrepayIdResult = (WxMpPrepayIdResult) xstream
 					.fromXML(responseContent);
+			if(!wxMpPrepayIdResult.getReturn_code().equals("SUCCESS")){
+				throw new WakaException("下单失败:" + wxMpPrepayIdResult.getReturn_msg());
+			}
 			return wxMpPrepayIdResult;
 		} catch (IOException e) {
 			throw new RuntimeException(
@@ -1246,9 +1249,9 @@ public class WxMpServiceImpl implements WxMpService {
 
 	@Override
 	public WxMpRefundResult getJSSDKRefundResult(String transactionId,
-												 String outTradeNo,
-												 int totalFee,
-												 int refundFee,
+												 String outRefundNo,
+												 BigDecimal totalFee,
+												 BigDecimal refundFee,
 												 String refundDesc) {
 		String nonce_str = System.currentTimeMillis() + "";
 
@@ -1258,13 +1261,10 @@ public class WxMpServiceImpl implements WxMpService {
 		packageParams.put("nonce_str", nonce_str);
 		if (transactionId != null && !"".equals(transactionId.trim())) {
 			packageParams.put("transaction_id", transactionId);
-			packageParams.put("out_refund_no", transactionId);
-		} else if (outTradeNo != null && !"".equals(outTradeNo.trim())) {
-			packageParams.put("out_trade_no", outTradeNo);
-			packageParams.put("out_refund_no", transactionId);
+			packageParams.put("out_refund_no", outRefundNo);
 		} else {
 			throw new IllegalArgumentException(
-					"Either 'transactionId' or 'outTradeNo' must be given.");
+					"Either 'transactionId' or 'outRefundNo' must be given.");
 		}
 		packageParams.put("total_fee", totalFee + "");
 		packageParams.put("refund_fee", refundFee + "");

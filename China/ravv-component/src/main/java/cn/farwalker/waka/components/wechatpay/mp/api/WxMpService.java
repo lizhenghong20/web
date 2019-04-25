@@ -14,6 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -950,9 +951,9 @@ public interface WxMpService {
 
 
 	WxMpRefundResult getJSSDKRefundResult(String transactionId,
-                                          String outTradeNo,
-                                          int totalFee,
-                                          int refundFee,
+                                          String outRefundNo,
+                                          BigDecimal totalFee,
+										  BigDecimal refundFee,
                                           String refundDesc);
 
 	/**

@@ -194,7 +194,7 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 		this.checkOrderTotalAmt(orderBos, pageTotalAmt);
 		
 		this.createOrderLogisticsBo(orderBos,addressId,  shipmentId);
-		calcTaxOrders(orderBos);
+		//calcTaxOrders(orderBos);//不需要算税了
 		
 		OrderAllObject masterBo = orderBos.get(0);//第一个是主单
 		OrderInfoBo ob = masterBo.orderBo;
@@ -202,17 +202,6 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 		orderLogService.createLog(ob.getId(),buyerId,ob.getBuyerNick(), "订单创建", txt ,Boolean.TRUE);
 		
 		freezeInventory(orderBos);
-		
-		//创建分润记录
-		if(CollectionUtils.isNotEmpty(orderBos)) {
-			List<OrderPaymemtBo> orderPayList = new ArrayList<>();
-			for(OrderAllObject order : orderBos) {
-				if(!order.orderBo.getOrderType().equals(OrderTypeEnum.MASTER)) {
-					orderPayList.add(order.paymentBo);
-				}
-			}
-			saleProfitAllotBiz.setProfitAllot(orderPayList, buyerId);
-		}
 		
 		deleteCart(buyerId,goodsSkuVo); //删除购物车的记录
 		return masterBo.paymentBo;
@@ -573,101 +562,6 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 		allobj.orderBo = orderBo;
 				
 		return allobj;
-	}
-	
-	private void calcTaxOrders(List<OrderAllObject> orderBos){
-		OrderAllObject masterBo = orderBos.get(0);
-		int size = orderBos.size() ;
-		List<OrderPaymemtBo> paymentBos = new ArrayList<>(size);
-		
-		if(orderBos.size() == 1){ 
-			OrderPaymemtBo pb = calcTaxOrderSub(masterBo);
-			paymentBos.add(pb);
-		}
-		else{ //多订单，第一个是masterBo
-			BigDecimal tax = BigDecimal.ZERO;
-			for(int i =1 ;i < size;i++){
-				OrderAllObject o = orderBos.get(i);
-				OrderPaymemtBo pb = calcTaxOrderSub(o);
-				paymentBos.add(pb);
-				
-				tax =Tools.bigDecimal.add(tax,pb.getTaxFee());
-				//tax = tax + (int)(pb.getTaxFee().doubleValue() *100);
-			}
-			
-			//更新主单
-			OrderPaymemtBo pm = masterBo.paymentBo;
-			pm.setTaxFee(tax);
-			pm.setShouldPayTotalFee(OrderPaymemtBo.getPayTotalFee(pm));
-			
-			paymentBos.add(pm);
-		}
-		orderPaymemtBiz.updateBatchById(paymentBos);
-	}
-	private OrderPaymemtBo calcTaxOrderSub(OrderAllObject orderVo){
-		Long storehouseId =  orderVo.orderBo.getStorehouseId();
-		if(storehouseId == null){
-			throw new WakaException(orderVo.orderBo.getId() +  "订单的仓库id为空");
-		}
-		StorehouseBo storeBo = storehouseBiz.selectById(storehouseId);
-		OrderPaymemtBo paymentBo =orderVo.paymentBo;
-		BigDecimal tax = calcTax(storeBo ,orderVo.logistiscBo, paymentBo);
-		paymentBo.setTaxFee(tax);
-		
-		//计算应付金额
-		paymentBo.setShouldPayTotalFee(OrderPaymemtBo.getPayTotalFee(paymentBo));
-		return paymentBo;
-	}
-	
-	/**
-	 * 计算税费
-	 * @param pfrom 发货仓库
-	 * @param pto 收货地址
-	 * @param pbo
-	 * @return 
-	 */
-	private BigDecimal calcTax(StorehouseBo pfrom, OrderLogisticsBo pto,OrderPaymemtBo pbo){
-		if(pfrom == null || pto==null || Tools.string.isAnyEmpty(pfrom.getZip(),pto.getReceiverPostCode())){
-			throw new WakaException("仓库和收件人邮编不能为空");
-		}
-		CountryCodeEnum  toCountry = pto.getCountryCode();
-		CountryCodeEnum fromCountry = pfrom.getCountryCode();
-		if(toCountry== null || fromCountry==null){
-			throw new WakaException("发货/收货地址的国家不能为空");
-		}
-		else if(toCountry != CountryCodeEnum.USA || fromCountry!= CountryCodeEnum.USA){
-			log.debug(toCountry.name() + "/" +fromCountry.name() + "不能计算税费");
-			return BigDecimal.ZERO;
-		}
-
-		//////////////////////////////////////////////////////////////////
-		TaxUtil.Address from,to ;{
-			AreaFullVo vo = AreaFullVo.getAreaFullVo(pfrom.getAreaid(), baseAreaBiz);
-			from = new TaxUtil.Address(vo.getProvinceBo().getShortName() ,pfrom.getZip());
-			if(vo.getCityBo()!=null){
-				from.setCity(vo.getCityBo().getName());
-			}
-			from.setStreet(pfrom.getAddress());
-		}
-		{
-			AreaFullVo vo = AreaFullVo.getAreaFullVo(pto.getReceiverAreaId(), baseAreaBiz);
-			to = new TaxUtil.Address(vo.getProvinceBo().getShortName(),pto.getReceiverPostCode());
-		
-			if(vo.getCityBo()==null){
-				to.setCity(pto.getReceiverCity());
-			}
-			else{
-				to.setCity(vo.getCityBo().getName());
-			}
-			to.setStreet(pto.getReceiverDetailAddress());
-		}
-		//复制是为了不破坏原对象
-		OrderPaymemtBo vo = Tools.bean.cloneBean(pbo,new OrderPaymemtBo());
-		vo.setPostFee(null);//物流不需要收税的
-		vo.setTaxFee(null);
-		BigDecimal amount = OrderPaymemtBo.getPayTotalFee(vo);
-		BigDecimal tax =  TaxUtil.calcTax(amount,from,to);
-		return tax;
 	}
 	
 	/**
