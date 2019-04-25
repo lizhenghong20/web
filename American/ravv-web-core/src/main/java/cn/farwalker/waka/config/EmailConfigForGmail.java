@@ -135,16 +135,16 @@ public class EmailConfigForGmail {
     }
 
 
-//    @Bean
-//    public JavaMailSender mail(){
-//
-//        JavaMailSenderImpl mail = new JavaMailSenderImpl();
-//        mail.setHost(host);
-//        mail.setUsername(username);
-//        mail.setPassword(password);
-//        mail.setPort(Integer.parseInt(port));
-//        mail.setJavaMailProperties(mailProperties);
-//
-//        return mail;
-//    }
+    @Bean
+    public JavaMailSender mail(){
+
+        JavaMailSenderImpl mail = new JavaMailSenderImpl();
+        mail.setHost(host);
+        mail.setUsername(username);
+        mail.setPassword(password);
+        mail.setPort(Integer.parseInt(port));
+        mail.setJavaMailProperties(mailProperties);
+
+        return mail;
+    }
 }
