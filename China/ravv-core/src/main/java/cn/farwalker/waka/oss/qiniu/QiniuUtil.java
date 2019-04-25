@@ -195,7 +195,8 @@ public class QiniuUtil {
 		}
 
 		String uptoken = getUptoken();
-		UploadParamVo pv = new UploadParamVo(qiniuConfig, sourceTable, sourceField, sourceId);
+		UploadParamVo pv = new UploadParamVo(
+				qiniuConfig, sourceTable, sourceField, sourceId);
 		pv.setUptoken(uptoken);
 		return pv;
 		/*StringBuilder path = getUploadpath(sourceTable, sourceField, sourceId);
