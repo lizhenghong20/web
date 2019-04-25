@@ -14,11 +14,13 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.Properties;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import javax.mail.*;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
@@ -110,7 +112,7 @@ public class EmailServiceImpl implements IEmailService {
     }
 
 
-
+    @Async
     @Override
     public void sendEmailForTest(String email, String message) {
        //生成激活码
@@ -121,35 +123,66 @@ public class EmailServiceImpl implements IEmailService {
        CacheManager.cache.put(email,appendCode);
 
        log.info("进入测试email:{}",email);
-       Session session = Session.getInstance(mailProperties,null);
-       session.setDebug(true);
-       Message msg = new MimeMessage(session);
-       try {
-           msg.setFrom(new InternetAddress(mailProperties.getProperty("username")));
-           ((MimeMessage) msg).setRecipients(Message.RecipientType.TO, InternetAddress.parse(email,false));
-           msg.setSubject("验证邮件");
-           ((MimeMessage) msg).setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
-           msg.setHeader("X-Mailer", "smtpsend");
-       } catch (MessagingException e) {
-           e.printStackTrace();
-       }
-       SMTPTransport t = null;
-       try {
-           t = (SMTPTransport)session.getTransport("smtp");
-           t.connect("smtp.gmail.com",mailProperties.getProperty("username"), mailProperties.getProperty("password"));
-           t.sendMessage(msg, msg.getAllRecipients());
-       } catch (NoSuchProviderException e) {
-           e.printStackTrace();
-       } catch (MessagingException e) {
-           e.printStackTrace();
-       } finally {
-           try {
-               t.close();
-           } catch (MessagingException e) {
-               e.printStackTrace();
-           }
-       }
+//       Session session = Session.getInstance(mailProperties,null);
+//       session.setDebug(true);
+//       Message msg = new MimeMessage(session);
+//       try {
+//           msg.setFrom(new InternetAddress(mailProperties.getProperty("username")));
+//           ((MimeMessage) msg).setRecipients(Message.RecipientType.TO, InternetAddress.parse(email,false));
+//           msg.setSubject("验证邮件");
+//           ((MimeMessage) msg).setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
+//           msg.setHeader("X-Mailer", "smtpsend");
+//       } catch (MessagingException e) {
+//           e.printStackTrace();
+//       }
+//       SMTPTransport t = null;
+//       try {
+//           t = (SMTPTransport)session.getTransport("smtp");
+//           t.connect("smtp.gmail.com",mailProperties.getProperty("username"), mailProperties.getProperty("password"));
+//           t.sendMessage(msg, msg.getAllRecipients());
+//       } catch (NoSuchProviderException e) {
+//           e.printStackTrace();
+//       } catch (MessagingException e) {
+//           e.printStackTrace();
+//       } finally {
+//           try {
+//               t.close();
+//           } catch (MessagingException e) {
+//               e.printStackTrace();
+//           }
+//       }
+        sendByGmail(email, activationCode);
 
+    }
+
+    private void sendByGmail(String email, String activationCode){
+        final String username = mailProperties.getProperty("username");
+        final String password = mailProperties.getProperty("password");
+        log.info("注入账号密码:{},{}",mailProperties.getProperty("username"),mailProperties.getProperty("password"));
+        Session session = Session.getDefaultInstance(mailProperties,
+                new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(username, password);
+                    }
+                });
+        session.setDebug(true);
+        // -- Create a new message --
+        Message msg = new MimeMessage(session);
+
+
+       // -- Set the FROM and TO fields --
+        try {
+            msg.setFrom(new InternetAddress(username));
+            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
+            msg.setSubject("验证邮件");
+            msg.setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
+            msg.setSentDate(new Date());
+            Transport.send(msg);
+        } catch (AddressException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
    }
 
     @Override

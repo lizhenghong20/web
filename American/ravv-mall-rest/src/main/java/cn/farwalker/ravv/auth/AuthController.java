@@ -357,7 +357,7 @@ public class AuthController{
         try{
             if(Tools.string.isEmpty(email))
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            iEmailService.asynSendEmail(email,"邮箱认证");
+            iEmailService.sendEmailForTest(email,"邮箱认证");
             return JsonResult.newSuccess("success");
         }
         catch(WakaException e){

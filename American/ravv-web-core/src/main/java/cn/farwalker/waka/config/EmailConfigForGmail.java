@@ -19,81 +19,81 @@ public class EmailConfigForGmail {
     @Qualifier("mailProperties")
     private Properties mailProperties;
 
-
-    private String tlsEnable = "true";
-
-
-    private String tlsRequired = "true";
-
-
-    private String host = "smtp.qq.com";
-
-
-    private String port = "587";
-
-
-    private String auth = "true";
-
-
-    private String username = "756518776@qq.com";
-
-
-    private String password = "suqboifqqhwjbebh";
-
-
-    //qq密码,谷歌密码shop.LIVE,iqrfiusvhrzjbegg
-//    private static final String password = "0816.hao";
-    //qq账号,谷歌账号notification@shop.live,756518776@qq.com
-//    public static final String username = "simple.ding816@gmail.com";
-
-    @Bean
-    public Properties mailProperties(){
-        Properties props = new Properties();
-        props.setProperty("mail.smtp.starttls.enable", tlsEnable);
-        props.setProperty("mail.smtp.starttls.required", tlsRequired);
-        props.setProperty("mail.smtp.host", host);
-        props.setProperty("mail.smtp.auth", auth);
-        props.setProperty("mail.smtp.port", port);
-        props.setProperty("password",password);
-        props.setProperty("username",username);
-        return props;
-    }
-
-
-    @Bean
-    public JavaMailSender mail(){
-
-        JavaMailSenderImpl mail = new JavaMailSenderImpl();
-        mail.setHost(host);
-        mail.setUsername(username);
-        mail.setPassword(password);
-        mail.setPort(Integer.parseInt(port));
-        mail.setJavaMailProperties(mailProperties);
-
-        return mail;
-    }
+//
+//    private String tlsEnable = "true";
+//
+//
+//    private String tlsRequired = "true";
+//
+//
+//    private String host = "smtp.qq.com";
+//
+//
+//    private String port = "587";
+//
+//
+//    private String auth = "true";
+//
+//
+//    private String username = "756518776@qq.com";
+//
+//
+//    private String password = "suqboifqqhwjbebh";
+//
+//
+//    //qq密码,谷歌密码shop.LIVE,iqrfiusvhrzjbegg
+////    private static final String password = "0816.hao";
+//    //qq账号,谷歌账号notification@shop.live,756518776@qq.com
+////    public static final String username = "simple.ding816@gmail.com";
+//
+//    @Bean
+//    public Properties mailProperties(){
+//        Properties props = new Properties();
+//        props.setProperty("mail.smtp.starttls.enable", tlsEnable);
+//        props.setProperty("mail.smtp.starttls.required", tlsRequired);
+//        props.setProperty("mail.smtp.host", host);
+//        props.setProperty("mail.smtp.auth", auth);
+//        props.setProperty("mail.smtp.port", port);
+//        props.setProperty("password",password);
+//        props.setProperty("username",username);
+//        return props;
+//    }
+//
+//
+//    @Bean
+//    public JavaMailSender mail(){
+//
+//        JavaMailSenderImpl mail = new JavaMailSenderImpl();
+//        mail.setHost(host);
+//        mail.setUsername(username);
+//        mail.setPassword(password);
+//        mail.setPort(Integer.parseInt(port));
+//        mail.setJavaMailProperties(mailProperties);
+//
+//        return mail;
+//    }
 
 
 //    @Autowired
 //    private Properties mailProperties;
-//
-//    private String sslEnable = "true";
-//
-//    private String socketClass = "javax.net.ssl.SSLSocketFactory";
-//
-//    private String fallback = "false";
-//
-//    private String socketPort = "465";
-//
-//    private String host = "smtp.gmail.com";
-//
-//    private String port = "465";
-//
-//    private String auth = "true";
-//
-//    private String username = "simple.ding816@gmail.com";
-//
-//    private String password = "0816.hao";
+
+    private String sslEnable = "true";
+
+    private String socketClass = "javax.net.ssl.SSLSocketFactory";
+
+    private String fallback = "false";
+
+    private String socketPort = "465";
+
+    private String host = "smtp.gmail.com";
+
+    private String port = "465";
+
+    private String auth = "true";
+
+    private String username = "simple.ding816@gmail.com";
+
+    private String password = "0816.hao";
 
 //    mail:
 //    smtp:
@@ -111,30 +111,30 @@ public class EmailConfigForGmail {
 //    host: smtp.gmail.com
 //    auth: true
 //    port: 465
-//
-//
-//    //qq密码,谷歌密码shop.LIVE,0816.hao
-////    private static final String password = "iqrfiusvhrzjbegg";
-//    //qq账号,谷歌账号notification@shop.live,simple.ding816@gmail.com
-////    public static final String username = "756518776@qq.com";
-//
-//    @Bean
-//    public Properties mailProperties(){
-//        Properties props = new Properties();
-//        //        props.setProperty("mail.transport.protocol", "smtp");
-//        props.setProperty("mail.smtp.ssl.enable", sslEnable);
-//        props.setProperty("mail.smtp.host", host);
-//        props.setProperty("mail.smtp.auth", auth);
-//        props.setProperty("mail.smtp.port", port);
-//        props.setProperty("mail.smtp.socketFactory.port", socketPort);
-//        props.setProperty("mail.smtp.socketFactory.class", socketClass);
+
+
+    //qq密码,谷歌密码shop.LIVE,0816.hao
+//    private static final String password = "iqrfiusvhrzjbegg";
+    //qq账号,谷歌账号notification@shop.live,simple.ding816@gmail.com
+//    public static final String username = "756518776@qq.com";
+
+    @Bean
+    public Properties mailProperties(){
+        Properties props = new Properties();
+        //        props.setProperty("mail.transport.protocol", "smtp");
+        props.setProperty("mail.smtp.ssl.enable", sslEnable);
+        props.setProperty("mail.smtp.host", host);
+        props.setProperty("mail.smtp.auth", auth);
+        props.setProperty("mail.smtp.port", port);
+        props.setProperty("mail.smtp.socketFactory.port", socketPort);
+        props.setProperty("mail.smtp.socketFactory.class", socketClass);
 //        props.setProperty("mail.smtp.socketFactory.fallback", fallback);
-//        props.setProperty("password",password);
-//        props.setProperty("username",username);
-//        return props;
-//    }
-//
-//
+        props.setProperty("password",password);
+        props.setProperty("username",username);
+        return props;
+    }
+
+
 //    @Bean
 //    public JavaMailSender mail(){
 //

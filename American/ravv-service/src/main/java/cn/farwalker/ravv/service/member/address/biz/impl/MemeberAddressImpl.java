@@ -73,18 +73,7 @@ public class MemeberAddressImpl implements IMemberAddressService {
         if(addressBoList.size() != 0){
             //如果该次添加设置默认，将之前默认设置为-1
             if(memberAddressBo.getDefaultAddr() == 1){
-                EntityWrapper<MemberAddressBo> addressQuery = new EntityWrapper<>();
-                addressQuery.eq(MemberAddressBo.Key.memberId.toString(), memberId);
-                addressQuery.eq(MemberAddressBo.Key.defaultAddr.toString(), 1);
-                List<MemberAddressBo> listDefault = iMemberAddressBiz.selectList(addressQuery);
-                if(listDefault.size() != 0){
-                    for(MemberAddressBo item: listDefault){
-                        item.setDefaultAddr(-1);
-                        if(!iMemberAddressBiz.updateById(item)){
-                            throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
-                        }
-                    }
-                }
+                isFirst(memberId);
             }
             //插入该条记录
             memberAddressBo.setMemberId(memberId);
@@ -131,18 +120,7 @@ public class MemeberAddressImpl implements IMemberAddressService {
         if(addressBoList.size() > 1){
             //如果该次添加设置默认，将之前默认设置为-1
             if(memberAddressBo.getDefaultAddr() == 1){
-                EntityWrapper<MemberAddressBo> addressQuery = new EntityWrapper<>();
-                addressQuery.eq(MemberAddressBo.Key.memberId.toString(), memberId);
-                addressQuery.eq(MemberAddressBo.Key.defaultAddr.toString(), 1);
-                List<MemberAddressBo> listDefault = iMemberAddressBiz.selectList(addressQuery);
-                if(listDefault.size() != 0){
-                    for(MemberAddressBo item: listDefault){
-                        item.setDefaultAddr(-1);
-                        if(!iMemberAddressBiz.updateById(item)){
-                            throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
-                        }
-                    }
-                }
+                isFirst(memberId);
             }
             //插入该条记录
             memberAddressBo.setMemberId(memberId);
@@ -196,7 +174,22 @@ public class MemeberAddressImpl implements IMemberAddressService {
 
 
 
+    private void isFirst(Long memberId){
+        //如果该次添加设置默认，将之前默认设置为-1
+        EntityWrapper<MemberAddressBo> addressQuery = new EntityWrapper<>();
+        addressQuery.eq(MemberAddressBo.Key.memberId.toString(), memberId);
+        addressQuery.eq(MemberAddressBo.Key.defaultAddr.toString(), 1);
+        List<MemberAddressBo> listDefault = iMemberAddressBiz.selectList(addressQuery);
+        if(listDefault.size() != 0){
+            for(MemberAddressBo item: listDefault){
+                item.setDefaultAddr(-1);
+                if(!iMemberAddressBiz.updateById(item)){
+                    throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
+                }
+            }
+        }
 
+    }
 
     //判断地址是否有效
     private boolean addressIsValid(MemberAddressBo memberAddressBo){
