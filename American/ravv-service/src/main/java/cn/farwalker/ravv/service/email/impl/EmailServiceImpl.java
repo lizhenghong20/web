@@ -75,40 +75,16 @@ public class EmailServiceImpl implements IEmailService {
         }finally {
             lock.unlock();
         }
-
-        log.info("注入账号密码:{},{}",mailProperties.getProperty("username"),mailProperties.getProperty("password"));
-
-//        Session session = Session.getDefaultInstance(mailProperties, new Authenticator() {
-//                @Override
-//                protected PasswordAuthentication getPasswordAuthentication() {
-//                    return new PasswordAuthentication("notification@shop.live","shop.LIVE");
-//                }
-//            }
-//        );
-//        session.setDebug(true);
-//        MimeMessage sendMessage = new MimeMessage(session);
-//        try {
-//            sendMessage.setFrom(new InternetAddress(mailProperties.getProperty("username")));
-//            sendMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-//            sendMessage.setSubject("验证邮件");
-//            sendMessage.setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
-//            Transport transport = session.getTransport("smtp");
-//            transport.send(sendMessage);
-//            transport.close();
-//            log.info("邮件发送完成");
-//        } catch (MessagingException e) {
-//            e.printStackTrace();
-//        }
         //发送验证码
-        SimpleMailMessage sendMessage = new SimpleMailMessage();
-        sendMessage.setFrom(mailProperties.getProperty("username"));
-        sendMessage.setTo(email);
-
-        sendMessage.setSubject("验证邮件");
-        sendMessage.setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
-
-        mail.send(sendMessage);
-
+//        SimpleMailMessage sendMessage = new SimpleMailMessage();
+//        sendMessage.setFrom(mailProperties.getProperty("username"));
+//        sendMessage.setTo(email);
+//
+//        sendMessage.setSubject("验证邮件");
+//        sendMessage.setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
+//
+//        mail.send(sendMessage);
+        sendByGmail(email, activationCode);
     }
 
 
@@ -123,34 +99,7 @@ public class EmailServiceImpl implements IEmailService {
        CacheManager.cache.put(email,appendCode);
 
        log.info("进入测试email:{}",email);
-//       Session session = Session.getInstance(mailProperties,null);
-//       session.setDebug(true);
-//       Message msg = new MimeMessage(session);
-//       try {
-//           msg.setFrom(new InternetAddress(mailProperties.getProperty("username")));
-//           ((MimeMessage) msg).setRecipients(Message.RecipientType.TO, InternetAddress.parse(email,false));
-//           msg.setSubject("验证邮件");
-//           ((MimeMessage) msg).setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
-//           msg.setHeader("X-Mailer", "smtpsend");
-//       } catch (MessagingException e) {
-//           e.printStackTrace();
-//       }
-//       SMTPTransport t = null;
-//       try {
-//           t = (SMTPTransport)session.getTransport("smtp");
-//           t.connect("smtp.gmail.com",mailProperties.getProperty("username"), mailProperties.getProperty("password"));
-//           t.sendMessage(msg, msg.getAllRecipients());
-//       } catch (NoSuchProviderException e) {
-//           e.printStackTrace();
-//       } catch (MessagingException e) {
-//           e.printStackTrace();
-//       } finally {
-//           try {
-//               t.close();
-//           } catch (MessagingException e) {
-//               e.printStackTrace();
-//           }
-//       }
+
         sendByGmail(email, activationCode);
 
     }
@@ -169,13 +118,13 @@ public class EmailServiceImpl implements IEmailService {
         // -- Create a new message --
         Message msg = new MimeMessage(session);
 
-
        // -- Set the FROM and TO fields --
         try {
             msg.setFrom(new InternetAddress(username));
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
-            msg.setSubject("验证邮件");
-            msg.setText("验证码：" + activationCode + "，验证码有效时间为30分钟");
+            msg.setSubject("E-mail verification");
+            msg.setText("【Shop.live】Your Shop.live ID verification code is ：" + activationCode + "，\n" +
+                    "verification code is valid for 30 minutes");
             msg.setSentDate(new Date());
             Transport.send(msg);
         } catch (AddressException e) {
