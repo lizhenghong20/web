@@ -120,7 +120,7 @@ public class TaxUtil {
      * https://developers.taxjar.com/api/reference/#taxes
      * */
     public static String getTaxToken(){
-    	return "e6c83c3008b53cd2b2477ef68d9686ea";//后期可以改为配置
+    	return "b08fd0d7ca7573e7fc95dd3070d628c0";//后期可以改为配置
     }
 	/**
 	 * 计算税金
@@ -218,7 +218,7 @@ public class TaxUtil {
     }
     
 	public static void main(String[] args) {
-		Taxjar client = new Taxjar("e6c83c3008b53cd2b2477ef68d9686ea");
+		Taxjar client = new Taxjar("b08fd0d7ca7573e7fc95dd3070d628c0");
 
         try {
             Map<String, Object> params = new HashMap<>();

@@ -99,7 +99,7 @@ public class AuthController{
             if(Tools.string.isEmpty(name)){
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             }
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.facebookLogin(userID,name));
+            return JsonResult.newSuccess();
         }
         catch(WakaException e){
             log.error("",e);
@@ -117,7 +117,7 @@ public class AuthController{
             if(Tools.string.isEmpty(name)){
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             }
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.googleLogin(userID,name));
+            return JsonResult.newSuccess();
         }
         catch(WakaException e){
             log.error("",e);
@@ -228,48 +228,6 @@ public class AuthController{
             if(Tools.string.isEmpty(email) || Tools.string.isEmpty(activationCode))
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             return JsonResult.newSuccess(iPamMemberService.updateAndValidatorForRegistered(email, activationCode));
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    /**
-     * @description: facebook第三方登录用户判断验证码
-     * @param: email,activationCode
-     * @return json
-     * @author Mr.Simple
-     * @date 2018/11/9 17:50
-     */
-    @RequestMapping("/validator_for_facebook")
-    public JsonResult<String> validatorForFacebook(String userID,String email, String activationCode){
-
-        try{
-            if(Tools.string.isEmpty(email) || Tools.string.isEmpty(activationCode)||Tools.string.isEmpty(userID))
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.validatorForFacebook(userID, email, activationCode));
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    /**
-     * @description: google第三方登录用户判断验证码
-     * @param: email,activationCode
-     * @return json
-     * @author Mr.Simple
-     * @date 2018/11/9 17:50
-     */
-    @RequestMapping("/validator_for_google")
-    public JsonResult<String> validatorForGoogle(String userID,String email, String activationCode){
-
-        try{
-            if(Tools.string.isEmpty(email) || Tools.string.isEmpty(activationCode)||Tools.string.isEmpty(userID))
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.validatorForGoogle(userID, email, activationCode));
         }
         catch(WakaException e){
             log.error("",e);

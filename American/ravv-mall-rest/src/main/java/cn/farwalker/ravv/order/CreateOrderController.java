@@ -8,11 +8,15 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import cn.farwalker.ravv.service.shipment.biz.IShipmentBiz;
 import cn.farwalker.waka.core.HttpKit;
+import cn.farwalker.waka.core.WakaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cn.farwalker.ravv.order.dto.ConfirmOrderVo;
@@ -48,7 +52,10 @@ public class CreateOrderController{
     @Resource
     private IStorehouseBiz storeHouseBiz;
     @Resource
-    private IShipmentService shipmentServer; 
+    private IShipmentService shipmentServer;
+
+    @Autowired
+    private IShipmentBiz shipmentBiz;
     
  
     /**
@@ -57,11 +64,16 @@ public class CreateOrderController{
      * @return
      */
     @RequestMapping("/confirm")
-    public JsonResult<List<ConfirmOrderVo>> doConfirmOrder(@RequestBody List<OrderGoodsSkuVo> valueids){
+    public JsonResult<List<ConfirmOrderVo>> doConfirmOrder(@RequestBody List<OrderGoodsSkuVo> valueids,  Long addressId,
+                                @RequestParam(value = "shipmentId", required = false, defaultValue = "-1") Long shipmentId){
         if(Tools.collection.isEmpty(valueids)){
             return JsonResult.newFail("选择的属性值不能为空");
         }
-        BigDecimal total = BigDecimal.ZERO  ;
+        if(Tools.number.isEmpty(addressId)){
+            throw new WakaException("地址id为空");
+        }
+        BigDecimal total = BigDecimal.ZERO ;
+        BigDecimal tax = BigDecimal.ZERO;
         Map<Long,List<OrderGoodsVo>> storeBos = orderCreateBiz.getConfirmOrder(valueids);
         List<ConfirmOrderVo> rds = new ArrayList<>();
         for(Map.Entry<Long,List<OrderGoodsVo>> e : storeBos.entrySet()){
@@ -70,16 +82,29 @@ public class CreateOrderController{
         	OrderGoodsVo v1 = (OrderGoodsVo) goods.get(0);
         	vo.setGoodsBos(goods);
         	BigDecimal fee = null;
-        	ShipmentBo freight= orderCreateBiz.calcFreightGoods(goods);
-        	if(freight!=null){
-        		fee = freight.getFee();
-        	}
+            if(shipmentId.longValue()==-1){//默认运费
+                ShipmentBo freight = orderCreateBiz.calcFreightGoods(goods);
+                if(freight != null){
+                    fee = freight.getFee();
+                }
+            }
+            else{
+                ShipmentBo sbo = shipmentBiz.selectById(shipmentId);
+                if(sbo==null){
+                    throw new WakaException("运费id不存在:" + shipmentId);
+                }
+                fee = sbo.getFee();
+            }
         	vo.setShipping(fee == null ? BigDecimal.ZERO : fee);
             log.info("vo.getShipping:{}",vo.getShipping());
         	StorehouseBo storeBo = storeHouseBiz.selectById(e.getKey());
         	vo.setStoreHouseBo(storeBo);
         	log.info("vo.getSubtotal:{}",vo.getSubtotal());
-        	total = Tools.bigDecimal.add(total,vo.getSubtotal()); //total + (int)(vo.getSubtotal().doubleValue() *100);
+            total = Tools.bigDecimal.add(total,vo.getSubtotal()); //total + (int)(vo.getSubtotal().doubleValue() *100);
+            //根据addressId查找地址，计算税费
+            BigDecimal subTax = orderCreateBiz.calTaxByStore(addressId, e.getKey(), vo.getSubtotal());
+            log.info("subTax:{}", subTax);
+            tax = Tools.bigDecimal.add(tax, subTax);
         	rds.add(vo);
         	//设置图片
         	for(Object g :goods){
@@ -96,6 +121,7 @@ public class CreateOrderController{
         }
         JsonResult<List<ConfirmOrderVo>> result = JsonResult.newSuccess(rds);
         result.put("total", total);//"不含物流总金额/BigDecimal"
+        result.put("tax", tax);
         return result;
     }
     
