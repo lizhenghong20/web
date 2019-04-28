@@ -325,6 +325,10 @@ public class PamMemberServiceImpl implements IPamMemberService {
         String salt = resultPamMember.getSalt();
         String dbEncryptedPassword = resultPamMember.getPassword();
         long memberId = resultPamMember.getMemberId();
+        MemberBo memberBo = iMemberBiz.selectById(memberId);
+        if(memberBo == null){
+            throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR);
+        }
         if(MD5PasswordUtil.verify(password, salt, dbEncryptedPassword)) {
             final String randomKey = jwtTokenUtil.getRandomKey();
             if(memberId == 0)
@@ -336,6 +340,9 @@ public class PamMemberServiceImpl implements IPamMemberService {
             authLoginVo.setAccount(account);
             authLoginVo.setRandomKey(randomKey);
             authLoginVo.setLoginType(LoginTypeEnum.EMAIL.getLabel());
+            authLoginVo.setLastname(memberBo.getLastname());
+            authLoginVo.setFirstname(memberBo.getFirstname());
+            authLoginVo.setAvator(memberBo.getAvator());
             return authLoginVo;
         } else {
             throw new WakaException(RavvExceptionEnum.USER_ACCOUNT_OR_PASSWORD_INCORRECT);
