@@ -8,14 +8,18 @@ import cn.farwalker.ravv.service.member.basememeber.biz.IMemberBiz;
 import cn.farwalker.ravv.service.member.basememeber.biz.IMemberService;
 import cn.farwalker.ravv.service.member.basememeber.model.MemberBo;
 import cn.farwalker.ravv.service.member.basememeber.model.MemberExVo;
+import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
 import cn.farwalker.ravv.service.member.pam.member.biz.IPamMemberBiz;
 import cn.farwalker.ravv.service.member.pam.member.model.PamMemberBo;
+import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountBiz;
+import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAccountBo;
 import cn.farwalker.ravv.service.youtube.liveanchor.biz.IYoutubeLiveAnchorBiz;
 import cn.farwalker.ravv.service.youtube.liveanchor.model.YoutubeLiveAnchorBo;
 import cn.farwalker.ravv.service.youtube.service.IYoutubeService;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.oss.qiniu.QiniuUtil;
+import cn.farwalker.waka.util.Tools;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -52,25 +56,44 @@ public class MemberServiceImpl implements IMemberService {
     @Autowired
     private IYoutubeLiveAnchorBiz iYoutubeLiveAnchorBiz;
 
+    @Autowired
+    private IMemberThirdpartAccountBiz memberThirdpartAccountBiz;
+
     @Override
-    public MemberExVo getBasicInfo(Long memberId) {
+    public MemberExVo getBasicInfo(Long memberId, LoginTypeEnum loginType) {
         MemberExVo memberInfoVo = new MemberExVo();
         MemberBo memberBo = iMemberBiz.selectById(memberId);
         BeanUtils.copyProperties(memberBo, memberInfoVo);
-        if(memberInfoVo.getEmail() == null){
-            //从pam表里查出email
-            PamMemberBo pamMemberBo = iPamMemberBiz.selectOne(Condition.create()
-                    .eq(PamMemberBo.Key.memberId.toString(), memberId));
-            if(pamMemberBo == null)
-                throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR + "该用户不存在");
-            memberInfoVo.setEmail(pamMemberBo.getEmailAccount());
+        //邮箱，头像，名称等需要按照登录方式分开查询
+        if(LoginTypeEnum.GOOGLE.equals(loginType) || LoginTypeEnum.FACEBOOK.equals(loginType)){
+            //查出第三方账号信息
+            MemberThirdpartAccountBo thirdpartAccountBo = memberThirdpartAccountBiz.selectOne(Condition.create()
+                                                            .eq(MemberThirdpartAccountBo.Key.memberId.toString(), memberId));
+            memberInfoVo.setEmail(Tools.string.isEmpty(memberBo.getEmail()) ? thirdpartAccountBo.getEmail() :
+                    memberBo.getEmail());
+            memberInfoVo.setAvator(Tools.string.isEmpty(memberBo.getAvator()) ? thirdpartAccountBo.getAvator() :
+                    memberBo.getAvator());
+            memberInfoVo.setFirstname(Tools.string.isEmpty(memberBo.getFirstname()) ? thirdpartAccountBo.getFirstname() :
+                    memberBo.getFirstname());
+            memberInfoVo.setLastname(Tools.string.isEmpty(memberBo.getLastname()) ? thirdpartAccountBo.getLastname() :
+                    memberBo.getLastname());
+        } else{
+            if(memberInfoVo.getEmail() == null){
+                //从pam表里查出email
+                PamMemberBo pamMemberBo = iPamMemberBiz.selectOne(Condition.create()
+                        .eq(PamMemberBo.Key.memberId.toString(), memberId));
+                if(pamMemberBo == null)
+                    throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR + "该用户不存在");
+                memberInfoVo.setEmail(pamMemberBo.getEmailAccount());
+            }
+            if(memberInfoVo.getAvator() != null)
+                memberInfoVo.setAvator(QiniuUtil.getFullPath(memberInfoVo.getAvator()));
         }
         if(memberBo.getBirthday() == null)
             memberInfoVo.setBirth(false);
         else
             memberInfoVo.setBirth(true);
-        if(memberInfoVo.getAvator() != null)
-            memberInfoVo.setAvator(QiniuUtil.getFullPath(memberInfoVo.getAvator()));
+
         //查出收藏，关注，最近浏览量
         int favoriteCount = 0;
         favoriteCount = iGoodsFavoriteBiz.selectCount(Condition.create().eq(GoodsFavoriteBo.Key.memberId.toString(), memberId));
@@ -110,7 +133,7 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public MemberExVo addBasicInfo(Long memberId, MemberBo memberInfo) {
+    public MemberExVo addBasicInfo(Long memberId, MemberBo memberInfo, LoginTypeEnum loginType) {
         //如果有图片，拆出路径
         if(memberInfo.getAvator() != null)
             memberInfo.setAvator(QiniuUtil.getRelativePath(memberInfo.getAvator()));
@@ -122,7 +145,7 @@ public class MemberServiceImpl implements IMemberService {
         if(!iMemberBiz.update(memberInfo, queryMember)){
             throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
         }
-        return getBasicInfo(memberId);
+        return getBasicInfo(memberId, loginType);
     }
 
 }

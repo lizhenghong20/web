@@ -9,9 +9,9 @@ import cn.farwalker.waka.orm.EnumManager.IEnumJsons;
  * Created by asus on 2018/11/10.
  */
 public enum LoginTypeEnum implements IEnumJsonn{
-        EMAIL(1,"email"),
-        FACEBOOK(2,"facebook"),
-        GOOGLE(3,"google");
+        EMAIL(1,"EMAIL"),
+        FACEBOOK(2,"FACEBOOK"),
+        GOOGLE(3,"GOOGLE");
        
     private final Integer key;
     private final String label;

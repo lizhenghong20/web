@@ -12,6 +12,7 @@ import cn.farwalker.ravv.service.goodsext.viewlog.model.GoodsViewLogVo;
 import cn.farwalker.ravv.service.member.basememeber.biz.IMemberService;
 import cn.farwalker.ravv.service.member.basememeber.model.MemberBo;
 import cn.farwalker.ravv.service.member.basememeber.model.MemberExVo;
+import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
 import cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsBo;
 import cn.farwalker.ravv.service.youtube.liveanchor.model.YoutubeLiveAnchorVo;
 import cn.farwalker.ravv.service.youtube.service.IYoutubeService;
@@ -59,14 +60,14 @@ public class PersonalController {
      * @date 2019/1/7 18:11
      */
     @RequestMapping("/basic_info")
-    public JsonResult<MemberExVo> getBasicInfo(HttpSession session) {
+    public JsonResult<MemberExVo> getBasicInfo(HttpSession session, LoginTypeEnum loginType) {
         try {
             long memberId = 0;
             if(session.getAttribute("memberId") != null)
                 memberId = (Long)session.getAttribute("memberId");
             else
                 throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR);
-            return JsonResult.newSuccess(iMemberService.getBasicInfo(memberId));
+            return JsonResult.newSuccess(iMemberService.getBasicInfo(memberId, loginType ));
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());
@@ -78,7 +79,7 @@ public class PersonalController {
     }
 
     @RequestMapping("/add_person_info")
-    public JsonResult<MemberExVo> addPersonInfo(HttpSession session, MemberBo memberInfo) {
+    public JsonResult<MemberExVo> addPersonInfo(HttpSession session, MemberBo memberInfo, LoginTypeEnum loginType) {
         try {
             long memberId = 0;
             if(session.getAttribute("memberId") != null)
@@ -87,7 +88,7 @@ public class PersonalController {
                 throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR);
             if(memberInfo == null)
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iMemberService.addBasicInfo(memberId, memberInfo));
+            return JsonResult.newSuccess(iMemberService.addBasicInfo(memberId, memberInfo, loginType));
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());
