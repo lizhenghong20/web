@@ -60,15 +60,25 @@ public class MemberServiceImpl implements IMemberService {
     private IMemberThirdpartAccountBiz memberThirdpartAccountBiz;
 
     @Override
-    public MemberExVo getBasicInfo(Long memberId, LoginTypeEnum loginType) {
+    public MemberExVo getBasicInfo(Long memberId, String loginType) {
+        LoginTypeEnum type = null;
+        if(LoginTypeEnum.GOOGLE.getLabel().equals(loginType)){
+            type = LoginTypeEnum.GOOGLE;
+        } else if(LoginTypeEnum.FACEBOOK.getLabel().equals(loginType)){
+            type  = LoginTypeEnum.FACEBOOK;
+        }
         MemberExVo memberInfoVo = new MemberExVo();
         MemberBo memberBo = iMemberBiz.selectById(memberId);
         BeanUtils.copyProperties(memberBo, memberInfoVo);
         //邮箱，头像，名称等需要按照登录方式分开查询
-        if(LoginTypeEnum.GOOGLE.equals(loginType) || LoginTypeEnum.FACEBOOK.equals(loginType)){
+        if(LoginTypeEnum.GOOGLE.equals(type) || LoginTypeEnum.FACEBOOK.equals(type)){
             //查出第三方账号信息
             MemberThirdpartAccountBo thirdpartAccountBo = memberThirdpartAccountBiz.selectOne(Condition.create()
-                                                            .eq(MemberThirdpartAccountBo.Key.memberId.toString(), memberId));
+                                                    .eq(MemberThirdpartAccountBo.Key.memberId.toString(), memberId)
+                                                    .eq(MemberThirdpartAccountBo.Key.accountType.toString(), type.getKey()));
+            if(thirdpartAccountBo == null){
+                throw new WakaException(RavvExceptionEnum.SELECT_ERROR + "this account is not exits");
+            }
             memberInfoVo.setEmail(Tools.string.isEmpty(memberBo.getEmail()) ? thirdpartAccountBo.getEmail() :
                     memberBo.getEmail());
             memberInfoVo.setAvator(Tools.string.isEmpty(memberBo.getAvator()) ? thirdpartAccountBo.getAvator() :
@@ -133,7 +143,7 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public MemberExVo addBasicInfo(Long memberId, MemberBo memberInfo, LoginTypeEnum loginType) {
+    public MemberExVo addBasicInfo(Long memberId, MemberBo memberInfo, String loginType) {
         //如果有图片，拆出路径
         if(memberInfo.getAvator() != null)
             memberInfo.setAvator(QiniuUtil.getRelativePath(memberInfo.getAvator()));

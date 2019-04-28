@@ -9,7 +9,7 @@ import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
  * Created by asus on 2018/11/8.
  */
 public interface IMemberService {
-    public MemberExVo getBasicInfo(Long memberId, LoginTypeEnum loginType);
+    public MemberExVo getBasicInfo(Long memberId, String loginType);
 
-    public MemberExVo addBasicInfo(Long memberId, MemberBo memberInfo, LoginTypeEnum loginType);
+    public MemberExVo addBasicInfo(Long memberId, MemberBo memberInfo, String loginType);
 }

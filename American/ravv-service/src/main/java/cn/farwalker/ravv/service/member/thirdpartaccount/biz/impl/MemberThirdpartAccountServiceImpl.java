@@ -35,11 +35,17 @@ public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccoun
 
     @Override
     public AuthLoginVo thirdpartLogin(String firstname, String lastname, String email, String userId, String avator,
-                                       String ip, LoginTypeEnum loginType) {
+                                       String ip, String loginType) {
+        LoginTypeEnum type = null;
+        if(LoginTypeEnum.GOOGLE.getLabel().equals(loginType)){
+            type = LoginTypeEnum.GOOGLE;
+        } else if(LoginTypeEnum.FACEBOOK.getLabel().equals(loginType)){
+            type  = LoginTypeEnum.FACEBOOK;
+        }
         //先查询userId在第三方表中是否存在
         MemberThirdpartAccountBo thirdpartAccountBo = memberThirdpartAccountBiz.selectOne(Condition.create()
                                 .eq(MemberThirdpartAccountBo.Key.userId.toString(), userId)
-                                .eq(MemberThirdpartAccountBo.Key.accountType.toString(), loginType.getKey()));
+                                .eq(MemberThirdpartAccountBo.Key.accountType.toString(), type.getKey()));
         MemberBo memberBo = null;
         if(thirdpartAccountBo == null){
             //执行插入逻辑
@@ -47,17 +53,17 @@ public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccoun
             memberBo = insertMember(ip);
             //插入thirdpart表
             thirdpartAccountBo = insertThirdAccount(memberBo.getId(), firstname, lastname, email, userId, avator,
-                    loginType);
+                    type);
         } else {
             memberBo = memberBiz.selectById(thirdpartAccountBo.getMemberId());
         }
         String randomKey = jwtTokenUtil.getRandomKey();
-        String token = jwtTokenUtil.generateToken(userId, memberBo.getId(), loginType.getLabel(), randomKey,true);
+        String token = jwtTokenUtil.generateToken(userId, memberBo.getId(), type.getLabel(), randomKey,true);
         AuthLoginVo authLoginVo = new AuthLoginVo();
         authLoginVo.setToken(token);
         authLoginVo.setAccount(userId);
         authLoginVo.setRandomKey(randomKey);
-        authLoginVo.setLoginType(loginType.getLabel());
+        authLoginVo.setLoginType(type.getLabel());
         authLoginVo.setAvator(Tools.string.isEmpty(memberBo.getAvator()) ? thirdpartAccountBo.getAvator() :
                                                                             memberBo.getAvator());
         authLoginVo.setFirstname(Tools.string.isEmpty(memberBo.getFirstname()) ? thirdpartAccountBo.getFirstname() :

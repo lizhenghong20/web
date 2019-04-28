@@ -93,7 +93,7 @@ public class AuthController{
 
     @RequestMapping("/thirdpart_login")
     public JsonResult<AuthLoginVo> thirdpartLogin(HttpServletRequest request, String firstname, String lastname, String email,
-                                               String userId, String avator, LoginTypeEnum loginType){
+                                               String userId, String avator, String loginType){
         try{
             //createMethodSinge创建方法
             if(Tools.string.isEmpty(firstname) || Tools.string.isEmpty(lastname) || Tools.string.isEmpty(email) ||

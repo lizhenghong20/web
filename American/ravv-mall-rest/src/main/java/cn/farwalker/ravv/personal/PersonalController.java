@@ -60,7 +60,7 @@ public class PersonalController {
      * @date 2019/1/7 18:11
      */
     @RequestMapping("/basic_info")
-    public JsonResult<MemberExVo> getBasicInfo(HttpSession session, LoginTypeEnum loginType) {
+    public JsonResult<MemberExVo> getBasicInfo(HttpSession session, String loginType) {
         try {
             long memberId = 0;
             if(session.getAttribute("memberId") != null)
@@ -79,7 +79,7 @@ public class PersonalController {
     }
 
     @RequestMapping("/add_person_info")
-    public JsonResult<MemberExVo> addPersonInfo(HttpSession session, MemberBo memberInfo, LoginTypeEnum loginType) {
+    public JsonResult<MemberExVo> addPersonInfo(HttpSession session, MemberBo memberInfo, String loginType) {
         try {
             long memberId = 0;
             if(session.getAttribute("memberId") != null)
