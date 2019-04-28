@@ -64,7 +64,7 @@ public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccoun
                                                                             memberBo.getFirstname());
         authLoginVo.setLastname(Tools.string.isEmpty(memberBo.getLastname()) ? thirdpartAccountBo.getLastname() :
                                                                             memberBo.getLastname());
-        return null;
+        return authLoginVo;
     }
 
     private MemberBo insertMember(String ip){
