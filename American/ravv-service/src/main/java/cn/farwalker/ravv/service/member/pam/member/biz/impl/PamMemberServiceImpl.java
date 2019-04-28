@@ -76,7 +76,8 @@ public class PamMemberServiceImpl implements IPamMemberService {
      */
     @Override
     @Transactional(readOnly = false,rollbackFor = Exception.class)
-    public String createMember(String email, String password, String ip, String lastName, String firstName, String referralCode) {
+    public String createMember(String email, String password, String ip, String lastName,
+                               String firstName, String referralCode) {
 
         //查询这个账号是否之前有登录记录
         PamMemberBo condition = new PamMemberBo();

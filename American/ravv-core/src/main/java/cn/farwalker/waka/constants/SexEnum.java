@@ -1,9 +1,8 @@
 package cn.farwalker.waka.constants;
 
 import cn.farwalker.waka.orm.EnumManager.IEnumJsons;
-import com.alibaba.fastjson.annotation.JSONType;
 
-@JSONType(serializeEnumAsJavaBean = true, deserializer = SexEnumDeser.class)
+//@JSONType(serializeEnumAsJavaBean = true, deserializer = SexEnumDeser.class)
 public enum SexEnum implements IEnumJsons {
 	MALE("M", "男"), FEMALE("F", "女");//
 
