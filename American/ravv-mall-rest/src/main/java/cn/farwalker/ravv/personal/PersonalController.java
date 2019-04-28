@@ -12,6 +12,7 @@ import cn.farwalker.ravv.service.goodsext.viewlog.model.GoodsViewLogVo;
 import cn.farwalker.ravv.service.member.basememeber.biz.IMemberService;
 import cn.farwalker.ravv.service.member.basememeber.model.MemberBo;
 import cn.farwalker.ravv.service.member.basememeber.model.MemberExVo;
+import cn.farwalker.ravv.service.member.basememeber.model.MemberInfoVo;
 import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
 import cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsBo;
 import cn.farwalker.ravv.service.youtube.liveanchor.model.YoutubeLiveAnchorVo;
@@ -79,7 +80,7 @@ public class PersonalController {
     }
 
     @RequestMapping("/add_person_info")
-    public JsonResult<MemberExVo> addPersonInfo(HttpSession session, MemberBo memberInfo, String loginType) {
+    public JsonResult<MemberExVo> addPersonInfo(HttpSession session, MemberInfoVo memberInfo) {
         try {
             long memberId = 0;
             if(session.getAttribute("memberId") != null)
@@ -88,7 +89,7 @@ public class PersonalController {
                 throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR);
             if(memberInfo == null)
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iMemberService.addBasicInfo(memberId, memberInfo, loginType));
+            return JsonResult.newSuccess(iMemberService.addBasicInfo(memberId, memberInfo));
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());

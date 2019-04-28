@@ -8,6 +8,7 @@ import cn.farwalker.ravv.service.member.basememeber.biz.IMemberBiz;
 import cn.farwalker.ravv.service.member.basememeber.biz.IMemberService;
 import cn.farwalker.ravv.service.member.basememeber.model.MemberBo;
 import cn.farwalker.ravv.service.member.basememeber.model.MemberExVo;
+import cn.farwalker.ravv.service.member.basememeber.model.MemberInfoVo;
 import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
 import cn.farwalker.ravv.service.member.pam.member.biz.IPamMemberBiz;
 import cn.farwalker.ravv.service.member.pam.member.model.PamMemberBo;
@@ -143,19 +144,21 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public MemberExVo addBasicInfo(Long memberId, MemberBo memberInfo, String loginType) {
+    public MemberExVo addBasicInfo(Long memberId, MemberInfoVo memberInfo) {
+        MemberBo memberBo = new MemberBo();
+        BeanUtils.copyProperties(memberInfo, memberBo);
         //如果有图片，拆出路径
-        if(memberInfo.getAvator() != null)
-            memberInfo.setAvator(QiniuUtil.getRelativePath(memberInfo.getAvator()));
-        log.info("{}",memberInfo.getFirstname());
+        if(memberBo.getAvator() != null)
+            memberBo.setAvator(QiniuUtil.getRelativePath(memberBo.getAvator()));
+        log.info("{}",memberBo.getFirstname());
         Date now = new Date();
-        memberInfo.setGmtModified(now);
+        memberBo.setGmtModified(now);
         EntityWrapper<MemberBo> queryMember = new EntityWrapper<>();
         queryMember.eq(MemberBo.Key.id.toString(), memberId);
-        if(!iMemberBiz.update(memberInfo, queryMember)){
+        if(!iMemberBiz.update(memberBo, queryMember)){
             throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
         }
-        return getBasicInfo(memberId, loginType);
+        return getBasicInfo(memberId, memberInfo.getLoginType());
     }
 
 }
