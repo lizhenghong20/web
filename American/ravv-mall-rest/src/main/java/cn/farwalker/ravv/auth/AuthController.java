@@ -7,6 +7,7 @@ import javax.servlet.http.HttpSession;
 
 import cn.farwalker.ravv.service.email.IEmailService;
 import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
+import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountService;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import org.slf4j.Logger;
@@ -33,6 +34,9 @@ public class AuthController{
 
     @Autowired
     private IEmailService iEmailService;
+
+    @Autowired
+    private IMemberThirdpartAccountService memberThirdpartAccountService;
 
 
     /**
@@ -89,7 +93,7 @@ public class AuthController{
 
     @RequestMapping("/thirdpart_login")
     public JsonResult<AuthLoginVo> thirdpartLogin(HttpServletRequest request, String firstname, String lastname, String email,
-                                               String userId, String avator, LoginTypeEnum loginTypeEnum){
+                                               String userId, String avator, LoginTypeEnum loginType){
         try{
             //createMethodSinge创建方法
             if(Tools.string.isEmpty(firstname) || Tools.string.isEmpty(lastname) || Tools.string.isEmpty(email) ||
@@ -97,7 +101,8 @@ public class AuthController{
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             }
             String ip = request.getRemoteAddr();
-            return JsonResult.newSuccess();
+            return JsonResult.newSuccess(memberThirdpartAccountService.thirdpartLogin(firstname, lastname, email, userId,
+                                                                avator, ip, loginType));
         }
         catch(WakaException e){
             log.error("",e);
