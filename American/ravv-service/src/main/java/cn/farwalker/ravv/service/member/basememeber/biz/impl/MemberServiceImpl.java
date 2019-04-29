@@ -17,6 +17,7 @@ import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAc
 import cn.farwalker.ravv.service.youtube.liveanchor.biz.IYoutubeLiveAnchorBiz;
 import cn.farwalker.ravv.service.youtube.liveanchor.model.YoutubeLiveAnchorBo;
 import cn.farwalker.ravv.service.youtube.service.IYoutubeService;
+import cn.farwalker.waka.constants.SexEnum;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.oss.qiniu.QiniuUtil;
@@ -147,6 +148,7 @@ public class MemberServiceImpl implements IMemberService {
     public MemberExVo addBasicInfo(Long memberId, MemberInfoVo memberInfo) {
         MemberBo memberBo = new MemberBo();
         BeanUtils.copyProperties(memberInfo, memberBo);
+        memberBo.setSex(SexEnum.getEnumByKey(memberBo.getSex().getKey()));
         //如果有图片，拆出路径
         if(memberBo.getAvator() != null)
             memberBo.setAvator(QiniuUtil.getRelativePath(memberBo.getAvator()));

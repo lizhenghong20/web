@@ -17,10 +17,12 @@ import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
 import cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsBo;
 import cn.farwalker.ravv.service.youtube.liveanchor.model.YoutubeLiveAnchorVo;
 import cn.farwalker.ravv.service.youtube.service.IYoutubeService;
+import cn.farwalker.waka.constants.SexEnum;
 import cn.farwalker.waka.core.JsonResult;
 
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
+import cn.farwalker.waka.util.Tools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -80,16 +83,37 @@ public class PersonalController {
     }
 
     @RequestMapping("/add_person_info")
-    public JsonResult<MemberExVo> addPersonInfo(HttpSession session, MemberInfoVo memberInfo) {
+    public JsonResult<MemberExVo> addPersonInfo(HttpSession session,
+                                                    @RequestParam(value = "avator", required = false) String avator,
+                                                    @RequestParam(value = "firstname", required = false) String firstname,
+                                                    @RequestParam(value = "lastname", required = false) String lastname,
+                                                    @RequestParam(value = "sex", required = false) String sex,
+                                                    @RequestParam(value = "birthday", required = false) Date birthday,
+                                                    String loginType) {
         try {
             long memberId = 0;
             if(session.getAttribute("memberId") != null)
                 memberId = (Long)session.getAttribute("memberId");
             else
                 throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR);
-            if(memberInfo == null)
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iMemberService.addBasicInfo(memberId, memberInfo));
+            MemberInfoVo memberInfoVo = new MemberInfoVo();
+            if(Tools.string.isNotEmpty(avator)){
+                memberInfoVo.setAvator(avator);
+            }
+            if(Tools.string.isNotEmpty(firstname)){
+                memberInfoVo.setFirstname(firstname);
+            }
+            if(Tools.string.isNotEmpty(lastname)){
+                memberInfoVo.setLastname(lastname);
+            }
+            if(Tools.string.isNotEmpty(sex)){
+                memberInfoVo.setSex(SexEnum.getEnumByKey(sex));
+            }
+            if(birthday != null){
+                memberInfoVo.setBirthday(birthday);
+            }
+            memberInfoVo.setLoginType(loginType);
+            return JsonResult.newSuccess(iMemberService.addBasicInfo(memberId, memberInfoVo));
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());

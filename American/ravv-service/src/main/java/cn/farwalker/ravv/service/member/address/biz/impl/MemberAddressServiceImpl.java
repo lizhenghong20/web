@@ -3,6 +3,8 @@ package cn.farwalker.ravv.service.member.address.biz.impl;
 import cn.farwalker.ravv.service.base.area.biz.IBaseAreaBiz;
 import cn.farwalker.ravv.service.base.area.model.AreaFullVo;
 import cn.farwalker.ravv.service.base.area.model.BaseAreaBo;
+import cn.farwalker.ravv.service.base.config.biz.IBaseConfigBiz;
+import cn.farwalker.ravv.service.base.config.model.BaseConfigBo;
 import cn.farwalker.ravv.service.base.storehouse.biz.IStorehouseBiz;
 import cn.farwalker.ravv.service.base.storehouse.model.StorehouseBo;
 import cn.farwalker.ravv.service.member.address.biz.IMemberAddressBiz;
@@ -14,6 +16,13 @@ import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.util.Tools;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.smartystreets.api.ClientBuilder;
+import com.smartystreets.api.StaticCredentials;
+import com.smartystreets.api.exceptions.SmartyException;
+import com.smartystreets.api.us_street.Candidate;
+import com.smartystreets.api.us_street.Client;
+import com.smartystreets.api.us_street.Lookup;
+import com.smartystreets.api.us_street.MatchType;
 import com.taxjar.Taxjar;
 import com.taxjar.exception.TaxjarException;
 import com.taxjar.model.taxes.Tax;
@@ -22,7 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,20 +50,14 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
     private IBaseAreaBiz iBaseAreaBiz;
 
     @Autowired
-    private IStorehouseBiz iStorehouseBiz;
-
-    private static final String D_From_country="from_country",D_From_zip="from_zip"
-            ,D_From_state="from_state",D_From_city="from_city",D_From_street="from_street";
-    private static final String D_To_country="to_country",D_To_zip="to_zip",D_To_state="to_state"
-            ,D_To_city="to_city",D_To_street="to_street";
-    private static final String D_Amount="amount",D_Shipping="shipping";
+    private IBaseConfigBiz baseConfigBiz;
 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public String addAddress(Long memberId,MemberAddressBo memberAddressBo) throws TaxjarException{
-        //判断地址和邮编是否匹配
-        if(!addressIsValid(memberAddressBo))
-            throw new TaxjarException("邮编和地址不匹配");
+    public String addAddress(Long memberId,MemberAddressBo memberAddressBo){
+        Candidate candidate = verifyAddress(memberAddressBo);
+        String zipCode = candidate.getComponents().getZipCode();
+        memberAddressBo.setZip(zipCode);
         long areaId = memberAddressBo.getAreaId();
         if(areaId == 0)
             throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
@@ -94,9 +99,10 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public String updateAddress(Long memberId,MemberAddressBo memberAddressBo) throws TaxjarException {
-        if(!addressIsValid(memberAddressBo))
-            throw new TaxjarException("邮编和地址不匹配");
+    public String updateAddress(Long memberId,MemberAddressBo memberAddressBo){
+        Candidate candidate = verifyAddress(memberAddressBo);
+        String zipCode = candidate.getComponents().getZipCode();
+        memberAddressBo.setZip(zipCode);
         long areaId = memberAddressBo.getAreaId();
         if(areaId == 0)
             throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
@@ -191,75 +197,53 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
 
     }
 
-    //判断地址是否有效
-    private boolean addressIsValid(MemberAddressBo memberAddressBo){
-        Long storehouseId =  1071337415509893121L;
-        StorehouseBo pfrom = iStorehouseBiz.selectById(storehouseId);
-        TaxUtil.Address from,to ;{
-            AreaFullVo vo = AreaFullVo.getAreaFullVo(pfrom.getAreaid(), iBaseAreaBiz);
-            from = new TaxUtil.Address(vo.getProvinceBo().getShortName() ,pfrom.getZip());
-            if(vo.getCityBo()!=null){
-                from.setCity(vo.getCityBo().getName());
-            }
-            from.setStreet(pfrom.getAddress());
+    private Candidate verifyAddress(MemberAddressBo addressBo){
+        //查出authId,authToken
+        BaseConfigBo addressConfig = baseConfigBiz.selectOne(Condition.create()
+                                                .eq(BaseConfigBo.Key.configType.toString(), "OUTOGENERATED"));
+        //根据当前areaId查出城市名称
+        BaseAreaBo city = iBaseAreaBiz.selectById(addressBo.getAreaId());
+        if(city == null || city.getPid() == 0){
+            throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
         }
-        {
-            AreaFullVo vo = AreaFullVo.getAreaFullVo(memberAddressBo.getAreaId(), iBaseAreaBiz);
-            to = new TaxUtil.Address(vo.getProvinceBo().getShortName(), memberAddressBo.getZip());
-            if(vo.getCityBo() != null){
-                to.setCity(vo.getCityBo().getName());
-            }
-            to.setStreet(memberAddressBo.getAddress());
+        String cityName = city.getName();
+        //根据城市的父id查出州短名
+        BaseAreaBo state = iBaseAreaBiz.selectById(city.getPid());
+        if(state == null){
+            throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
         }
-        BigDecimal total = new BigDecimal(100.00);
-        Tax tax = getTax(total, from, to);
+        String stateName = state.getShortName();
+        //解析出街道1，街道2
+        String[] allStreets = addressBo.getAddress().split(",");
+        Lookup lookup = new Lookup();
+        lookup.setInputId("24601");
+        lookup.setStreet(allStreets[0]);
+        lookup.setStreet2(allStreets[1]);
+        lookup.setState(stateName);
+        lookup.setCity(cityName);
+        lookup.setMaxCandidates(3);
+        lookup.setMatch(MatchType.INVALID);
 
-        return true;
-    }
-
-    public static Tax getTax(BigDecimal amount, TaxUtil.Address from, TaxUtil.Address to){
+        StaticCredentials credentials = new StaticCredentials(addressConfig.getAuthId(), addressConfig.getAuthToken());
+        Client client = new ClientBuilder(credentials)
+                .buildUsStreetApiClient();
         try {
-            Map<String, Object> params = new HashMap<>();
-            params.put(D_From_country, isRequired(from.getCountry(),"国家"));
-            params.put(D_From_zip, isRequired(from.getZip(),"邮编"));
-            params.put(D_From_state,isRequired(from.getState(),"州"));
-            params.put(D_From_city, isNull(from.getCity(),""));
-            params.put(D_From_street, isNull(from.getStreet(),""));
-
-            params.put(D_To_country,isRequired(to.getCountry(),"国家"));
-            params.put(D_To_zip, isRequired(to.getZip(),"邮编"));
-            params.put(D_To_state,isRequired(to.getState(),"州"));
-            params.put(D_To_city, isNull(to.getCity(),""));
-            params.put(D_To_street,isNull( to.getStreet(),""));
-
-            String amounts = (amount == null ? "0":amount.toString());
-            params.put(D_Amount, amounts);
-            //String postFees =(postFee == null ? "0":postFee.toString());
-            params.put(D_Shipping, "0");
-
-            Taxjar client = new Taxjar("b08fd0d7ca7573e7fc95dd3070d628c0");
-            TaxResponse res = client.taxForOrder(params);
-            if(res == null){
-                throw new WakaException("计税接口出错,返回null:");
-            }
-            //Float fx = res.tax.getAmountToCollect();
-            //return new BigDecimal(fx);
-            return res.tax ;//Tools.json.toJson(res.tax);
-
-        } catch (TaxjarException e) {
-            throw new WakaException("地址邮编不匹配，请重新输入",e);
+            client.send(lookup);
         }
-    }
-
-
-    private static String isNull(String s,String def){
-        return (Tools.string.isEmpty(s) ? def: s);
-    }
-    private static String isRequired(String s,String field){
-        if(Tools.string.isEmpty(s)){
-            throw new WakaException(field + "为空,不能计算税费");
+        catch (SmartyException ex) {
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
         }
-        return s;
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        ArrayList<Candidate> results = lookup.getResult();
+        if (results.isEmpty()) {
+            throw new WakaException(RavvExceptionEnum.ADDRESS_IS_INVAILD);
+        }
+
+        Candidate firstCandidate = results.get(0);
+        return firstCandidate;
     }
 
 

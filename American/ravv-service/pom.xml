@@ -37,6 +37,11 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.smartystreets.api</groupId>
+			<artifactId>smartystreets-java-sdk</artifactId>
+		</dependency>
+
 
 		<!--税率taxjar对接
 			https://blog.csdn.net/zxl646801924/article/details/80984949

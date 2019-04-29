@@ -4,8 +4,12 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import cn.farwalker.ravv.service.base.config.biz.IBaseConfigBiz;
+import cn.farwalker.ravv.service.base.config.model.BaseConfigBo;
 import cn.farwalker.ravv.service.member.pam.member.dao.IPamMemberDao;
 import cn.farwalker.ravv.service.member.pam.member.model.TestParam;
 import cn.farwalker.ravv.service.member.pam.member.model.TestVo;
@@ -64,7 +68,10 @@ public class PamMemberServiceImpl implements IPamMemberService {
     @Autowired
     private DefaultKaptcha defaultKaptcha;
 
-    private static final String avator = "http://ravv.qiniu.farwalker.cn/task_cutover_attachment/attachment/191M91702XCA0000/app.jpg";
+    @Autowired
+    private IBaseConfigBiz baseConfigBiz;
+
+    private static final String avator = "task_cutover_attachment/attachment/191M91702XCA0000/app.jpg";
 
 
     /**
@@ -342,7 +349,7 @@ public class PamMemberServiceImpl implements IPamMemberService {
             authLoginVo.setLoginType(LoginTypeEnum.EMAIL.getLabel());
             authLoginVo.setLastname(memberBo.getLastname());
             authLoginVo.setFirstname(memberBo.getFirstname());
-            authLoginVo.setAvator(memberBo.getAvator());
+            authLoginVo.setAvator(QiniuUtil.getFullPath(memberBo.getAvator()));
             return authLoginVo;
         } else {
             throw new WakaException(RavvExceptionEnum.USER_ACCOUNT_OR_PASSWORD_INCORRECT);
@@ -408,12 +415,26 @@ public class PamMemberServiceImpl implements IPamMemberService {
 
     @Override
     public String testParamMap() {
-        TestParam t1 = new TestParam();
-        long memberId1 = Long.valueOf("1062590086136315905").longValue();
-        t1.setMemberId(memberId1);
-        t1.setPoint(2);
-        if(Tools.number.isEmpty(iPamMemberDao.updatePointById(t1)))
-            throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
+        Date current = new Date();
+        BaseConfigBo configBo = new BaseConfigBo();
+        configBo.setAuthId("28ef75d2-82d3-cee6-2408-16e62bbc6641");
+        configBo.setAuthToken("YI7ErevsA97QQTdwt8FB");
+        configBo.setConfigType("GENERATED");
+        configBo.setGmtCreate(current);
+        configBo.setGmtModified(current);
+
+        BaseConfigBo baseConfigBo = new BaseConfigBo();
+        baseConfigBo.setAuthId("bd24ae20-0bf9-25e1-967d-6767172f3b0b");
+        baseConfigBo.setAuthToken("4UchK7JQZ7kFCIFAY73N");
+        baseConfigBo.setConfigType("OUTOGENERATED");
+        baseConfigBo.setGmtCreate(current);
+        baseConfigBo.setGmtModified(current);
+        List<BaseConfigBo> list = new ArrayList<>();
+        list.add(configBo);
+        list.add(baseConfigBo);
+        if(!baseConfigBiz.insertBatch(list)){
+            throw new WakaException(RavvExceptionEnum.INSERT_ERROR);
+        }
         return "success";
     }
 

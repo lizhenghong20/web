@@ -57,6 +57,7 @@
         <paypal.version>1.4.2</paypal.version>
         <project.youtube.version>v3-rev182-1.22.0</project.youtube.version>
         <project.youtube.api-client.version>1.27.0</project.youtube.api-client.version>
+        <smartystreets.api.version>3.3.6</smartystreets.api.version>
         <!-- spring1.5.9 默认依赖2.9.0 其他模块可以直接使用 <jedis.version>2.9.0</jedis.version> -->
     </properties>
 
@@ -144,6 +145,13 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql-connector-java.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>com.smartystreets.api</groupId>
+                <artifactId>smartystreets-java-sdk</artifactId>
+                <version>${smartystreets.api.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.baomidou</groupId>
                 <artifactId>mybatis-plus</artifactId>

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.farwalker.ravv.service.order.paymemt.model.OrderPaymemtBo;
+import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.util.Tools;
 
@@ -14,7 +15,9 @@ import com.taxjar.Taxjar;
 import com.taxjar.exception.TaxjarException;
 import com.taxjar.model.taxes.Tax;
 import com.taxjar.model.taxes.TaxResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class TaxUtil {
 
 
@@ -203,7 +206,9 @@ public class TaxUtil {
             return res.tax ;//Tools.json.toJson(res.tax);
             
         } catch (TaxjarException e) {
-            throw new WakaException("计算税金",e);
+    		e.printStackTrace();
+    		log.info("===============税金:{}",e);
+            throw new WakaException(RavvExceptionEnum.ADDRESS_IS_INVAILD);
         }
     }
     
