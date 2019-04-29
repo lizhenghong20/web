@@ -48,7 +48,7 @@ public class AuthController{
      */
     @RequestMapping("/register")
     public JsonResult<String> register(HttpServletRequest request, String email, String password, String lastName, String firstName,
-                                       @RequestParam(value = "referralCode", required = false, defaultValue = "abc*def*") String referralCode){
+                          @RequestParam(value = "referralCode", required = false, defaultValue = "abc*def*") String referralCode){
 
 
         try{
@@ -92,7 +92,8 @@ public class AuthController{
     }
 
     @RequestMapping("/thirdpart_login")
-    public JsonResult<AuthLoginVo> thirdpartLogin(HttpServletRequest request, String firstname, String lastname, String email,
+    public JsonResult<AuthLoginVo> thirdpartLogin(HttpServletRequest request, String firstname, String lastname,
+                     @RequestParam(value = "email", required = false)String email,
                                                String userId, String avator, String loginType){
         try{
             //createMethodSinge创建方法

@@ -11,6 +11,7 @@ import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAc
 import cn.farwalker.waka.auth.util.JwtTokenUtil;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
+import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 import cn.farwalker.waka.util.Tools;
 import com.baomidou.mybatisplus.mapper.Condition;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +66,7 @@ public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccoun
         authLoginVo.setRandomKey(randomKey);
         authLoginVo.setLoginType(type.getLabel());
         authLoginVo.setAvator(Tools.string.isEmpty(memberBo.getAvator()) ? thirdpartAccountBo.getAvator() :
-                                                                            memberBo.getAvator());
+                                                                            QiniuUtil.getFullPath(memberBo.getAvator()));
         authLoginVo.setFirstname(Tools.string.isEmpty(memberBo.getFirstname()) ? thirdpartAccountBo.getFirstname() :
                                                                             memberBo.getFirstname());
         authLoginVo.setLastname(Tools.string.isEmpty(memberBo.getLastname()) ? thirdpartAccountBo.getLastname() :
@@ -102,7 +103,8 @@ public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccoun
         memberThirdpartAccountBo.setLastname(lastname);
         memberThirdpartAccountBo.setAccountType(loginTypeEnum.getKey());
         memberThirdpartAccountBo.setAvator(avator);
-        memberThirdpartAccountBo.setEmail(email);
+        if(Tools.string.isNotEmpty(email))
+            memberThirdpartAccountBo.setEmail(email);
         memberThirdpartAccountBo.setUserId(userId);
         memberThirdpartAccountBo.setGmtCreate(current);
         memberThirdpartAccountBo.setGmtModified(current);
