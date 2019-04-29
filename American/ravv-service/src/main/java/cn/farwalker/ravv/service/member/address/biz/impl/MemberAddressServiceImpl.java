@@ -216,13 +216,13 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
         //解析出街道1，街道2
         String[] allStreets = addressBo.getAddress().split(",");
         Lookup lookup = new Lookup();
-        lookup.setInputId("24601");
+//        lookup.setInputId("24601");
         lookup.setStreet(allStreets[0]);
         lookup.setStreet2(allStreets[1]);
         lookup.setState(stateName);
         lookup.setCity(cityName);
-        lookup.setMaxCandidates(3);
-        lookup.setMatch(MatchType.INVALID);
+        lookup.setMaxCandidates(1);
+        lookup.setMatch(MatchType.STRICT);
 
         StaticCredentials credentials = new StaticCredentials(addressConfig.getAuthId(), addressConfig.getAuthToken());
         Client client = new ClientBuilder(credentials)
