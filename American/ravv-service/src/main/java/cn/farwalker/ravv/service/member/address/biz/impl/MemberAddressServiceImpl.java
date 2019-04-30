@@ -60,7 +60,7 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
         memberAddressBo.setZip(zipCode);
         long areaId = memberAddressBo.getAreaId();
         if(areaId == 0)
-            throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+            throw new WakaException(RavvExceptionEnum.ADDRESS_IS_INVAILD);
         BaseAreaBo queryBaseArea =  iBaseAreaBiz.selectById(areaId);
         if(queryBaseArea == null||queryBaseArea.getPid()==0)
             throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
@@ -105,7 +105,7 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
         memberAddressBo.setZip(zipCode);
         long areaId = memberAddressBo.getAreaId();
         if(areaId == 0)
-            throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+            throw new WakaException(RavvExceptionEnum.ADDRESS_IS_INVAILD);
         BaseAreaBo queryBaseArea =  iBaseAreaBiz.selectById(areaId);
         if(queryBaseArea == null||queryBaseArea.getPid()==0)
             throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
@@ -218,7 +218,9 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
         Lookup lookup = new Lookup();
 //        lookup.setInputId("24601");
         lookup.setStreet(allStreets[0]);
-        lookup.setStreet2(allStreets[1]);
+        if(allStreets.length == 2){
+            lookup.setStreet2(allStreets[1]);
+        }
         lookup.setState(stateName);
         lookup.setCity(cityName);
         lookup.setMaxCandidates(1);
