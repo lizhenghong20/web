@@ -93,11 +93,11 @@ public class AuthController{
 
     @RequestMapping("/thirdpart_login")
     public JsonResult<AuthLoginVo> thirdpartLogin(HttpServletRequest request, String firstname, String lastname,
-                     @RequestParam(value = "email", required = false)String email,
-                                               String userId, String avator, String loginType){
+                                                @RequestParam(value = "email", required = false)String email,
+                                                String userId, String avator, String loginType){
         try{
             //createMethodSinge创建方法
-            if(Tools.string.isEmpty(firstname) || Tools.string.isEmpty(lastname) || Tools.string.isEmpty(email) ||
+            if(Tools.string.isEmpty(firstname) || Tools.string.isEmpty(lastname) ||
                     Tools.string.isEmpty(userId) || Tools.string.isEmpty(avator)){
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             }
