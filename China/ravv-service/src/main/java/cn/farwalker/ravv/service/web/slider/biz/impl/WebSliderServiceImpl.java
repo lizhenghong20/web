@@ -25,6 +25,7 @@ public class WebSliderServiceImpl implements IWebSliderService {
     @Autowired
     private IWebSliderBiz iWebSliderBiz;
 
+    @Override
     public List<WebSliderVo> getSliderImage(String pageName){
         Wrapper<WebSliderBo> wrapper = new EntityWrapper<>();
         wrapper.eq(WebSliderBo.Key.status.toString(),true);
@@ -33,14 +34,15 @@ public class WebSliderServiceImpl implements IWebSliderService {
         list.add(WebSliderBo.Key.sequence.toString());
         wrapper.orderDesc(list);
         List<WebSliderBo> boList = iWebSliderBiz.selectList(wrapper);
-        if(boList == null)
+        if(boList == null){
             throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
+        }
 
         List<WebSliderVo> voList = new ArrayList<>();
         for(WebSliderBo item : boList){
             WebSliderVo  newVo = new WebSliderVo();
-            newVo.setPicture(QiniuUtil.getFullPath(item.getPicture()));
             Tools.bean.copyProperties(item,newVo);
+            newVo.setPicture(QiniuUtil.getFullPath(item.getPicture()));
             voList.add(newVo);
         }
         return voList;
