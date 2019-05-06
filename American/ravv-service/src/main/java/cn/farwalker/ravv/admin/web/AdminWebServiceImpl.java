@@ -407,6 +407,7 @@ public class AdminWebServiceImpl implements  AdminWebService {
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public Boolean createWebSlider(WebSliderBo vo) {
+        vo.setPicture(QiniuUtil.getRelativePath(vo.getPicture()));
         // 判断当前页面类型对应的生效图片张数 （最多只能显示5条轮播）
         WebSliderBo query = new WebSliderBo();
         query.setPageName(vo.getPageName());
