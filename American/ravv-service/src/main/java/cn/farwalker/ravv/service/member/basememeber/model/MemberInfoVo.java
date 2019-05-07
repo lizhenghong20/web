@@ -5,4 +5,5 @@ import lombok.Data;
 @Data
 public class MemberInfoVo extends MemberBo {
     boolean isBirth;
+    String loginType;
 }

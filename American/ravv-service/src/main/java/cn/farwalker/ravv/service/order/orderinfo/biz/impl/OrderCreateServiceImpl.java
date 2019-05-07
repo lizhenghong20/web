@@ -13,6 +13,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.ravv.service.quartz.JobSchedulerFactory;
 import cn.farwalker.ravv.service.quartz.UpdateOrderUnfreezeTaskJob;
@@ -376,7 +377,8 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 	 * @param buyerMessage
 	 * @return 第一个是主单
 	 */
-	private List<OrderAllObject> createOrders(BigDecimal totalAmt,Long shipmentId, List<SkuPriceInVo> skuVos,Long buyerId,String buyerMessage){
+	private List<OrderAllObject> createOrders(BigDecimal totalAmt,Long shipmentId, List<SkuPriceInVo> skuVos,
+											  Long buyerId,String buyerMessage){
 		Map<Long,List<SkuPriceInVo>> storeOrder = doDecompose(skuVos);
 		final int storeCount  = storeOrder.size();
 		if(storeCount ==1){ //不需分单
@@ -505,8 +507,8 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 		return rd;
 	}
 	
-	private OrderAllObject createOrderChildren(BigDecimal amt,Long buyerId,String buyerMessage 
-			,Long orderMasterId,List<SkuPriceInVo> goodsBos,Long shipmentId){
+	private OrderAllObject createOrderChildren(BigDecimal amt,Long buyerId,String buyerMessage,
+											   Long orderMasterId,List<SkuPriceInVo> goodsBos,Long shipmentId){
 		OrderInfoBo orderBo = new OrderInfoBo();
 		orderBo.setPid( orderMasterId);
 		if(Tools.number.nullIf(orderMasterId, 0) ==0){
@@ -989,7 +991,36 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 		log.info("===============查找运费");
 		return rs;
 	}
-	
+
+	@Override
+	public BigDecimal calTaxByStore(Long addressId, Long storeId, BigDecimal subTotal) {
+		//查出用户地址和仓库地址，subtotal
+		MemberAddressBo memberAddressBo = memberAddressBiz.selectById(addressId);
+		if(memberAddressBo == null){
+			throw new WakaException(RavvExceptionEnum.SELECT_ERROR + "用户地址查找失败");
+		}
+		StorehouseBo storehouseBo = storehouseBiz.selectById(storeId);
+		if(storehouseBo == null){
+			throw new WakaException(RavvExceptionEnum.SELECT_ERROR + "仓库地址添查找失败");
+		}
+		TaxUtil.Address from,to ;{
+			AreaFullVo vo = AreaFullVo.getAreaFullVo(storehouseBo.getAreaid(), baseAreaBiz);
+			from = new TaxUtil.Address(vo.getProvinceBo().getShortName() ,storehouseBo.getZip());
+			if(vo.getCityBo()!=null){
+				from.setCity(vo.getCityBo().getName());
+			}
+			from.setStreet(storehouseBo.getAddress());
+		}
+		{
+			AreaFullVo vo = AreaFullVo.getAreaFullVo(memberAddressBo.getAreaId(), baseAreaBiz);
+			to = new TaxUtil.Address(vo.getProvinceBo().getShortName(),memberAddressBo.getZip());
+			to.setCity(vo.getCityBo().getName());
+			to.setStreet(memberAddressBo.getAddress());
+		}
+		BigDecimal tax =  TaxUtil.calcTax(subTotal, from, to);
+		return tax;
+	}
+
 	/**
 	 * 按商品分类返回每个商品的运费
 	 * @param orderGoodBos

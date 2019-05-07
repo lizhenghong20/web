@@ -44,6 +44,8 @@ public interface IOrderCreateService {
 	 * @return
 	 */
 	public ShipmentBo calcFreightGoods(List<OrderGoodsBo> goodBos);
+
+	public BigDecimal calTaxByStore(Long addressId, Long storeId, BigDecimal subTotal);
 	
 	/**创建订单号*/
 	public String getOrderNo();

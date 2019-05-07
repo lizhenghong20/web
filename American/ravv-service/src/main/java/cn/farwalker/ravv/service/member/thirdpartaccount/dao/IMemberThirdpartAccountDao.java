@@ -1,6 +1,6 @@
 package cn.farwalker.ravv.service.member.thirdpartaccount.dao;
-import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAccountBo;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAccountBo;
 
 /**
  * 会员第三方账号绑定<br/>

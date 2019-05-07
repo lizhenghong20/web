@@ -1,8 +1,9 @@
 package cn.farwalker.ravv.service.member.thirdpartaccount.biz.impl;
-
-import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAccountBo;
+import java.util.List;
+import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAccountBo;
 import cn.farwalker.ravv.service.member.thirdpartaccount.dao.IMemberThirdpartAccountDao;
 import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountBiz;
 

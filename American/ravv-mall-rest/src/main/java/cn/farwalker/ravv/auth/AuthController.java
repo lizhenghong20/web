@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import cn.farwalker.ravv.service.email.IEmailService;
+import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
 import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountService;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
@@ -35,7 +36,8 @@ public class AuthController{
     private IEmailService iEmailService;
 
     @Autowired
-    private IMemberThirdpartAccountService iMemberThirdpartAccountService;
+    private IMemberThirdpartAccountService memberThirdpartAccountService;
+
 
     /**
      * @description: 注册
@@ -46,7 +48,7 @@ public class AuthController{
      */
     @RequestMapping("/register")
     public JsonResult<String> register(HttpServletRequest request, String email, String password, String lastName, String firstName,
-                                       @RequestParam(value = "referralCode", required = false, defaultValue = "abc*def*") String referralCode){
+                          @RequestParam(value = "referralCode", required = false, defaultValue = "abc*def*") String referralCode){
 
 
         try{
@@ -89,35 +91,19 @@ public class AuthController{
         }
     }
 
-    @RequestMapping("/facebook_login")
-    public JsonResult<AuthLoginVo> facebookLogin(String userID,String name){
+    @RequestMapping("/thirdpart_login")
+    public JsonResult<AuthLoginVo> thirdpartLogin(HttpServletRequest request, String firstname, String lastname,
+                                                @RequestParam(value = "email", required = false)String email,
+                                                String userId, String avator, String loginType){
         try{
             //createMethodSinge创建方法
-            if(Tools.string.isEmpty(userID)){
+            if(Tools.string.isEmpty(firstname) || Tools.string.isEmpty(lastname) ||
+                    Tools.string.isEmpty(userId) || Tools.string.isEmpty(avator)){
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             }
-            if(Tools.string.isEmpty(name)){
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            }
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.facebookLogin(userID,name));
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    @RequestMapping("/google_login")
-    public JsonResult<AuthLoginVo> googleLogin(String userID,String name){
-        try{
-            //createMethodSinge创建方法
-            if(Tools.string.isEmpty(userID)){
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            }
-            if(Tools.string.isEmpty(name)){
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            }
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.googleLogin(userID,name));
+            String ip = request.getRemoteAddr();
+            return JsonResult.newSuccess(memberThirdpartAccountService.thirdpartLogin(firstname, lastname, email, userId,
+                                                                avator, ip, loginType));
         }
         catch(WakaException e){
             log.error("",e);
@@ -236,48 +222,6 @@ public class AuthController{
     }
 
     /**
-     * @description: facebook第三方登录用户判断验证码
-     * @param: email,activationCode
-     * @return json
-     * @author Mr.Simple
-     * @date 2018/11/9 17:50
-     */
-    @RequestMapping("/validator_for_facebook")
-    public JsonResult<String> validatorForFacebook(String userID,String email, String activationCode){
-
-        try{
-            if(Tools.string.isEmpty(email) || Tools.string.isEmpty(activationCode)||Tools.string.isEmpty(userID))
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.validatorForFacebook(userID, email, activationCode));
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    /**
-     * @description: google第三方登录用户判断验证码
-     * @param: email,activationCode
-     * @return json
-     * @author Mr.Simple
-     * @date 2018/11/9 17:50
-     */
-    @RequestMapping("/validator_for_google")
-    public JsonResult<String> validatorForGoogle(String userID,String email, String activationCode){
-
-        try{
-            if(Tools.string.isEmpty(email) || Tools.string.isEmpty(activationCode)||Tools.string.isEmpty(userID))
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            return JsonResult.newSuccess(iMemberThirdpartAccountService.validatorForGoogle(userID, email, activationCode));
-        }
-        catch(WakaException e){
-            log.error("",e);
-            return JsonResult.newFail(e.getCode(),e.getMessage());
-        }
-    }
-
-    /**
      * @description: 忘记密码判断验证码
      * @param: email,activationCode
      * @return Json
@@ -357,7 +301,7 @@ public class AuthController{
         try{
             if(Tools.string.isEmpty(email))
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            iEmailService.asynSendEmail(email,"邮箱认证");
+            iEmailService.sendEmailForTest(email,"邮箱认证");
             return JsonResult.newSuccess("success");
         }
         catch(WakaException e){

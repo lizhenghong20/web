@@ -14,4 +14,7 @@ public class AuthLoginVo implements Serializable{
     private String account;
     private String loginType;
     private String randomKey;
+    private String firstname;
+    private String lastname;
+    private String avator;
 }

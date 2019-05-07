@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.farwalker.ravv.service.order.paymemt.model.OrderPaymemtBo;
+import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.util.Tools;
 
@@ -14,7 +15,9 @@ import com.taxjar.Taxjar;
 import com.taxjar.exception.TaxjarException;
 import com.taxjar.model.taxes.Tax;
 import com.taxjar.model.taxes.TaxResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class TaxUtil {
 
 
@@ -120,7 +123,7 @@ public class TaxUtil {
      * https://developers.taxjar.com/api/reference/#taxes
      * */
     public static String getTaxToken(){
-    	return "e6c83c3008b53cd2b2477ef68d9686ea";//后期可以改为配置
+    	return "b08fd0d7ca7573e7fc95dd3070d628c0";//后期可以改为配置
     }
 	/**
 	 * 计算税金
@@ -203,7 +206,9 @@ public class TaxUtil {
             return res.tax ;//Tools.json.toJson(res.tax);
             
         } catch (TaxjarException e) {
-            throw new WakaException("计算税金",e);
+    		e.printStackTrace();
+    		log.info("===============税金:{}",e);
+            throw new WakaException(RavvExceptionEnum.ADDRESS_IS_INVAILD);
         }
     }
     
@@ -218,7 +223,7 @@ public class TaxUtil {
     }
     
 	public static void main(String[] args) {
-		Taxjar client = new Taxjar("e6c83c3008b53cd2b2477ef68d9686ea");
+		Taxjar client = new Taxjar("b08fd0d7ca7573e7fc95dd3070d628c0");
 
         try {
             Map<String, Object> params = new HashMap<>();

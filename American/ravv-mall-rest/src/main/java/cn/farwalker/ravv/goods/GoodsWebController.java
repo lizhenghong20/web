@@ -202,10 +202,10 @@ public class GoodsWebController {
      */
     @RequestMapping("/comment_with_filter")
     public JsonResult<List<GoodsCommentDetailVo>> getCommentWithFilter(Long goodsId,
-                                                                       @RequestParam(value = "goodsPoint", required = false, defaultValue = "0") int goodsPoint,
-                                                                       @RequestParam(value = "picture", required = false, defaultValue = "false") boolean picture,
-                                                                       @RequestParam(value = "addtion", required = false, defaultValue = "false") boolean addtion,
-                                                                       int currentPage, int pageSize  ){
+                          @RequestParam(value = "goodsPoint", required = false, defaultValue = "0") int goodsPoint,
+                          @RequestParam(value = "picture", required = false, defaultValue = "false") boolean picture,
+                          @RequestParam(value = "addtion", required = false, defaultValue = "false") boolean addtion,
+                          int currentPage, int pageSize  ){
         try{
             currentPage++;
             if(goodsId == 0)
