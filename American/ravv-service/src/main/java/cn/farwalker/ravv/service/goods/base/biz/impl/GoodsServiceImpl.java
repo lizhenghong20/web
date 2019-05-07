@@ -427,7 +427,7 @@ public class GoodsServiceImpl implements IGoodsService{
 
 
 	/**
-	 * 在多个限时购列表中选取所有个对于未来时间生效的（即当前时间小于其冻结时间）的限时购条目
+	 * 在多个限时购列表中选取所有对于未来时间生效的（即当前时间小于其冻结时间）的限时购条目
 	 * 如果符合上述条件的限时购有多个，则抛出异常
 	 * @param flashSaleList
 	 * @return

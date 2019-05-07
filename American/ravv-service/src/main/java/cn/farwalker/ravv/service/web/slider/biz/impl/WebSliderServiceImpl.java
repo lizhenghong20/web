@@ -37,7 +37,7 @@ public class WebSliderServiceImpl implements IWebSliderService {
         if(boList == null){
             throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
         }
-        
+
         List<WebSliderVo> voList = new ArrayList<>();
         for(WebSliderBo item : boList){
             WebSliderVo  newVo = new WebSliderVo();
