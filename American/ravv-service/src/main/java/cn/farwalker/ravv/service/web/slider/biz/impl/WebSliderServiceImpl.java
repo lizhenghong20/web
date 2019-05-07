@@ -39,7 +39,7 @@ public class WebSliderServiceImpl implements IWebSliderService {
         List<WebSliderVo> voList = new ArrayList<>();
         for(WebSliderBo item : boList){
             WebSliderVo  newVo = new WebSliderVo();
-            newVo.setPicture(QiniuUtil.getFullPath(item.getPicture()));
+            item.setPicture(QiniuUtil.getFullPath(item.getPicture()));
             Tools.bean.copyProperties(item,newVo);
             voList.add(newVo);
         }
