@@ -9,10 +9,13 @@ import cn.farwalker.ravv.service.flash.sale.biz.IFlashSaleService;
 import cn.farwalker.ravv.service.flash.sale.model.FlashSaleBo;
 import cn.farwalker.ravv.service.flash.sku.biz.IFlashGoodsSkuBiz;
 import cn.farwalker.ravv.service.flash.sku.model.FlashGoodsSkuBo;
+import cn.farwalker.ravv.service.goods.base.biz.IGoodsBiz;
+import cn.farwalker.ravv.service.goods.base.biz.IGoodsService;
 import cn.farwalker.ravv.service.goodssku.skudef.model.SkuPriceInventoryVo;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.core.base.controller.ControllerUtils;
 import cn.farwalker.waka.core.RavvExceptionEnum;
+import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -20,6 +23,7 @@ import com.baomidou.mybatisplus.toolkit.CollectionUtils;
 import com.cangwu.frame.orm.core.annotation.LoadJoinValueImpl;
 import com.cangwu.frame.web.crud.QueryFilter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,9 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 public class AdminFlashServiceImpl implements AdminFlashService{
@@ -42,6 +49,9 @@ public class AdminFlashServiceImpl implements AdminFlashService{
 
     @Resource
     private IFlashGoodsSkuBiz flashGoodsSkuBiz;
+
+    @Autowired
+    private IGoodsService iGoodsService;
 
     protected IFlashSaleBiz getBiz() {
         return flashSaleBiz;
@@ -183,6 +193,10 @@ public class AdminFlashServiceImpl implements AdminFlashService{
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public Boolean create(FlashSaleBo vo) {
+        if(!isValid(vo)){
+            throw new WakaException("此限时购活动与其他活动时间上有交叠");
+        }
+
         Boolean rs = getBiz().insert(vo);
         if(!rs){
             throw new WakaException(RavvExceptionEnum.INSERT_ERROR);
@@ -238,5 +252,20 @@ public class AdminFlashServiceImpl implements AdminFlashService{
             throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
         }
         return rs;
+    }
+
+    /**
+     * 插入的限时购是否合法
+     * @param one
+     * @return
+     */
+    private  boolean isValid(FlashSaleBo one){
+        Date current = new Date();
+        List<FlashSaleBo> queryList = flashSaleBiz.selectList(Condition.create().gt(FlashSaleBo.Key.endtime.toString(),current));
+        if(queryList == null){
+            return true;
+        }
+        queryList.add(one);
+       return  iGoodsService.isFlashSaleValid(queryList);
     }
 }

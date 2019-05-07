@@ -3,6 +3,7 @@ package cn.farwalker.ravv.service.goods.base.biz;
 import java.math.BigDecimal;
 import java.util.List;
 
+import cn.farwalker.ravv.service.flash.sale.model.FlashSaleBo;
 import cn.farwalker.ravv.service.goods.base.model.*;
 import org.apache.ibatis.annotations.Param;
 
@@ -176,4 +177,12 @@ public interface IGoodsService {
 	 * @param skuId
      */
 	Boolean verifySkuId(Long skuId);
+
+
+	/**
+	 * 判断多个限时购在冻结--结束时间区间上是否合法(没有交叠即为合法)
+	 * @param flashSaleList
+	 * @return
+	 */
+	boolean isFlashSaleValid(List<FlashSaleBo> flashSaleList);
 }
