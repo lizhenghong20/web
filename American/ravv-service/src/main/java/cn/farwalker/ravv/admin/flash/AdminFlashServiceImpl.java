@@ -247,6 +247,10 @@ public class AdminFlashServiceImpl implements AdminFlashService{
         }else if(endtime.before(starttime)) {
             throw new WakaException("开始时间需在结束时间之前");
         }
+        if(!isValid(vo)){
+            throw new WakaException("此限时购活动与其他活动时间上有交叠");
+        }
+
         Boolean rs = getBiz().updateById(vo);
         if(!rs){
             throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
