@@ -20,11 +20,11 @@ import java.util.Map;
 @Configuration
 public class PaypalConfig {
 
-//    @Value("${paypal.client.app}")
+//    @Value("${pay.client.app}")
 //    private String clientId;
-//    @Value("${paypal.client.secret}")
+//    @Value("${pay.client.secret}")
 //    private String clientSecret;
-//    @Value("${paypal.mode}")
+//    @Value("${pay.mode}")
 //    private String mode;
 
 

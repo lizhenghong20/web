@@ -67,7 +67,7 @@ ravv:
     app:
       style: /styleControl.css
 #paypal的沙箱测试环境
-#paypal:
+#pay:
 #  mode: sandbox
 #  client:
 #    app: AX-x-YAnir3Wy25ha46CB7Xx8-FiE4rQgraI5hg-C2YB2EMzTmAX4z8iCAHot9LmqKbw2GLnRFmJMGLN

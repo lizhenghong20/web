@@ -58,6 +58,7 @@
         <project.youtube.version>v3-rev182-1.22.0</project.youtube.version>
         <project.youtube.api-client.version>1.27.0</project.youtube.api-client.version>
         <smartystreets.api.version>3.3.6</smartystreets.api.version>
+        <stripe.version>9.8.0</stripe.version>
         <!-- spring1.5.9 默认依赖2.9.0 其他模块可以直接使用 <jedis.version>2.9.0</jedis.version> -->
     </properties>
 
@@ -288,6 +289,14 @@
                 <artifactId>google-api-services-youtube</artifactId>
                 <version>${project.youtube.version}</version>
             </dependency>
+
+            <!-- Stripe -->
+            <dependency>
+                <groupId>com.stripe</groupId>
+                <artifactId>stripe-java</artifactId>
+                <version>${stripe.version}</version>
+            </dependency>
+
 
             <!--&lt;!&ndash;引入第三方jar-Mas jar&ndash;&gt;-->
             <!--<dependency>-->
