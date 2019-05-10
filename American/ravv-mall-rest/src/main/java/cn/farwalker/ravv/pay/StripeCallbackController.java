@@ -44,9 +44,9 @@ public class StripeCallbackController {
                 req.append(wholeRequest);
             }
             payload = req.toString();
-            log.info("========================request", payload);
+            log.info("========================request:{}", payload);
             String sigHeader = request.getHeader("Stripe-Signature");
-            log.info("========================request", sigHeader);
+            log.info("========================request:{}", sigHeader);
             event = Webhook.constructEvent(
                     payload, sigHeader, endpointSecret
             );
