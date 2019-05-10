@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +31,7 @@ import java.util.Map;
 public class StripeCallbackController {
 
     @RequestMapping("/pay_succeeded")
+    @ResponseBody
     public String paySucceeded(HttpServletRequest request, HttpServletResponse response){
 //        String payload = request.body();
 //        String sigHeader = request.headers("Stripe-Signature");
@@ -92,6 +94,7 @@ public class StripeCallbackController {
     }
 
     @RequestMapping("/before_pay")
+    @ResponseBody
     public JsonResult<String> beforePay(){
         try{
             Stripe.apiKey = "sk_test_aAcqEpgzPmQYqplFVNErNS3U004xRfetnl";
