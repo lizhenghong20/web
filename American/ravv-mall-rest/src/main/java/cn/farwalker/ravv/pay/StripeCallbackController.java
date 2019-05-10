@@ -55,15 +55,15 @@ public class StripeCallbackController {
             log.info("========================request:{}", payload);
             String sigHeader = request.getHeader("stripe-signature");
             log.info("========================request:{}", sigHeader);
-            //或者时间戳，加上7个小时
-            Long before = getTimestamp(sigHeader);
-            Long jetLag = 7 * 60 * 1000L;
-            Long after = before + jetLag;
-            //将时间设置回去
-            sigHeader = changeSigHeader(sigHeader, after);
-            log.info("========================request:{}", sigHeader);
+//            //或者时间戳，加上7个小时
+//            Long before = getTimestamp(sigHeader);
+//            Long jetLag = 7 * 60 * 1000L;
+//            Long after = before + jetLag;
+//            //将时间设置回去
+//            sigHeader = changeSigHeader(sigHeader, after);
+//            log.info("========================request:{}", sigHeader);
             event = Webhook.constructEvent(
-                    payload, sigHeader, endpointSecret
+                    payload, sigHeader, endpointSecret, 24 * 60L
             );
             PaymentIntent intent = null;
             switch(event.getType()) {
