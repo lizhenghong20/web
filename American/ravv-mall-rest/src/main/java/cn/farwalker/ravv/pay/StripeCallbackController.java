@@ -79,7 +79,9 @@ public class StripeCallbackController {
                     // Handle other event types
                     break;
             }
-
+            //获取订单id，执行更新订单状态
+            Map<String, String> metadata = intent.getMetadata();
+            Long orderId =  Long.parseLong(metadata.get("orderId"));
             response.setStatus(200);
             return "OK";
 
