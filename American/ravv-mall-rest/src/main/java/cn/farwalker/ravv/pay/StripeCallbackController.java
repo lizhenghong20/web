@@ -1,9 +1,7 @@
 package cn.farwalker.ravv.pay;
 
 import cn.farwalker.waka.core.JsonResult;
-import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
-import cn.farwalker.waka.util.Tools;
 import com.google.gson.JsonSyntaxException;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
@@ -14,17 +12,15 @@ import com.stripe.net.Webhook;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -57,7 +53,14 @@ public class StripeCallbackController {
             }
             payload = req.toString();
             log.info("========================request:{}", payload);
-            String sigHeader = request.getHeader("Stripe-Signature");
+            String sigHeader = request.getHeader("stripe-signature");
+            log.info("========================request:{}", sigHeader);
+            //或者时间戳，加上7个小时
+            Long before = getTimestamp(sigHeader);
+            Long jetLag = 7 * 60 * 1000L;
+            Long after = before + jetLag;
+            //将时间设置回去
+            sigHeader = changeSigHeader(sigHeader, after);
             log.info("========================request:{}", sigHeader);
             event = Webhook.constructEvent(
                     payload, sigHeader, endpointSecret
@@ -134,6 +137,45 @@ public class StripeCallbackController {
             e.printStackTrace();
             return JsonResult.newFail(e.getCode(), e.getMessage());
         }
+    }
+
+    private long getTimestamp(String sigHeader) {
+        String[] items = sigHeader.split(",", -1);
+        String[] var2 = items;
+        int var3 = items.length;
+
+        for(int var4 = 0; var4 < var3; ++var4) {
+            String item = var2[var4];
+            String[] itemParts = item.split("=", 2);
+            if (itemParts[0].equals("t")) {
+                log.info("========================t:{}", itemParts[1]);
+                return Long.parseLong(itemParts[1]);
+            }
+        }
+
+        return -1L;
+    }
+
+
+    private String changeSigHeader(String sigHeader, Long afterTime) {
+        String[] items = sigHeader.split(",", -1);
+        String[] var2 = items;
+        int var3 = items.length;
+        StringBuffer stringBuffer = new StringBuffer();
+
+        for(int var4 = 0; var4 < var3; ++var4) {
+            String item = var2[var4];
+            String[] itemParts = item.split("=", 2);
+            if (itemParts[0].equals("t")) {
+                itemParts[1] = String.valueOf(afterTime);
+                log.info("========================t:{}", itemParts[1]);
+            }
+            stringBuffer.append(itemParts[0]).append("=").append(itemParts[1]);
+            if(var4 != var3 - 1)
+                stringBuffer.append(",");
+        }
+
+        return stringBuffer.toString();
     }
 
 }
