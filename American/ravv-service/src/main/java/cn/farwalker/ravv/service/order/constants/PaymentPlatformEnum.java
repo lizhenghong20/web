@@ -19,6 +19,7 @@ public enum PaymentPlatformEnum implements IEnumJsons{
 	/ **银联支付* /
 	UNIONPAY("unionpay", "银联支付")*/
 	PayPal("PayPal","PayPal"),
+	Stripe("Stripe", "Stripe"),
 	Advance("Advance","账户余额"),
 	;
 	private final String key,label;
@@ -48,8 +49,10 @@ public enum PaymentPlatformEnum implements IEnumJsons{
 	public static PaymentPlatformEnum value(String key){
 		if("PayPal".equals(key)){
 			return PayPal;
-		}else if("Advance".equals(key)){
+		} else if("Advance".equals(key)){
 			return Advance;
+		} else if("Stripe".equals(key)){
+			return Stripe;
 		}
 		return null;
 	}

@@ -56,13 +56,6 @@ public class StripeCallbackController {
             log.info("========================request:{}", payload);
             String sigHeader = request.getHeader("stripe-signature");
             log.info("========================request:{}", sigHeader);
-//            //或者时间戳，加上7个小时
-//            Long before = getTimestamp(sigHeader);
-//            Long jetLag = 7 * 60 * 1000L;
-//            Long after = before + jetLag;
-//            //将时间设置回去
-//            sigHeader = changeSigHeader(sigHeader, after);
-//            log.info("========================request:{}", sigHeader);
             event = (Event) ApiResource.GSON.fromJson(payload, Event.class);/*Webhook.constructEvent(
                     payload, sigHeader, endpointSecret, 24 * 60L
             );*/
@@ -118,25 +111,22 @@ public class StripeCallbackController {
     @ResponseBody
     public JsonResult<String> beforePay(){
         try{
-            Stripe.apiKey = "sk_test_aAcqEpgzPmQYqplFVNErNS3U004xRfetnl";
-            Map<String, Object> paymentIntentParams = new HashMap<String, Object>();
-            paymentIntentParams.put("amount", 1099);
-            paymentIntentParams.put("currency", "usd");
-            ArrayList<String> paymentMethodTypes = new ArrayList<>();
-            paymentMethodTypes.add("card");
-            paymentIntentParams.put("payment_method_types", paymentMethodTypes);
+//            Stripe.apiKey = "sk_test_aAcqEpgzPmQYqplFVNErNS3U004xRfetnl";
+//            Map<String, Object> paymentIntentParams = new HashMap<String, Object>();
+//            paymentIntentParams.put("amount", 1099);
+//            paymentIntentParams.put("currency", "usd");
+//            ArrayList<String> paymentMethodTypes = new ArrayList<>();
+//            paymentMethodTypes.add("card");
+//            paymentIntentParams.put("payment_method_types", paymentMethodTypes);
+//
+//            PaymentIntent intent = PaymentIntent.create(paymentIntentParams);
+//            log.info("=====================this intent id:{}", intent.getId());
 
-            PaymentIntent intent = PaymentIntent.create(paymentIntentParams);
-            log.info("=====================this intent id:{}", intent.getId());
-
-            return JsonResult.newSuccess(intent.getClientSecret());
+            return JsonResult.newSuccess(/*intent.getClientSecret()*/);
         }
         catch(WakaException e){
             log.error("",e);
             return JsonResult.newFail(e.getCode(),e.getMessage());
-        } catch (StripeException e) {
-            e.printStackTrace();
-            return JsonResult.newFail(e.getCode(), e.getMessage());
         }
     }
 
