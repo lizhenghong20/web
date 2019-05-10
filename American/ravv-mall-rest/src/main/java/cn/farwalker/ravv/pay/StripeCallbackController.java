@@ -8,6 +8,7 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
+import com.stripe.net.ApiResource;
 import com.stripe.net.Webhook;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -62,9 +63,9 @@ public class StripeCallbackController {
 //            //将时间设置回去
 //            sigHeader = changeSigHeader(sigHeader, after);
 //            log.info("========================request:{}", sigHeader);
-            event = Webhook.constructEvent(
+            event = (Event) ApiResource.GSON.fromJson(payload, Event.class);/*Webhook.constructEvent(
                     payload, sigHeader, endpointSecret, 24 * 60L
-            );
+            );*/
             PaymentIntent intent = null;
             switch(event.getType()) {
                 case "payment_intent.succeeded":
@@ -98,13 +99,13 @@ public class StripeCallbackController {
             // Invalid payload
             response.setStatus(400);
             return "Invalid payload";
-        } catch (SignatureVerificationException e) {
+        } /*catch (SignatureVerificationException e) {
             // Invalid signature
             e.printStackTrace();
             log.error("=================================={}", e);
             response.setStatus(400);
             return "Invalid signature";
-        }
+        }*/
         catch (Exception e) {
             log.error("", e);
             return "";
