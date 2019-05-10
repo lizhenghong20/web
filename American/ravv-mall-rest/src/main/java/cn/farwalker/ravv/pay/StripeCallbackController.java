@@ -33,8 +33,6 @@ public class StripeCallbackController {
     @RequestMapping("/pay_succeeded")
     @ResponseBody
     public String paySucceeded(HttpServletRequest request, HttpServletResponse response){
-//        String payload = request.body();
-//        String sigHeader = request.headers("Stripe-Signature");
 
         try {
             String endpointSecret = "whsec_Scn2X5UvfTOQhjRnzzNdpaqEtUc1m7ZJ";
@@ -53,12 +51,14 @@ public class StripeCallbackController {
             PaymentIntent intent = null;
             switch(event.getType()) {
                 case "payment_intent.succeeded":
+                    log.info("===================成功");
                     intent = (PaymentIntent) event.getData().getObject();
                     System.out.println("Succeeded: " + intent.getId());
                     break;
                 // Fulfil the customer's purchase
 
                 case "payment_intent.payment_failed":
+                    log.info("===================失败");
                     intent = (PaymentIntent) event.getData().getObject();
                     System.out.println("Failed: " + intent.getId());
                     break;
@@ -90,6 +90,7 @@ public class StripeCallbackController {
             log.error("", e);
             return "";
         }
+        log.info("======================返回失败");
         return "";
     }
 
