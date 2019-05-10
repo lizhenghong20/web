@@ -443,7 +443,7 @@ public class GoodsServiceImpl implements IGoodsService{
 	}
 
 	//判断多个限时购在冻结--结束时间区间上是否合法(没有交叠即为合法)
-	boolean isFlashSaleValid(List<FlashSaleBo> flashSaleList){
+	public  boolean isFlashSaleValid(List<FlashSaleBo> flashSaleList){
 		Date  currentTime = new Date();
 		for(int i = 0; i< flashSaleList.size()-1; i++ ){
 			//如果限时购已经过期，不对其进行判断
