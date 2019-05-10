@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,6 +36,17 @@ public class StripeCallbackController {
     public String paySucceeded(HttpServletRequest request, HttpServletResponse response){
 
         try {
+            Enumeration<String> requestHeader = request.getHeaderNames();
+            log.info("------- header -------");
+            while(requestHeader.hasMoreElements()){
+                String headerKey = requestHeader.nextElement().toString();
+                //打印所有Header值
+                log.info("-----------------headerKey={},value={}----------------", headerKey, request.getHeader(headerKey));
+            }
+
+            log.info("------- parameter -------");
+
+
             String endpointSecret = "whsec_Scn2X5UvfTOQhjRnzzNdpaqEtUc1m7ZJ";
             BufferedReader br = request.getReader();
             String wholeRequest, payload = "";
@@ -85,6 +97,8 @@ public class StripeCallbackController {
             return "Invalid payload";
         } catch (SignatureVerificationException e) {
             // Invalid signature
+            e.printStackTrace();
+            log.error("=================================={}", e);
             response.setStatus(400);
             return "Invalid signature";
         }
