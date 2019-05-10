@@ -405,6 +405,8 @@ public class OrderInventoryServiceImpl implements IOrderInventoryService{
 	public Long[] updateOrderUnfreeze(Long... orderIds) {
 		List<OrderInfoBo> orderBos= getFreezeOrderUnpaid(orderIds);
 		if(Tools.collection.isNotEmpty(orderBos)){
+			log.info("======================================执行取消订单任务，取消个数:{},第一个订单号:{}",
+																			orderBos.size(), orderBos.get(0).getId());
 			Long[] loadIds = new Long[orderBos.size()];
 			for(int i =0 ;i < loadIds.length;i++){
 				loadIds[i] = orderBos.get(i).getId();
@@ -416,8 +418,10 @@ public class OrderInventoryServiceImpl implements IOrderInventoryService{
 				bo.setOrderStatus(OrderStatusEnum.CANCEL);
 			}
 
-			if(!orderInfoBiz.updateBatchById(orderBos))
+			if(!orderInfoBiz.updateBatchById(orderBos)){
 				throw new WakaException(RavvExceptionEnum.UPDATE_ERROR + "取消订单执行失败,orderId=" + orderIds);
+			}
+
 
 			/////////////////////////////////
  		/*

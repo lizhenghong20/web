@@ -59,6 +59,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		releaseSet.add("/qiniu/token");
 		releaseSet.add("/style");
 		releaseSet.add("/style_control.css");
+		releaseSet.add("/stripe_callback");
 
 		//必须进行token验证的请求集合，必须写全路径。
 		Set<String> filterSet = new HashSet<>();
