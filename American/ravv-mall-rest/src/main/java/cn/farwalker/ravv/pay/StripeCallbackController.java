@@ -103,6 +103,7 @@ public class StripeCallbackController {
             paymentIntentParams.put("payment_method_types", paymentMethodTypes);
 
             PaymentIntent intent = PaymentIntent.create(paymentIntentParams);
+            log.info("=====================this intent id:{}", intent.getId());
 
             return JsonResult.newSuccess(intent.getClientSecret());
         }
