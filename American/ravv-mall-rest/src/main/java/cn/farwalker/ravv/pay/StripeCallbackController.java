@@ -1,5 +1,6 @@
 package cn.farwalker.ravv.pay;
 
+import cn.farwalker.ravv.service.payment.callback.StripeCallbackService;
 import cn.farwalker.waka.core.JsonResult;
 import cn.farwalker.waka.core.WakaException;
 import com.google.gson.JsonSyntaxException;
@@ -11,6 +12,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.net.ApiResource;
 import com.stripe.net.Webhook;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -19,14 +21,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Slf4j
 @Controller
 @RequestMapping("/stripe_callback")
 public class StripeCallbackController {
+
+    @Autowired
+    private StripeCallbackService stripeCallbackService;
 
     @RequestMapping("/pay_succeeded")
     @ResponseBody
@@ -82,6 +85,7 @@ public class StripeCallbackController {
             //获取订单id，执行更新订单状态
             Map<String, String> metadata = intent.getMetadata();
             Long orderId =  Long.parseLong(metadata.get("orderId"));
+            stripeCallbackService.doSuccess(orderId);
             response.setStatus(200);
             return "OK";
 

@@ -53,10 +53,13 @@ public class PayByStripeServiceImpl implements IPayService {
         Map<String, String> metadata = new HashMap<>();
         metadata.put("orderId", orderId.toString());
         paymentIntentParams.put("metadate", metadata);
+        log.info("=====================before paymentintent");
         PaymentIntent intent = PaymentIntent.create(paymentIntentParams);
+        log.info("=====================after paymentintent");
         log.info("=====================this intent id:{}", intent.getId());
         PaymentResultVo paymentResultVo = new PaymentResultVo();
         paymentResultVo.setClientSecret(intent.getClientSecret());
+        paymentResultVo.setAmount(query.getShouldPayTotalFee());
         return JsonResult.newSuccess(paymentResultVo);
     }
 }
