@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +47,10 @@ public class PayByStripeServiceImpl implements IPayService {
         //查出金额等信息发送到stripe
         Stripe.apiKey = "sk_test_aAcqEpgzPmQYqplFVNErNS3U004xRfetnl";
         Map<String, Object> paymentIntentParams = new HashMap<String, Object>();
-        paymentIntentParams.put("amount", query.getShouldPayTotalFee());
+        //总价字段使用美分计算
+        BigDecimal amount = query.getShouldPayTotalFee().multiply(new BigDecimal(100))
+                .setScale(0, BigDecimal.ROUND_HALF_UP);
+        paymentIntentParams.put("amount", amount);
         paymentIntentParams.put("currency", "usd");
         ArrayList<String> paymentMethodTypes = new ArrayList<>();
         paymentMethodTypes.add("card");

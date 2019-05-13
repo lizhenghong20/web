@@ -83,7 +83,8 @@ public class PaymentController {
 
     @RequestMapping(method = RequestMethod.POST, value = "/pay_by_order")
     @ResponseBody
-    public JsonResult<PaymentResultVo> payByOrder(HttpServletRequest request,@RequestParam("orderId")Long orderId, @RequestParam("payType") String payType,
+    public JsonResult<PaymentResultVo> payByOrder(HttpServletRequest request,@RequestParam("orderId")Long orderId,
+                                                  @RequestParam("payType") String payType,
                                                   @RequestParam(required = false) String payPassword ){
         try {
             return getPayService(payType).payByOrder(request,orderId,payPassword);
