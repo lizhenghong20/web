@@ -2,6 +2,7 @@ package cn.farwalker.ravv.service.payment.pay;
 
 import cn.farwalker.ravv.service.order.constants.PayStatusEnum;
 import cn.farwalker.ravv.service.order.constants.PaymentModeEnum;
+import cn.farwalker.ravv.service.order.constants.PaymentPlatformEnum;
 import cn.farwalker.ravv.service.order.paymemt.biz.IOrderPaymemtBiz;
 import cn.farwalker.ravv.service.order.paymemt.model.OrderPaymemtBo;
 import cn.farwalker.ravv.service.paypal.PaymentForm;
@@ -60,6 +61,8 @@ public class PayByStripeServiceImpl implements IPayService {
         PaymentResultVo paymentResultVo = new PaymentResultVo();
         paymentResultVo.setClientSecret(intent.getClientSecret());
         paymentResultVo.setAmount(query.getShouldPayTotalFee());
+        paymentResultVo.setOrderId(orderId);
+        paymentResultVo.setPayType(PaymentPlatformEnum.Stripe.getKey());
         return JsonResult.newSuccess(paymentResultVo);
     }
 }
