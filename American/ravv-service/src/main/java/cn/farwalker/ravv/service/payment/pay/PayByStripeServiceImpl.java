@@ -57,7 +57,7 @@ public class PayByStripeServiceImpl implements IPayService {
         paymentIntentParams.put("payment_method_types", paymentMethodTypes);
         Map<String, String> metadata = new HashMap<>();
         metadata.put("orderId", orderId.toString());
-        paymentIntentParams.put("metadate", metadata);
+        paymentIntentParams.put("metadata", metadata);
         log.info("=====================before paymentintent");
         PaymentIntent intent = PaymentIntent.create(paymentIntentParams);
         log.info("=====================after paymentintent");
