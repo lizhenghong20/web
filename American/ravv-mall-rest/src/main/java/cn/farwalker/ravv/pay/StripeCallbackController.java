@@ -3,6 +3,7 @@ package cn.farwalker.ravv.pay;
 import cn.farwalker.ravv.service.payment.callback.StripeCallbackService;
 import cn.farwalker.waka.core.JsonResult;
 import cn.farwalker.waka.core.WakaException;
+import cn.farwalker.waka.util.Tools;
 import com.google.gson.JsonSyntaxException;
 import com.stripe.Stripe;
 import com.stripe.exception.SignatureVerificationException;
@@ -85,7 +86,12 @@ public class StripeCallbackController {
             //获取订单id，执行更新订单状态
             Map<String, String> metadata = intent.getMetadata();
             Long orderId =  Long.parseLong(metadata.get("orderId"));
-            stripeCallbackService.doSuccess(orderId);
+            if(Tools.number.isEmpty(orderId)){
+                log.info("===================orderId拆解失败");
+            } else {
+                stripeCallbackService.doSuccess(orderId);
+            }
+
             response.setStatus(200);
             return "OK";
 
