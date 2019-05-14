@@ -20,6 +20,7 @@ import cn.farwalker.ravv.service.order.orderlogistics.biz.IOrderLogisticsService
 import cn.farwalker.ravv.service.order.orderlogistics.model.LogisticsTraceVo;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
+import com.baomidou.mybatisplus.plugins.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -294,9 +295,11 @@ public class OrderMyController{
      * @param sortfield 排序(+字段1/-字段名2)<br/>
      */
     @RequestMapping("/list")
-    public JsonResult<List<OrderAllInfoVo>> doList(Integer tabType,OrderFilterEnum status,Integer lastmonth,String search,
+    public JsonResult<Page<OrderAllInfoVo>> doList(Integer tabType,OrderFilterEnum status,Integer lastmonth,String search,
 												   Integer start,Integer size,String sortfield){
+    	start++;
     	//Long memberId = (Long)session.getAttribute(CreateOrderController.K_MemberId);
+		Page<OrderAllInfoVo> allPage = new Page<>();
     	HttpSession sin = HttpKit.getRequest().getSession();
     	Long memberId = (Long)sin.getAttribute(CreateOrderController.K_MemberId);
         if(memberId == null || memberId.longValue()==0){
@@ -325,9 +328,10 @@ public class OrderMyController{
         if(Tools.collection.isEmpty(orderFields)){//按编号排序
         	orderFields.add(OrderInfoBo.Key.orderCode.toString() + " desc");
         }
-        List<OrderInfoBo> rds = orderInfoService.getMyOrderList(memberId,orderStatus
-        		, search, lastmonth,waitReview,afterSale,
-        		orderFields,start, size);
+		Page<OrderInfoBo> page = orderInfoService.getMyOrderList(memberId,orderStatus
+				, search, lastmonth,waitReview,afterSale,
+				orderFields,start, size);
+        List<OrderInfoBo> rds = page.getRecords();
         List<OrderAllInfoVo> result = new ArrayList<>(rds.size());
         
         Date systime = new Date();
@@ -341,7 +345,11 @@ public class OrderMyController{
         fillOrderImage(result,true);
         loadReturnQuanByOrder(result);
         //loadOrderAddress(result);
-        return JsonResult.newSuccess(result);
+		allPage.setRecords(result);
+		allPage.setCurrent(page.getCurrent());
+		allPage.setSize(page.getSize());
+		allPage.setTotal(page.getTotal());
+        return JsonResult.newSuccess(allPage);
     }
     /** 
      * 加载商品信息及图片信息 

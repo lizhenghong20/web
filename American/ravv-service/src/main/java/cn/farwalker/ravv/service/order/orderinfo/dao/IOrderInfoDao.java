@@ -2,6 +2,7 @@ package cn.farwalker.ravv.service.order.orderinfo.dao;
 import java.util.Date;
 import java.util.List;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
@@ -27,15 +28,13 @@ public interface IOrderInfoDao extends BaseMapper<OrderInfoBo>{
 	 * @param orderList 排序字段
 	 * @return
 	 */
-	public List<OrderInfoBo> getMyOrder(@Param("unpaidStatus")List<OrderStatusEnum> unpaidStatus
-			,@Param("paidStatus")List<OrderStatusEnum> paidStatus
-			,@Param("buyerId")Long buyerId
-			,@Param("lastDate")Date lastDate
-			,@Param("statusList")List<OrderStatusEnum> statusList
-			,@Param("search")String search
-			,@Param("waitReview")Boolean waitReview
-			,@Param("afterSale") Boolean afterSale
-			,@Param("orderList")List<String> orderList
-			,@Param("start")Integer start 
-			,@Param("size")Integer size);
+	public List<OrderInfoBo> getMyOrder(Page page, @Param("unpaidStatus")List<OrderStatusEnum> unpaidStatus
+			, @Param("paidStatus")List<OrderStatusEnum> paidStatus
+			, @Param("buyerId")Long buyerId
+			, @Param("lastDate")Date lastDate
+			, @Param("statusList")List<OrderStatusEnum> statusList
+			, @Param("search")String search
+			, @Param("waitReview")Boolean waitReview
+			, @Param("afterSale") Boolean afterSale
+			, @Param("orderList")List<String> orderList);
 }

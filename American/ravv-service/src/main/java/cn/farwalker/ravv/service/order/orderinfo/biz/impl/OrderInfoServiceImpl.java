@@ -19,6 +19,7 @@ import cn.farwalker.ravv.service.shipstation.biz.IShipStationService;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import com.baomidou.mybatisplus.mapper.Condition;
+import com.baomidou.mybatisplus.plugins.Page;
 import org.quartz.JobDataMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,9 +99,10 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 	}
 
 	@Override
-	public List<OrderInfoBo> getMyOrderList(Long buyerId, List<OrderStatusEnum> orderStatus, String search,
+	public Page<OrderInfoBo> getMyOrderList(Long buyerId, List<OrderStatusEnum> orderStatus, String search,
 			Integer lastMonth, Boolean waitReview, Boolean afterSale, List<String> sortfield, Integer start,
 			Integer size) {
+		Page<OrderInfoBo> page = new Page<>(start, size);
 		// OrderStatusEnum.CREATED_UNREVIEW,
 		List<OrderStatusEnum> unpaidStatus = Arrays.asList(OrderStatusEnum.REVIEWADOPT_UNPAID);
 		List<OrderStatusEnum> paidStatus = new ArrayList<>();
@@ -142,9 +144,10 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 			afterSale = Boolean.FALSE;
 		}
 
-		List<OrderInfoBo> rds = orderInfoDao.getMyOrder(unpaidStatus, paidStatus, buyerId, lastDate, orderStatus,
-				search, waitReview, afterSale, sortfield, start, size);
-		return rds;
+		List<OrderInfoBo> rds = orderInfoDao.getMyOrder(page,unpaidStatus, paidStatus, buyerId, lastDate, orderStatus,
+				search, waitReview, afterSale, sortfield);
+		page.setRecords(rds);
+		return page;
 	}
 
 	@Override

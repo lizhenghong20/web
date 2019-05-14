@@ -8,6 +8,7 @@ import cn.farwalker.ravv.service.order.orderlogistics.model.OrderLogisticsBo;
 import cn.farwalker.ravv.service.order.paymemt.model.OrderPaymemtBo;
 import cn.farwalker.ravv.service.sys.user.model.SysUserBo;
 import cn.farwalker.waka.core.JsonResult;
+import com.baomidou.mybatisplus.plugins.Page;
 
 import javax.servlet.http.HttpSession;
 
@@ -39,10 +40,10 @@ public interface IOrderInfoService {
 	 * @param size 记录数
 	 * @return 不会为null
 	 */
-	public List<OrderInfoBo> getMyOrderList(Long buyerId
-			,List<OrderStatusEnum> orderStatus,String search
-			,Integer lastMonth,Boolean waitReview, Boolean afterSale,
-			List<String> sortfield,Integer start,Integer size);
+	public Page<OrderInfoBo> getMyOrderList(Long buyerId
+			, List<OrderStatusEnum> orderStatus, String search
+			, Integer lastMonth, Boolean waitReview, Boolean afterSale,
+											List<String> sortfield, Integer start, Integer size);
 	
 	/**
 	 * 仓库给订单发货

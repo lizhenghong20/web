@@ -36,7 +36,6 @@
         <include refid="getMyOrderWhere"/>
       ) t
       <include refid="getMyOrderFieldList"/>
-      limit #{start},#{size}
     </select>
     
     <sql id="getMyOrderWhere">
