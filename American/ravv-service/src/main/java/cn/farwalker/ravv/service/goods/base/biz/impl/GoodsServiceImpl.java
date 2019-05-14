@@ -156,13 +156,13 @@ public class GoodsServiceImpl implements IGoodsService{
 	}
 
 	/**
-	 * @description: 解耦合，单独获取skuId
+	 * @description: 解耦合，单独获取skuId(于2019/05/13根据业务进行修改)
 	 * @param: goodsId,propertyList
 	 * @return skuId
 	 * @author Mr.Simple
 	 * @date 2018/12/3 10:08
 	 */
-	public Long parseSkuToId(Long goodsId, String propertyValueIds){
+	public List<Long> parseSkuToId(Long goodsId, String propertyValueIds){
 		List<String> propertyList = Tools.string.convertStringList(propertyValueIds);
 		//根据goodsId和propertyValuesIds查出skuId
 		Wrapper<GoodsSkuDefBo> skuQuery = new EntityWrapper<>();
@@ -171,16 +171,19 @@ public class GoodsServiceImpl implements IGoodsService{
 			if(Tools.string.isNotEmpty(propertyId))
 				skuQuery.like(GoodsSkuDefBo.Key.propertyValueIds.toString(), propertyId);
 		}
-		GoodsSkuDefBo goodsSkuDefBo = goodsSkuDefBiz.selectOne(skuQuery);
-		if(goodsSkuDefBo == null)
+		List<GoodsSkuDefBo> goodsSkuDefBo = goodsSkuDefBiz.selectList(skuQuery);
+		if(goodsSkuDefBo.size() == 0)
 			throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
-		long skuId = goodsSkuDefBo.getId();
-		log.info("skuId:{}",skuId);
-		return skuId;
+		List<Long> skuIdList = new ArrayList<>();
+		goodsSkuDefBo.forEach(item ->{
+			skuIdList.add(item.getId());
+		});
+		log.info("skuIdList.size:{}",skuIdList.size());
+		return skuIdList;
 	}
 
 	/**
-	 * @description: 通过goodsId和属性id查询商品售价和销量
+	 * @description: 通过goodsId和属性id查询商品售价和销量(于2019/05/13根据业务进行修改)
 	 * @param: goodsId,propertyValueIds
 	 * @return map<price,stockNum>
 	 * @author Mr.Simple
@@ -188,10 +191,16 @@ public class GoodsServiceImpl implements IGoodsService{
 	 */
 	@Override
 	public ParseSkuExtVo parseSku(Long goodsId, String propertyValueIds) throws Exception{
-		long skuId = parseSkuToId(goodsId, propertyValueIds);
-		return parseSku(goodsId,skuId);
-
+		List<Long> skuIdList = parseSkuToId(goodsId, propertyValueIds);
+		//如果查出的list.size为1,则执行parseSku方法，否则执行返回所有sku列表
+		if(skuIdList.size() == 0){
+			throw new WakaException("sku find fail");
+		} else if(skuIdList.size() == 1)
+			return parseSku(goodsId,skuIdList.get(0));
+		return null;
 	}
+
+
 	/**
 	 * @description: 找出商品价格和库存（为下单服务）
 	 * @param  goodsId
@@ -601,7 +610,7 @@ public class GoodsServiceImpl implements IGoodsService{
      * @param pageSize
      * @return
      */
-	public List<GoodsListVo> search(Long menuId,String keyWords,
+	public Page<GoodsListVo> search(Long menuId,String keyWords,
 									BigDecimal floor, BigDecimal ceiling,
 									String oneOfThree,
 									Boolean freeShipment,
@@ -646,7 +655,8 @@ public class GoodsServiceImpl implements IGoodsService{
 		result.forEach(item->{
 			item.setImgUrl(QiniuUtil.getFullPath(item.getImgUrl()));
 		});
-		return result;
+		page.setRecords(result);
+		return page;
 	}
 
 	@Override

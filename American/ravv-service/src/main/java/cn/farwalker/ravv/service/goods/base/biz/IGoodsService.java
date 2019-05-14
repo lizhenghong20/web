@@ -56,7 +56,7 @@ public interface IGoodsService {
 	 * @author Mr.Simple
 	 * @date 2018/12/3 10:11
 	 */
-	public Long parseSkuToId(Long goodsId, String propertyValueIds);
+	public List<Long> parseSkuToId(Long goodsId, String propertyValueIds);
 
 	/**
 	 * @description: 找出商品价格和库存（为商品详情页面服务）
@@ -106,7 +106,7 @@ public interface IGoodsService {
  * @author Lee 
  * @date 2018/11/24 11:28 
  */ 
-	List<GoodsListVo> search(Long menuId,String keyWords, BigDecimal floor, BigDecimal ceiling,String oneOfThree,Boolean freeShipment, Integer goodsPoint, int currentPage, int PageSize);
+	Page<GoodsListVo> search(Long menuId,String keyWords, BigDecimal floor, BigDecimal ceiling,String oneOfThree,Boolean freeShipment, Integer goodsPoint, int currentPage, int PageSize);
 
 	/**
 	 * 商品创建普通属性及SKU

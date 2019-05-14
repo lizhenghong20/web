@@ -2,6 +2,7 @@ package cn.farwalker.ravv.pay;
 
 import cn.farwalker.ravv.service.payment.callback.StripeCallbackService;
 import cn.farwalker.waka.core.JsonResult;
+import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.util.Tools;
 import com.google.gson.JsonSyntaxException;
@@ -10,6 +11,7 @@ import com.stripe.exception.SignatureVerificationException;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
 import com.stripe.model.PaymentIntent;
+import com.stripe.model.Refund;
 import com.stripe.net.ApiResource;
 import com.stripe.net.Webhook;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Slf4j
@@ -89,7 +92,7 @@ public class StripeCallbackController {
             if(Tools.number.isEmpty(orderId)){
                 log.info("===================orderId拆解失败");
             } else {
-                stripeCallbackService.doSuccess(orderId);
+                stripeCallbackService.doSuccess(orderId, intent.getId());
             }
 
             response.setStatus(200);
@@ -138,6 +141,39 @@ public class StripeCallbackController {
         }
         catch(WakaException e){
             log.error("",e);
+            return JsonResult.newFail(e.getCode(),e.getMessage());
+        }
+    }
+
+    @RequestMapping("/refund_test")
+    @ResponseBody
+    public JsonResult<String> refundTest(){
+        try{
+            Stripe.apiKey = "sk_test_aAcqEpgzPmQYqplFVNErNS3U004xRfetnl";
+            PaymentIntent intent = PaymentIntent.retrieve("pi_1EZXWiH4ljcVH2dEq7WtEHyt");
+            if(intent == null){
+                throw new WakaException("intent 为空");
+            }
+            String chargeId = intent.getCharges().getData().get(0).getId();
+            //退款金额使用美分
+            BigDecimal refundAmount = new BigDecimal(5).multiply(new BigDecimal(100))
+                    .setScale(0, BigDecimal.ROUND_HALF_UP);
+            Map<String, Object> params = new HashMap<>();
+//            params.put("amount", refundAmount);
+            params.put("charge", chargeId);
+            Refund refund = Refund.create(params);
+            if(!"succeeded".equals(refund.getStatus())){
+                throw new WakaException("退款失败");
+            }
+//            log.info("=====================this intent id:{}", intent.getId());
+
+            return JsonResult.newSuccess("success");
+        }
+        catch(WakaException e){
+            log.error("",e);
+            return JsonResult.newFail(e.getCode(),e.getMessage());
+        } catch (StripeException e) {
+            e.printStackTrace();
             return JsonResult.newFail(e.getCode(),e.getMessage());
         }
     }

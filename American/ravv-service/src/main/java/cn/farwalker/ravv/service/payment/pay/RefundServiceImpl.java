@@ -24,6 +24,10 @@ public class RefundServiceImpl implements IRefundService {
     IRefundService iRefundFromWallet;
 
     @Autowired
+    @Qualifier("refundFromStripeServiceImpl")
+    IRefundService iRefundFromStripe;
+
+    @Autowired
     IOrderInfoService iOrderInfoService;
 
     @Override
@@ -36,6 +40,10 @@ public class RefundServiceImpl implements IRefundService {
 
         if(PaymentPlatformEnum.Advance.equals(payType)){
             return iRefundFromWallet.refund(refundForm);
+        }
+
+        if(PaymentPlatformEnum.Stripe.equals(payType)){
+            return iRefundFromStripe.refund(refundForm);
         }
 
         throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);

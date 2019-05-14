@@ -22,6 +22,7 @@ import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.util.Tools;
 import com.baomidou.mybatisplus.mapper.Condition;
+import com.baomidou.mybatisplus.plugins.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -109,7 +110,7 @@ public class GoodsWebController {
      * @date 2018/11/24 11:02
      */
     @RequestMapping("/search")
-    public JsonResult<List<GoodsListVo>> search(@RequestParam(value = "keyWords", required = false)String keyWords,
+    public JsonResult<Page<GoodsListVo>> search(@RequestParam(value = "keyWords", required = false)String keyWords,
                                                 @RequestParam(value = "menuId", required = false, defaultValue = "0") Long menuId,
                                                 @RequestParam(value = "floorStr", required = false, defaultValue = "0") String floorStr,
                                                 @RequestParam(value = "ceilingStr", required = false, defaultValue = "999999999") String ceilingStr,

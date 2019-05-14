@@ -68,7 +68,8 @@ public class MemberPaymentLogBo extends Model<MemberPaymentLogBo> implements Bas
         shipping("shipping"),
         subtotal("subtotal"),
         tax("tax"),
-        totalAmount("total_amount");
+        totalAmount("total_amount"),
+        stripePaymentId("stripe_payment_id") ;
         private final String column;
         private Key(String k){
             this.column = k;
@@ -233,6 +234,10 @@ public class MemberPaymentLogBo extends Model<MemberPaymentLogBo> implements Bas
     @TableField("total_amount")
     @DDLColumn(name="total_amount",comment="订单总金额")
     private BigDecimal totalAmount;
+
+    @TableField("stripe_payment_id")
+    @DDLColumn(name="stripe_payment_id",comment="stripe支付id,退款时使用",length=64)
+    private String stripePaymentId;
     /** 支付单号*/
     public Long getId(){
         return id;
@@ -535,4 +540,13 @@ public class MemberPaymentLogBo extends Model<MemberPaymentLogBo> implements Bas
     public Date getRefundTime() {return refundTime;}
 
     public void setRefundTime(Date refundTime) {this.refundTime = refundTime;}
+
+    public String getStripePaymentId() {
+        return stripePaymentId;
+    }
+
+    public void setStripePaymentId(String stripePaymentId) {
+        this.stripePaymentId = stripePaymentId;
+    }
+
 }

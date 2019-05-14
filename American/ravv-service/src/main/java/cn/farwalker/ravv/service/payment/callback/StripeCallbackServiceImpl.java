@@ -38,13 +38,14 @@ public class StripeCallbackServiceImpl implements StripeCallbackService {
     private IOrderPaymentService orderPaymentService;
 
     @Override
-    public void doSuccess(Long orderId) {
+    public void doSuccess(Long orderId, String paymentIntentId) {
         HttpSession sin = HttpKit.getRequest().getSession();
         //根据orderId查出订单详细信息
         OrderPaymemtBo orderPaymemtBo = orderPaymemtBiz.selectOne(Condition.create()
                                                 .eq(OrderPaymemtBo.Key.orderId.toString(), orderId));
         OrderInfoBo orderInfoBo = orderInfoBiz.selectById(orderId);
         MemberPaymentLogBo payLogBo = new MemberPaymentLogBo();
+        payLogBo.setStripePaymentId(paymentIntentId);
         payLogBo.setMemberId(orderInfoBo.getBuyerId());
         payLogBo.setOrderId(orderId);
         payLogBo.setStatus(PayStatusEnum.PAID);

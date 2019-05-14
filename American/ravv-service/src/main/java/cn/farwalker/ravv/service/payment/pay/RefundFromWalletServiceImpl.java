@@ -34,9 +34,11 @@ public class RefundFromWalletServiceImpl implements IRefundService {
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public String refund(RefundForm refundForm){
 
-        if(refundForm.getRefundTotalAmount().doubleValue() < 0 || refundForm.getOrderId() == null || refundForm.getMemberId()==null)
+        if(refundForm.getRefundTotalAmount().doubleValue() < 0 || refundForm.getOrderId() == null
+                || refundForm.getMemberId()==null)
             throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-        MemberPaymentLogBo queryLogBo = iMemberPaymentLogBiz.selectOne(Condition.create().eq(MemberPaymentLogBo.Key.orderId.toString(),refundForm.getOrderId())
+        MemberPaymentLogBo queryLogBo = iMemberPaymentLogBiz.selectOne(Condition.create()
+                .eq(MemberPaymentLogBo.Key.orderId.toString(),refundForm.getOrderId())
                 .eq(MemberPaymentLogBo.Key.memberId.toString(),refundForm.getMemberId())
                 .eq(MemberPaymentLogBo.Key.status.toString(), PayStatusEnum.PAID.toString())
                 .eq(MemberPaymentLogBo.Key.payType.toString(), PaymentPlatformEnum.Advance.getKey()));
