@@ -119,7 +119,6 @@ public class GoodsWebController {
                                                 @RequestParam(value = "goodsPoint",required = false)Integer goodsPoint,
                                                 Integer currentPage, Integer pageSize) {
         try {
-            currentPage++;
             if ( currentPage < 0 || pageSize < 0) {
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             }

@@ -297,7 +297,6 @@ public class OrderMyController{
     @RequestMapping("/list")
     public JsonResult<Page<OrderAllInfoVo>> doList(Integer tabType,OrderFilterEnum status,Integer lastmonth,String search,
 												   Integer start,Integer size,String sortfield){
-    	start++;
     	//Long memberId = (Long)session.getAttribute(CreateOrderController.K_MemberId);
 		Page<OrderAllInfoVo> allPage = new Page<>();
     	HttpSession sin = HttpKit.getRequest().getSession();
