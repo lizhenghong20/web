@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by asus on 2018/12/29.
@@ -29,6 +30,8 @@ public class ParseSkuExtVo {
     ActivityField activityField;
 
     Date currentTime;
+
+    List<PropertyStockVO> propertyStockVOList;
 }
 
 

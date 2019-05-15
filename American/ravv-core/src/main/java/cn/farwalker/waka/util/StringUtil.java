@@ -1,5 +1,7 @@
 package cn.farwalker.waka.util;
 
+import cn.farwalker.waka.core.RavvExceptionEnum;
+import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 
 import java.io.UnsupportedEncodingException;
@@ -383,17 +385,47 @@ public class StringUtil {
 	 * @date 2018/11/19 14:04
 	 */
 	public List<String> convertStringList(String originString){
-        List<String> list = new ArrayList<>();
         if(Tools.string.isEmpty(originString))
-            return list;
+            return new ArrayList<>();
         String replaceString = originString.replace("(", "").replace(")", ",");
         String[] s = replaceString.split(",");
+        return splicePropertyValues(s);
+    }
+
+    /**
+     * @Author Mr.Simple
+     * @Description 拆分功能 拼接propertyValues查询数据库
+     * @Date 16:11 2019/5/14
+     * @Param 
+     * @return 
+     **/
+    public List<String> splicePropertyValues(String[] s){
+        List<String> list = new ArrayList<>();
         for (int i = 0;i < s.length;i++){
             StringBuffer stringBuffer = new StringBuffer("(");
             stringBuffer.append(s[i]).append(")");
             list.add(stringBuffer.toString());
         }
 	    return list;
+    }
+
+    /**
+     * @Author Mr.Simple
+     * @Description 将propertyValueId拆解出来
+     * @Date 15:48 2019/5/14
+     * @Param
+     * @return
+     **/
+    public List<Long> convertPropertyValueToLong(String originString){
+        List<Long> list = new ArrayList<>();
+        if(Tools.string.isEmpty(originString))
+            throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+        String replaceString = originString.replace("(", "").replace(")", ",");
+        String[] s = replaceString.split(",");
+        for (int i = 0;i < s.length;i++){
+            list.add(Long.parseLong(s[i]));
+        }
+        return list;
     }
 
     /**

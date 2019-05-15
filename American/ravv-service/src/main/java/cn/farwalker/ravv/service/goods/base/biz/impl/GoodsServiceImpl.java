@@ -3,9 +3,11 @@ package cn.farwalker.ravv.service.goods.base.biz.impl;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Resource;
 
+import cn.farwalker.ravv.service.goods.base.model.*;
 import cn.farwalker.waka.core.WakaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,14 +31,6 @@ import cn.farwalker.ravv.service.flash.sku.model.FlashGoodsSkuBo;
 import cn.farwalker.ravv.service.goods.base.biz.IGoodsBiz;
 import cn.farwalker.ravv.service.goods.base.biz.IGoodsService;
 import cn.farwalker.ravv.service.goods.base.dao.IGoodsDao;
-import cn.farwalker.ravv.service.goods.base.model.ActivityField;
-import cn.farwalker.ravv.service.goods.base.model.GoodsBo;
-import cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo;
-import cn.farwalker.ravv.service.goods.base.model.GoodsListVo;
-import cn.farwalker.ravv.service.goods.base.model.ParseSkuExtVo;
-import cn.farwalker.ravv.service.goods.base.model.ParseSkuTemp;
-import cn.farwalker.ravv.service.goods.base.model.PropertyLineVo;
-import cn.farwalker.ravv.service.goods.base.model.PropsVo;
 import cn.farwalker.ravv.service.goods.constants.GoodsStatusEnum;
 import cn.farwalker.ravv.service.goods.constants.PropsUserInputEnum;
 import cn.farwalker.ravv.service.goods.image.biz.IGoodsImageBiz;
@@ -163,6 +157,23 @@ public class GoodsServiceImpl implements IGoodsService{
 	 * @date 2018/12/3 10:08
 	 */
 	public List<Long> parseSkuToId(Long goodsId, String propertyValueIds){
+		List<GoodsSkuDefBo> goodsSkuDefBo = getSkuByGoodsIdAndPropertyValueId(goodsId, propertyValueIds);
+		List<Long> skuIdList = new ArrayList<>();
+		goodsSkuDefBo.forEach(item ->{
+			skuIdList.add(item.getId());
+		});
+		log.info("====================skuIdList.size:{}",skuIdList.size());
+		return skuIdList;
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 拆解功能 通过goodsId和properValueId查找sku
+	 * @Date 16:43 2019/5/14
+	 * @Param
+	 * @return
+	 **/
+	private List<GoodsSkuDefBo> getSkuByGoodsIdAndPropertyValueId(Long goodsId, String propertyValueIds){
 		List<String> propertyList = Tools.string.convertStringList(propertyValueIds);
 		//根据goodsId和propertyValuesIds查出skuId
 		Wrapper<GoodsSkuDefBo> skuQuery = new EntityWrapper<>();
@@ -172,14 +183,8 @@ public class GoodsServiceImpl implements IGoodsService{
 				skuQuery.like(GoodsSkuDefBo.Key.propertyValueIds.toString(), propertyId);
 		}
 		List<GoodsSkuDefBo> goodsSkuDefBo = goodsSkuDefBiz.selectList(skuQuery);
-		if(goodsSkuDefBo.size() == 0)
-			throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
-		List<Long> skuIdList = new ArrayList<>();
-		goodsSkuDefBo.forEach(item ->{
-			skuIdList.add(item.getId());
-		});
-		log.info("skuIdList.size:{}",skuIdList.size());
-		return skuIdList;
+
+		return goodsSkuDefBo;
 	}
 
 	/**
@@ -192,12 +197,91 @@ public class GoodsServiceImpl implements IGoodsService{
 	@Override
 	public ParseSkuExtVo parseSku(Long goodsId, String propertyValueIds) throws Exception{
 		List<Long> skuIdList = parseSkuToId(goodsId, propertyValueIds);
-		//如果查出的list.size为1,则执行parseSku方法，否则执行返回所有sku列表
+		//如果查出的list.size为1,则执行parseSku方法，否则查找该商品的其他属性sku并查找库存
 		if(skuIdList.size() == 0){
 			throw new WakaException("sku find fail");
-		} else if(skuIdList.size() == 1)
+		} else if(skuIdList.size() == 1){
 			return parseSku(goodsId,skuIdList.get(0));
-		return null;
+		} else {
+			return getPropertyStock(goodsId, propertyValueIds);
+		}
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 根据propertyValueid查找该商品剩余属性库存
+	 * @Date 15:36 2019/5/14
+	 * @Param
+	 * @return
+	 **/
+	private ParseSkuExtVo getPropertyStock(Long goodsId, String propertyValueIds){
+		List<Long> propertyList = Tools.string.convertPropertyValueToLong(propertyValueIds);
+		ParseSkuExtVo parseSkuExtVo = new ParseSkuExtVo();
+		List<PropertyStockVO> propertyStockVOList = new ArrayList<>();
+		//根据propertyValue查找出属性名称
+		List<String> propertyName = new ArrayList<>();
+		propertyList.forEach(item->{
+			//根据propertyValueId查出该属性的名称
+			GoodsSpecificationDefBo defBo = new GoodsSpecificationDefBo();
+			defBo = goodsValueBiz.selectOne(Condition.create()
+									.eq(GoodsSpecificationDefBo.Key.propertyValueId.toString(), item));
+			if(defBo == null){
+				throw new WakaException(RavvExceptionEnum.SELECT_ERROR + "this propertyid is wrong");
+			}
+			propertyName.add(defBo.getTmpPropertyName());
+		});
+		//根据goodsId和属性名称查询剩余属性
+		List<GoodsSpecificationDefBo> otherDefList = goodsValueBiz.selectList(Condition.create()
+											.eq(GoodsSpecificationDefBo.Key.goodsId.toString(), goodsId)
+											.notIn(GoodsSpecificationDefBo.Key.tmpPropertyName.toString(), propertyName));
+		List<String> propertyValueList = otherDefList.stream().map(GoodsSpecificationDefBo::getPropertyValueId)
+													.map(String::valueOf)
+													.collect(Collectors.toList());
+		//查找sku
+//		List<String> propertyValueList = otherPropertyValueids.stream().map(String::valueOf).collect(Collectors.toList());
+		propertyStockVOList = getPropertyStockList(propertyValueList, goodsId, propertyValueIds);
+		parseSkuExtVo.setPropertyStockVOList(propertyStockVOList);
+		return parseSkuExtVo;
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 获取list
+	 * @Date 16:52 2019/5/14
+	 * @Param propertyValue 获取到的剩余propertyid，goodsId 商品id，propertyValueIds 前端选择的propertyValue
+	 * @return
+	 **/
+	private List<PropertyStockVO> getPropertyStockList(List<String> propertyValue, Long goodsId, String propertyValueIds){
+		List<PropertyStockVO> propertyStockVOList = new ArrayList<>();
+		propertyValue.forEach(item->{
+			PropertyStockVO propertyStockVO = new PropertyStockVO();
+			int count = 0;
+			//拼接propertyValueId，查询skuId
+			StringBuffer stringBuffer = new StringBuffer(propertyValueIds);
+			stringBuffer.append("(").append(item).append(")");
+			List<GoodsSkuDefBo> goodsSkuDefBo = getSkuByGoodsIdAndPropertyValueId(goodsId, stringBuffer.toString());
+			if(goodsSkuDefBo.size() != 0){
+				List<GoodsInventoryBo> goodsInventoryBos = new ArrayList<>();
+				//根据skuId,goods查出所有库存
+				goodsSkuDefBo.forEach(skuDefBo ->{
+					GoodsInventoryBo inventoryBo = goodsInventoryBiz.selectOne(Condition.create()
+							.eq(GoodsInventoryBo.Key.skuId.toString(), skuDefBo.getId())
+							.eq(GoodsInventoryBo.Key.goodsId.toString(), goodsId));
+					goodsInventoryBos.add(inventoryBo);
+				});
+				log.info("================count:{}",count);
+				count = goodsInventoryBos.stream().map(GoodsInventoryBo::getSaleStockNum).reduce(0, Integer::sum);
+				log.info("================property:{},count:{}", stringBuffer.toString(), count);
+
+				propertyStockVO.setSkuStockNum(count);
+			} else {
+				log.info("================count:{}",count);
+				propertyStockVO.setSkuStockNum(count);
+			}
+			propertyStockVO.setPropertyId(Long.parseLong(item));
+			propertyStockVOList.add(propertyStockVO);
+		});
+		return propertyStockVOList;
 	}
 
 
