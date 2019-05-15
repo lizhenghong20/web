@@ -49,4 +49,10 @@ public interface IOrderInventoryService {
 	 * @return
 	 */
 	public Boolean updateBuySuccessGoodsInventory(Long... orderIds);
+
+
+	/**
+	 * 用于测试
+	 */
+	public void testConvertToOrderStatusEnum(Long orderId);
 }

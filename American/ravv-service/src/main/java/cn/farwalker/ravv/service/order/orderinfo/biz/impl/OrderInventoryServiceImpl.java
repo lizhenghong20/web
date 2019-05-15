@@ -442,4 +442,12 @@ public class OrderInventoryServiceImpl implements IOrderInventoryService{
 		}
 		return null;
 	}
+
+	public void testConvertToOrderStatusEnum(Long orderId){
+		OrderInfoBo orderBo = new OrderInfoBo();
+		orderBo.setOrderStatus(OrderStatusEnum.REVIEWADOPT_UNPAID);
+		orderInfoBiz.insert(orderBo);
+		OrderInfoBo query = orderInfoBiz.selectById(orderId);
+		//updateOrderUnfreeze();
+	}
 }
