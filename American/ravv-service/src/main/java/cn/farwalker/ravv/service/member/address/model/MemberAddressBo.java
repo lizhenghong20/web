@@ -45,7 +45,8 @@ public class MemberAddressBo extends Model<MemberAddressBo> implements BaseBo{
         mobile("mobile"),
         name("name"),
         remark("remark"),
-        zip("zip");
+        zip("zip"),
+        country("country") ;
         private final String column;
         private Key(String k){
             this.column = k;
@@ -131,6 +132,10 @@ public class MemberAddressBo extends Model<MemberAddressBo> implements BaseBo{
     @TableField("zip")
     @DDLColumn(name="zip",comment="邮编")
     private String zip;
+
+    @TableField("country")
+    @DDLColumn(name="country",comment="国家",length=255)
+    private String country;
     /** 主键*/
     public Long getId(){
         return id;
@@ -269,6 +274,13 @@ public class MemberAddressBo extends Model<MemberAddressBo> implements BaseBo{
     /** 邮编*/
     public void setZip(String zip){
         this.zip =zip;
+    }
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
     @Override
     protected Serializable pkVal(){
