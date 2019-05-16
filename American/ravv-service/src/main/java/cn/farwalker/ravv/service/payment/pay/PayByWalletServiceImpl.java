@@ -82,9 +82,9 @@ public class PayByWalletServiceImpl implements IPayService {
     public JsonResult<PaymentResultVo> payByOrder(HttpServletRequest request, Long orderId,String payPassword){
         if(orderId == null || orderId == 0 || Tools.string.isEmpty(payPassword) )
             throw new WakaException("invalid orderId");
-        if(Tools.string.isEmpty(payPassword) ){
-            throw new WakaException("invalid password");
-        }
+//        if(Tools.string.isEmpty(payPassword) ){
+//            throw new WakaException("invalid password");
+//        }
         OrderPaymemtBo query = iOrderPaymemtBiz.selectOne(Condition.create().eq(OrderPaymemtBo.Key.orderId.toString(),orderId)
                 .eq(OrderPaymemtBo.Key.payStatus.toString(), PayStatusEnum.UNPAY.toString())
                 .eq(OrderPaymemtBo.Key.payMode.toString(), PaymentModeEnum.ONLINE.toString()));

@@ -129,9 +129,9 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 		paymentForm.setMemberId(memberId);
 
 		//核查密码
-		if(!verifyPayPassword(paymentForm.getMemberId(),paymentForm.getPayPassword())){
-			throw new WakaException(RavvExceptionEnum.INCORRECT_PASSWORD);
-		}
+//		if(!verifyPayPassword(paymentForm.getMemberId(),paymentForm.getPayPassword())){
+//			throw new WakaException(RavvExceptionEnum.INCORRECT_PASSWORD);
+//		}
 
 		BigDecimal total =  Tools.bigDecimal.add(paymentForm.getSubTotal(),paymentForm.getShipping(),paymentForm.getTax()).setScale(2, BigDecimal.ROUND_HALF_UP);
 		if(!total.equals(paymentForm.getOrderTotal().setScale(2,BigDecimal.ROUND_HALF_UP)))
