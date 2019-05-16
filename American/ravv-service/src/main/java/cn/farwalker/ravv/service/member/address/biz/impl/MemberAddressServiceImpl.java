@@ -149,7 +149,7 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
     @Override
     public List<MemberAddressBo> getAddress(Long memberId){
         return  iMemberAddressBiz.selectList(Condition.create().eq(MemberAddressBo.Key.memberId.toString(),memberId)
-                                                           .orderBy(MemberAddressBo.Key.defaultAddr.toString(), true));
+                                                           .orderBy(MemberAddressBo.Key.defaultAddr.toString(), false));
     }
 
     public List<BaseAreaBo> getStates(){
