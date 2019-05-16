@@ -4,9 +4,14 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderInventoryService;
+import cn.farwalker.ravv.service.order.orderinfo.biz.impl.OrderInfoBizImpl;
+import cn.farwalker.ravv.service.order.orderinfo.constants.OrderStatusEnum;
+import cn.farwalker.ravv.service.order.orderinfo.model.OrderInfoBo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -21,6 +26,12 @@ import cn.farwalker.waka.util.Tools;
 public class OrderPaymentServiceTest {
 	@Resource
 	private IOrderPaymentService service;
+
+	@Autowired
+	IOrderInventoryService iOrderInventoryService;
+
+
+
 	
 	/** 拆单测试*/
 	@Test
@@ -52,4 +63,12 @@ public class OrderPaymentServiceTest {
 		}
 		Assert.assertTrue("支付回调处理(支付成功时，需要更新库存)", b.booleanValue());
 	}
+
+	@Test
+	public void convertStringToEnum() throws Exception{
+		Long id = 1113587906910216194L;
+		iOrderInventoryService.testConvertToOrderStatusEnum(id);
+	}
+
+
 }
