@@ -270,7 +270,7 @@ public class GoodsServiceImpl implements IGoodsService{
 					goodsInventoryBos.add(inventoryBo);
 				});
 				log.info("================count:{}",count);
-				count = goodsInventoryBos.stream().map(GoodsInventoryBo::getSaleStockNum).reduce(0, Integer::sum);
+				count = goodsInventoryBos.stream().mapToInt(GoodsInventoryBo::getSaleStockNum).sum();
 				log.info("================property:{},count:{}", stringBuffer.toString(), count);
 
 				propertyStockVO.setSkuStockNum(count);
