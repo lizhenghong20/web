@@ -80,7 +80,7 @@ public class PayByWalletServiceImpl implements IPayService {
      */
     @Override
     public JsonResult<PaymentResultVo> payByOrder(HttpServletRequest request, Long orderId,String payPassword){
-        if(orderId == null || orderId == 0 || Tools.string.isEmpty(payPassword) )
+        if(orderId == null || orderId == 0 /*|| Tools.string.isEmpty(payPassword) */)
             throw new WakaException("invalid orderId");
 //        if(Tools.string.isEmpty(payPassword) ){
 //            throw new WakaException("invalid password");
