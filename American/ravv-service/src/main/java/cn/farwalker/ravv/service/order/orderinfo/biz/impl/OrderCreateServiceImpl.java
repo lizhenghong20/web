@@ -247,7 +247,7 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 	 * @date 2019/3/21 9:43
 	 */
 	private void callUpdateOrderUnfreeze(Long orderId){
-		long delay = 15 * 60 * 1000;
+		long delay = /*15*/2 * 60 * 1000;
 		JobDataMap paramMap = new JobDataMap();
 		paramMap.put("orderId", String.valueOf(orderId));
 		JobSchedulerFactory.callTaskJob(
