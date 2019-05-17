@@ -132,7 +132,8 @@ public class AuthFilter extends OncePerRequestFilter {
 				return;
 			}
 		} else {
-			RenderUtil.renderJson(response,RavvExceptionEnum.TOKEN_VERIFICATION_FAILED);
+			RenderUtil.renderJson(response, JsonResult.newFail(RavvExceptionEnum.TOKEN_VERIFICATION_FAILED.getCode(),
+					RavvExceptionEnum.TOKEN_VERIFICATION_FAILED.getMessage()));
 			return;
 		}
 		chain.doFilter(request, response);
