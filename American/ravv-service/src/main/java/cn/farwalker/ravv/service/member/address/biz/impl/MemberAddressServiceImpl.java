@@ -58,6 +58,7 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
         Candidate candidate = verifyAddress(memberAddressBo);
         String zipCode = candidate.getComponents().getZipCode();
         memberAddressBo.setZip(zipCode);
+        memberAddressBo.setCountry("United States");
         long areaId = memberAddressBo.getAreaId();
         if(areaId == 0)
             throw new WakaException(RavvExceptionEnum.ADDRESS_IS_INVAILD);
@@ -103,6 +104,7 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
         Candidate candidate = verifyAddress(memberAddressBo);
         String zipCode = candidate.getComponents().getZipCode();
         memberAddressBo.setZip(zipCode);
+        memberAddressBo.setCountry("United States");
         long areaId = memberAddressBo.getAreaId();
         if(areaId == 0)
             throw new WakaException(RavvExceptionEnum.ADDRESS_IS_INVAILD);
@@ -146,7 +148,8 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
     }
     @Override
     public List<MemberAddressBo> getAddress(Long memberId){
-        return  iMemberAddressBiz.selectList(Condition.create().eq(MemberAddressBo.Key.memberId.toString(),memberId));
+        return  iMemberAddressBiz.selectList(Condition.create().eq(MemberAddressBo.Key.memberId.toString(),memberId)
+                                                           .orderBy(MemberAddressBo.Key.defaultAddr.toString(), false));
     }
 
     public List<BaseAreaBo> getStates(){
