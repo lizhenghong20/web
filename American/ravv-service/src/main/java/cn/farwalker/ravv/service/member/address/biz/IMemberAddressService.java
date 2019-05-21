@@ -10,10 +10,10 @@ import java.util.List;
  * Created by asus on 2018/12/13.
  */
 public interface IMemberAddressService {
-    public String addAddress(Long memberId,MemberAddressBo memberAddressBo)  throws TaxjarException;
+    public Long addAddress(Long memberId,MemberAddressBo memberAddressBo)  throws TaxjarException;
     public String delAddress(Long memberAddressId);
 
-    public String updateAddress(Long memberId,MemberAddressBo memberAddressBo) throws TaxjarException;
+    public Long updateAddress(Long memberId,MemberAddressBo memberAddressBo) throws TaxjarException;
     public List<MemberAddressBo> getAddress(Long memberId);
 
     public List<BaseAreaBo> getStates();

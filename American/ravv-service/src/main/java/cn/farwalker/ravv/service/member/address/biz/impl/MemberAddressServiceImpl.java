@@ -54,7 +54,7 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public String addAddress(Long memberId,MemberAddressBo memberAddressBo){
+    public Long addAddress(Long memberId,MemberAddressBo memberAddressBo){
         Candidate candidate = verifyAddress(memberAddressBo);
         String zipCode = candidate.getComponents().getZipCode();
         memberAddressBo.setZip(zipCode);
@@ -95,12 +95,12 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
                 throw new WakaException(RavvExceptionEnum.INSERT_ERROR);
         }
 
-        return "add success";
+        return memberAddressBo.getId();
     }
 
     @Override
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public String updateAddress(Long memberId,MemberAddressBo memberAddressBo){
+    public Long updateAddress(Long memberId,MemberAddressBo memberAddressBo){
         Candidate candidate = verifyAddress(memberAddressBo);
         String zipCode = candidate.getComponents().getZipCode();
         memberAddressBo.setZip(zipCode);
@@ -144,7 +144,7 @@ public class MemberAddressServiceImpl implements IMemberAddressService {
                 throw new WakaException(RavvExceptionEnum.INSERT_ERROR);
         }
 
-        return "update success";
+        return memberAddressBo.getId();
     }
     @Override
     public List<MemberAddressBo> getAddress(Long memberId){
