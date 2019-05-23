@@ -1,4 +1,4 @@
-package cn.farwalker.ravv.order.dto;
+package cn.farwalker.ravv.service.order.orderinfo.model;
 
 import java.math.BigDecimal;
 import java.util.List;

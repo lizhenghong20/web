@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import cn.farwalker.ravv.order.dto.ConfirmOrderVo;
+import cn.farwalker.ravv.service.order.orderinfo.model.ConfirmOrderVo;
 import cn.farwalker.ravv.service.base.storehouse.biz.IStorehouseBiz;
 import cn.farwalker.ravv.service.base.storehouse.model.StorehouseBo;
 import cn.farwalker.ravv.service.goods.utils.GoodsUtil;
@@ -72,57 +72,8 @@ public class CreateOrderController{
         if(Tools.number.isEmpty(addressId)){
             throw new WakaException("地址id为空");
         }
-        BigDecimal total = BigDecimal.ZERO ;
-        BigDecimal tax = BigDecimal.ZERO;
-        Map<Long,List<OrderGoodsVo>> storeBos = orderCreateBiz.getConfirmOrder(valueids);
-        List<ConfirmOrderVo> rds = new ArrayList<>();
-        for(Map.Entry<Long,List<OrderGoodsVo>> e : storeBos.entrySet()){
-        	ConfirmOrderVo vo = new ConfirmOrderVo();
-        	List goods = e.getValue();
-        	OrderGoodsVo v1 = (OrderGoodsVo) goods.get(0);
-        	vo.setGoodsBos(goods);
-        	BigDecimal fee = null;
-            if(shipmentId.longValue()==-1){//默认运费
-                ShipmentBo freight = orderCreateBiz.calcFreightGoods(goods);
-                if(freight != null){
-                    fee = freight.getFee();
-                }
-            }
-            else{
-                ShipmentBo sbo = shipmentBiz.selectById(shipmentId);
-                if(sbo==null){
-                    throw new WakaException("运费id不存在:" + shipmentId);
-                }
-                fee = sbo.getFee();
-            }
-        	vo.setShipping(fee == null ? BigDecimal.ZERO : fee);
-            log.info("vo.getShipping:{}",vo.getShipping());
-        	StorehouseBo storeBo = storeHouseBiz.selectById(e.getKey());
-        	vo.setStoreHouseBo(storeBo);
-        	log.info("vo.getSubtotal:{}",vo.getSubtotal());
-            total = Tools.bigDecimal.add(total,vo.getSubtotal()); //total + (int)(vo.getSubtotal().doubleValue() *100);
-            //根据addressId查找地址，计算税费
-            BigDecimal subTax = orderCreateBiz.calTaxByStore(addressId, e.getKey(), vo.getSubtotal());
-            log.info("subTax:{}", subTax);
-            tax = Tools.bigDecimal.add(tax, subTax);
-        	rds.add(vo);
-        	//设置图片
-        	for(Object g :goods){
-        		OrderGoodsBo go = (OrderGoodsBo)g;
-        		String imgdesc = GoodsUtil.getCdnFullPaths(go.getImgDesc());
-        		go.setImgDesc(imgdesc);
-        		String imgtitle = GoodsUtil.getCdnFullPaths(go.getImgTitle());
-        		go.setImgTitle(imgtitle);
-        		String major = GoodsUtil.getCdnFullPaths( go.getImgMajor());
-        		go.setImgMajor(major);
-        		String imgsku = GoodsUtil.getCdnFullPaths( go.getImgSku());
-        		go.setImgSku(imgsku);
-        	}
-        }
-        JsonResult<List<ConfirmOrderVo>> result = JsonResult.newSuccess(rds);
-        result.put("total", total);//"不含物流总金额/BigDecimal"
-        result.put("tax", tax);
-        return result;
+
+        return orderCreateBiz.calTotal(valueids, addressId, shipmentId);
     }
     
     /**取得通用的物流方式*/

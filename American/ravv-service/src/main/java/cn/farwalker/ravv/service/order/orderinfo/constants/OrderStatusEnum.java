@@ -52,7 +52,11 @@ public enum OrderStatusEnum implements IEnumJsons{
 	/**
 	 * 交易取消(没有支付、已退款：退款完成后，需要变为交易取消)
 	 */
-	CANCEL("cancel", "交易取消");
+	CANCEL("cancel", "交易取消"),
+	/**
+	 * 订单失效（获取订单列表时判断是否失效）
+	 */
+	INVALID("invalid", "订单失效");
 	
 	/**
 	 * 审核不通过

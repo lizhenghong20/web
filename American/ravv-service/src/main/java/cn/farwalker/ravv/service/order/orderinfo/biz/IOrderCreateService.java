@@ -8,9 +8,11 @@ import cn.farwalker.ravv.service.goodssku.specification.model.GoodsSpecification
 import cn.farwalker.ravv.service.member.basememeber.model.MemberBo;
 import cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsBo;
 import cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsVo;
+import cn.farwalker.ravv.service.order.orderinfo.model.ConfirmOrderVo;
 import cn.farwalker.ravv.service.order.orderinfo.model.OrderGoodsSkuVo;
 import cn.farwalker.ravv.service.order.paymemt.model.OrderPaymemtBo;
 import cn.farwalker.ravv.service.shipment.model.ShipmentBo;
+import cn.farwalker.waka.core.JsonResult;
 
 /**
  * 创建订单处理
@@ -37,6 +39,8 @@ public interface IOrderCreateService {
 	 * @return Map(key=仓库id,订单商品）
 	 */
 	public Map<Long,List<OrderGoodsVo>> getConfirmOrder(List<OrderGoodsSkuVo> valueids);
+
+	public JsonResult<List<ConfirmOrderVo>> calTotal(List<OrderGoodsSkuVo> valueids, Long addressId, Long shipmentId);
 	
 	/**
 	 * 按商品计算默认运费

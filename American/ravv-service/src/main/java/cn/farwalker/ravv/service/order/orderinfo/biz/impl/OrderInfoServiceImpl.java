@@ -1,21 +1,37 @@
 package cn.farwalker.ravv.service.order.orderinfo.biz.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+import cn.farwalker.ravv.service.goods.base.biz.IGoodsBiz;
+import cn.farwalker.ravv.service.goods.base.model.GoodsBo;
+import cn.farwalker.ravv.service.goods.constants.GoodsStatusEnum;
+import cn.farwalker.ravv.service.goodssku.skudef.biz.IGoodsSkuDefBiz;
+import cn.farwalker.ravv.service.goodssku.skudef.model.GoodsSkuDefBo;
+import cn.farwalker.ravv.service.member.address.biz.IMemberAddressBiz;
+import cn.farwalker.ravv.service.member.address.model.MemberAddressBo;
 import cn.farwalker.ravv.service.order.constants.PayStatusEnum;
 import cn.farwalker.ravv.service.order.constants.PaymentPlatformEnum;
+import cn.farwalker.ravv.service.order.ordergoods.biz.IOrderGoodsBiz;
+import cn.farwalker.ravv.service.order.ordergoods.dao.IOrderGoodsDao;
+import cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsBo;
+import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderCreateService;
+import cn.farwalker.ravv.service.order.orderinfo.constants.OrderTypeEnum;
+import cn.farwalker.ravv.service.order.orderinfo.model.*;
 import cn.farwalker.ravv.service.payment.paymentlog.biz.IMemberPaymentLogBiz;
 import cn.farwalker.ravv.service.payment.paymentlog.model.MemberPaymentLogBo;
 import cn.farwalker.ravv.service.quartz.JobSchedulerFactory;
 import cn.farwalker.ravv.service.quartz.UpdateOrderStatusTaskJob;
 import cn.farwalker.ravv.service.shipstation.biz.IShipStationService;
+import cn.farwalker.waka.core.JsonResult;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import com.baomidou.mybatisplus.mapper.Condition;
@@ -36,7 +52,6 @@ import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderInfoService;
 import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderInventoryService;
 import cn.farwalker.ravv.service.order.orderinfo.constants.OrderStatusEnum;
 import cn.farwalker.ravv.service.order.orderinfo.dao.IOrderInfoDao;
-import cn.farwalker.ravv.service.order.orderinfo.model.OrderInfoBo;
 import cn.farwalker.ravv.service.order.orderlogistics.biz.IOrderLogisticsBiz;
 import cn.farwalker.ravv.service.order.orderlogistics.contants.LogisticsStatusEnum;
 import cn.farwalker.ravv.service.order.orderlogistics.model.OrderLogisticsBo;
@@ -83,6 +98,21 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 	@Autowired
 	private IMemberPaymentLogBiz iMemberPaymentLogBiz;
 
+	@Autowired
+	private IOrderGoodsBiz iOrderGoodsBiz;
+
+	@Autowired
+	private IMemberAddressBiz iMemberAddressBiz;
+
+	@Autowired
+	private IOrderCreateService iOrderCreateService;
+
+	@Autowired
+	private IGoodsBiz iGoodsBiz;
+
+	@Autowired
+	private IGoodsSkuDefBiz iGoodsSkuDefBiz;
+
 	@Override
 	public OrderInfoBo updateCancelOrder(Long orderId) {
 		OrderInfoBo bo = orderInfoBiz.selectById(orderId);
@@ -99,6 +129,7 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 	}
 
 	@Override
+	@Transactional(readOnly = false, rollbackFor = Exception.class)
 	public Page<OrderInfoBo> getMyOrderList(Long buyerId, List<OrderStatusEnum> orderStatus, String search,
 			Integer lastMonth, Boolean waitReview, Boolean afterSale, List<String> sortfield, Integer start,
 			Integer size) {
@@ -146,6 +177,10 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 
 		List<OrderInfoBo> rds = orderInfoDao.getMyOrder(page,unpaidStatus, paidStatus, buyerId, lastDate, orderStatus,
 				search, waitReview, afterSale, sortfield);
+
+		//对未支付订单做失效判断（计算出的应付价格等与数据库存储不符即为失效）
+		rds = doInvalidOrder(rds);
+
 		page.setRecords(rds);
 		return page;
 	}
@@ -318,6 +353,193 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 		return null;
 	}
 
+	/**
+	 * @Author Mr.Simple
+	 * @Description 判断订单中是否存在失效订单并更改状态
+	 * @Date 13:48 2019/5/23
+	 * @Param
+	 * @return
+	 **/
+	private List<OrderInfoBo> doInvalidOrder(List<OrderInfoBo> orderInfoBoList){
+		Long memberId = orderInfoBoList.get(0).getBuyerId();
+		List<OrderInfoBo> allList = new ArrayList<>();
+		//判断订单是否支付
+		for (OrderInfoBo item : orderInfoBoList) {
+			//如果未支付，判断该订单是否失效
+			if(OrderStatusEnum.REVIEWADOPT_UNPAID.getKey().equals(item.getOrderStatus().getKey())){
+				//如果订单未失效，根据orderId查出订单下的所有商品，重新执行一遍confirm接口计算金额
+				//判断该订单有没有子单，分别查出OrderGoodsSkuVo属性值
+				List<Long> orderIdList = new ArrayList<>();
+				if(OrderTypeEnum.SINGLE.getKey().equals(item.getOrderType().getKey())){
+					orderIdList.add(item.getId());
+				} else if(OrderTypeEnum.MASTER.getKey().equals(item.getOrderType().getKey())){
+					//根据主单id查询出所有子单
+					List<OrderInfoBo> orderList = orderInfoBiz.selectList(Condition.create()
+							.eq(OrderInfoBo.Key.pid.toString(), item.getId()));
+					List<Long> childOrderList = orderList.stream().map(OrderInfoBo::getId).collect(Collectors.toList());
+					orderIdList.addAll(childOrderList);
+				}
+				//根据orderId查出订单所有商品
+				List<OrderGoodsSkuVo> valueids = getValueidsByOrderId(orderIdList);
+				//判断valueids是否为空，为空说明商品失效
+				if(valueids == null){
+					//执行订单失效逻辑
+					allList.add(changeInvalidStatus(item.getId()));
+					continue;
+				}
+
+				ConfirmVo confirmVo = getAddressId(item.getId(), memberId);
+				if(confirmVo == null){
+					//confirmVo为空说明收货地址改变，执行订单失效逻辑
+					allList.add(changeInvalidStatus(item.getId()));
+					continue;
+				}
+
+				//不为空则重新计算所有金额
+				JsonResult<List<ConfirmOrderVo>> result =
+						iOrderCreateService.calTotal(valueids, confirmVo.getAddressId(), confirmVo.getShipmentId());
+				//与数据库存储的金额对比（orderpayment表）
+				if(!compareOrderPament(result, item.getId())){
+					//执行订单失效逻辑
+					allList.add(changeInvalidStatus(item.getId()));
+					continue;
+				}
+			}
+			allList.add(item);
+		}
+		return allList;
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 获得订单所有商品
+	 * @Date 13:48 2019/5/23
+	 * @Param
+	 * @return
+	 **/
+	private List<OrderGoodsSkuVo> getValueidsByOrderId(List<Long> orderIdList){
+		List<OrderGoodsSkuVo> valueids = new ArrayList<>();
+		for (Long item : orderIdList) {
+			List<OrderGoodsBo> orderGoodsBos = iOrderGoodsBiz.selectList(Condition.create()
+					.eq(OrderGoodsBo.Key.orderId.toString(), item));
+			if(orderGoodsBos == null){
+				throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
+			}
+			for (OrderGoodsBo list : orderGoodsBos) {
+				//查看goodsid,skuid是否存在,不存在直接return null
+				if(!checkGoods(list)){
+					return null;
+				}
+				OrderGoodsSkuVo orderGoodsSkuVo = new OrderReturnSkuVo();
+				orderGoodsSkuVo.setGoodsId(list.getGoodsId());
+				orderGoodsSkuVo.setSkuId(list.getSkuId());
+				orderGoodsSkuVo.setQuan(list.getQuantity());
+				valueids.add(orderGoodsSkuVo);
+			}
+		}
+
+		return valueids;
+	}
+
+	private boolean checkGoods(OrderGoodsBo orderGoodsBo){
+		//验证商品是否失效
+		GoodsBo goodsBo = iGoodsBiz.selectById(orderGoodsBo.getGoodsId());
+		if(goodsBo == null || !GoodsStatusEnum.ONLINE.getKey().equals(goodsBo.getGoodsStatus().getKey())){
+			return false;
+		}
+		//再查找sku
+		GoodsSkuDefBo skuDefBo = iGoodsSkuDefBiz.selectById(orderGoodsBo.getSkuId());
+		if(skuDefBo == null){
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 获取该订单下单时的地址id和shipmentId
+	 * @Date 13:48 2019/5/23
+	 * @Param
+	 * @return
+	 **/
+	private ConfirmVo getAddressId(Long orderId, Long memberId){
+		ConfirmVo confirmVo = new ConfirmVo();
+		//通过orderId查询出该订单填写的物流地址（查询order_logistics表）
+		OrderLogisticsBo orderLogisticsBo = orderLogisticsBiz.selectOne(Condition.create()
+													.eq(OrderLogisticsBo.Key.orderId.toString(), orderId));
+		if(orderLogisticsBo == null){
+			throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
+		}
+		List<MemberAddressBo> addressList = iMemberAddressBiz.selectList(Condition.create()
+									.eq(MemberAddressBo.Key.areaId.toString(), orderLogisticsBo.getReceiverAreaId())
+									.eq(MemberAddressBo.Key.address.toString(), orderLogisticsBo.getReceiverDetailAddress())
+									.eq(MemberAddressBo.Key.memberId.toString(), memberId));
+		if(addressList.size() == 0){
+			return null;
+		}
+		confirmVo.setAddressId(addressList.get(0).getId());
+		confirmVo.setShipmentId(orderLogisticsBo.getShipmentId());
+		return confirmVo;
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 比较当前计算出的价格与数据库存储价格
+	 * @Date 13:54 2019/5/23
+	 * @Param
+	 * @return
+	 **/
+	private boolean compareOrderPament(JsonResult<List<ConfirmOrderVo>> result, Long orderId){
+		BigDecimal total = (BigDecimal) result.get("total");
+		BigDecimal tax = (BigDecimal) result.get("tax");
+		BigDecimal ship = (BigDecimal) result.get("ship");
+		BigDecimal amount = Tools.bigDecimal.add(BigDecimal.ZERO, total, tax, ship);
+		//根据orderId查询orderpayment查出订单应付金额
+
+		OrderPaymemtBo paymemtBo = orderPaymemtBiz.selectOne(Condition.create()
+											.eq(OrderPaymemtBo.Key.orderId.toString(), orderId));
+		if(paymemtBo == null){
+			throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
+		}
+
+		if(amount.compareTo(paymemtBo.getShouldPayTotalFee()) != 0){
+			log.info("-----------------amount:{}", amount);
+			log.info("-----------------paymemtBo.getShouldPayTotalFee():{}", paymemtBo.getShouldPayTotalFee());
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 订单失效逻辑
+	 * @Date 15:07 2019/5/23
+	 * @Param
+	 * @return
+	 **/
+	private OrderInfoBo changeInvalidStatus(Long orderId){
+		//改变订单和子单状态
+		List<Long> orderIdList = new ArrayList<>();
+		orderIdList.add(orderId);
+		//查询是否有子单
+		List<OrderInfoBo> orderList = orderInfoBiz.selectList(Condition.create()
+				.eq(OrderInfoBo.Key.pid.toString(), orderId));
+		if(orderList.size() != 0){
+			orderList.forEach(item->{
+				orderIdList.add(item.getId());
+			});
+		}
+		OrderInfoBo updateBo = new OrderInfoBo();
+		updateBo.setOrderStatus(OrderStatusEnum.INVALID);
+		if(!orderInfoBiz.update(updateBo, Condition.create().in(OrderInfoBo.Key.id.toString(), orderIdList))){
+			throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
+		}
+		OrderInfoBo orderInfoBo = orderInfoBiz.selectById(orderId);
+		if(orderInfoBo == null){
+			throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
+		}
+		return orderInfoBo;
+	}
 
 
 

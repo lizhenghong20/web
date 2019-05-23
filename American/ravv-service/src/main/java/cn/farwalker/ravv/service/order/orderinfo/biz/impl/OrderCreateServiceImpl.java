@@ -13,6 +13,8 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import cn.farwalker.ravv.service.order.orderinfo.model.ConfirmOrderVo;
+import cn.farwalker.waka.core.JsonResult;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.ravv.service.quartz.JobSchedulerFactory;
@@ -724,8 +726,9 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 				if(shipment != null) {
 					vo.setLogisticsCompany(shipment.getName());
 				}
-				vo.setShipmentId(shipmentId);
+
 			}
+			vo.setShipmentId(shipmentId);
 			rds.add(vo);
 		}
 		orderLogisticsBiz.insertBatch(rds);
@@ -930,7 +933,65 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 		}
 		return result;
 	}
-	
+
+	@Override
+	public JsonResult<List<ConfirmOrderVo>> calTotal(List<OrderGoodsSkuVo> valueids, Long addressId, Long shipmentId) {
+		Map<Long,List<OrderGoodsVo>> storeBos = getConfirmOrder(valueids);
+		BigDecimal total = BigDecimal.ZERO ;
+		BigDecimal tax = BigDecimal.ZERO;
+		BigDecimal ship = BigDecimal.ZERO;
+		List<ConfirmOrderVo> rds = new ArrayList<>();
+		for(Map.Entry<Long,List<OrderGoodsVo>> e : storeBos.entrySet()){
+			ConfirmOrderVo vo = new ConfirmOrderVo();
+			List goods = e.getValue();
+			OrderGoodsVo v1 = (OrderGoodsVo) goods.get(0);
+			vo.setGoodsBos(goods);
+			BigDecimal fee = null;
+			if(shipmentId.longValue()==-1){//默认运费
+				ShipmentBo freight = calcFreightGoods(goods);
+				if(freight != null){
+					fee = freight.getFee();
+				}
+			}
+			else{
+				ShipmentBo sbo = shipmentBiz.selectById(shipmentId);
+				if(sbo==null){
+					throw new WakaException("运费id不存在:" + shipmentId);
+				}
+				fee = sbo.getFee();
+			}
+			vo.setShipping(fee == null ? BigDecimal.ZERO : fee);
+			log.info("vo.getShipping:{}",vo.getShipping());
+			ship = Tools.bigDecimal.add(ship, vo.getShipping());
+			StorehouseBo storeBo = storehouseBiz.selectById(e.getKey());
+			vo.setStoreHouseBo(storeBo);
+			log.info("vo.getSubtotal:{}",vo.getSubtotal());
+			total = Tools.bigDecimal.add(total,vo.getSubtotal()); //total + (int)(vo.getSubtotal().doubleValue() *100);
+			//根据addressId查找地址，计算税费
+			BigDecimal subTax = calTaxByStore(addressId, e.getKey(), vo.getSubtotal());
+			log.info("subTax:{}", subTax);
+			tax = Tools.bigDecimal.add(tax, subTax);
+			rds.add(vo);
+			//设置图片
+			for(Object g :goods){
+				OrderGoodsBo go = (OrderGoodsBo)g;
+				String imgdesc = GoodsUtil.getCdnFullPaths(go.getImgDesc());
+				go.setImgDesc(imgdesc);
+				String imgtitle = GoodsUtil.getCdnFullPaths(go.getImgTitle());
+				go.setImgTitle(imgtitle);
+				String major = GoodsUtil.getCdnFullPaths( go.getImgMajor());
+				go.setImgMajor(major);
+				String imgsku = GoodsUtil.getCdnFullPaths( go.getImgSku());
+				go.setImgSku(imgsku);
+			}
+		}
+		JsonResult<List<ConfirmOrderVo>> result = JsonResult.newSuccess(rds);
+		result.put("total", total);//"不含物流总金额/BigDecimal"
+		result.put("tax", tax);
+		result.put("ship", ship);
+		return result;
+	}
+
 	/**
 	 * 如果商品是促销活动，则取原来的库存价格，否则返回null
 	 * @param vo

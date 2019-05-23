@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Random;
 
 import cn.farwalker.ravv.admin.order.AdminOrderService;
-import cn.farwalker.ravv.order.dto.ConfirmOrderVo;
+import cn.farwalker.ravv.service.order.orderinfo.model.ConfirmOrderVo;
 import cn.farwalker.ravv.service.base.area.constant.CountryCodeEnum;
 import cn.farwalker.ravv.service.goodssku.skudef.biz.IGoodsSkuDefBiz;
 import cn.farwalker.ravv.service.goodssku.skudef.model.GoodsSkuDefBo;

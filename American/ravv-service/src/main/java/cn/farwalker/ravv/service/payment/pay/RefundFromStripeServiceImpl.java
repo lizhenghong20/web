@@ -7,6 +7,7 @@ import cn.farwalker.ravv.service.payment.paymentlog.model.MemberPaymentLogBo;
 import cn.farwalker.ravv.service.paypal.RefundForm;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
+import cn.farwalker.waka.util.Tools;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.Refund;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -52,6 +54,19 @@ public class RefundFromStripeServiceImpl implements IRefundService{
         Refund refund = Refund.create(params);
         if(!"succeeded".equals(refund.getStatus())){
             throw new WakaException("退款失败");
+        }
+        MemberPaymentLogBo insertBo = new MemberPaymentLogBo();
+        Tools.bean.copyProperties(queryLogBo,insertBo);
+        insertBo.setStatus(PayStatusEnum.REFUND);
+        insertBo.setReturnOrderId(refundForm.getReturnOrderId());
+        insertBo.setRefundTime(new Date());
+        insertBo.setId(null);
+        insertBo.setGmtModified(new Date());
+        insertBo.setGmtCreate(new Date());
+        insertBo.setPayedTime(null);
+        insertBo.setRefundTotalAmount(refundForm.getRefundTotalAmount());
+        if(!iMemberPaymentLogBiz.insert(insertBo)){
+            throw new WakaException(RavvExceptionEnum.INSERT_ERROR);
         }
         return "refund success!";
     }
