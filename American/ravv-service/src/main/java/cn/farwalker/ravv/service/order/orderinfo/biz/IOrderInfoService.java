@@ -1,8 +1,13 @@
 package cn.farwalker.ravv.service.order.orderinfo.biz;
+import java.math.BigDecimal;
 import java.util.List;
 
 import cn.farwalker.ravv.service.order.constants.PaymentPlatformEnum;
+import cn.farwalker.ravv.service.order.ordergoods.model.OrderGoodsBo;
 import cn.farwalker.ravv.service.order.orderinfo.constants.OrderStatusEnum;
+import cn.farwalker.ravv.service.order.orderinfo.model.ConfirmOrderVo;
+import cn.farwalker.ravv.service.order.orderinfo.model.ConfirmVo;
+import cn.farwalker.ravv.service.order.orderinfo.model.OrderGoodsSkuVo;
 import cn.farwalker.ravv.service.order.orderinfo.model.OrderInfoBo;
 import cn.farwalker.ravv.service.order.orderlogistics.model.OrderLogisticsBo;
 import cn.farwalker.ravv.service.order.paymemt.model.OrderPaymemtBo;
@@ -82,5 +87,15 @@ public interface IOrderInfoService {
 	 * @return
 	 */
 	PaymentPlatformEnum getPayType(Long orderId);
+
+	public List<Long> getAllOrderIdListByMasterId(OrderInfoBo item);
+
+	public List<OrderGoodsSkuVo> getValueidsByOrderId(List<Long> orderIdList, boolean isCheckGoodsId);
+
+	public boolean checkGoods(OrderGoodsBo orderGoodsBo);
+
+	public ConfirmVo getAddressId(Long orderId, Long memberId);
+
+	public BigDecimal getAmount(JsonResult<List<ConfirmOrderVo>> result);
 
 }

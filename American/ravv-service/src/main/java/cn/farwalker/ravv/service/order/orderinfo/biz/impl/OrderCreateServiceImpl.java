@@ -204,7 +204,7 @@ public class OrderCreateServiceImpl implements IOrderCreateService{
 		String txt = "订单金额:" +  pageTotalAmt;
 		orderLogService.createLog(ob.getId(),buyerId,ob.getBuyerNick(), "订单创建", txt ,Boolean.TRUE);
 		
-		freezeInventory(orderBos);
+//		freezeInventory(orderBos);
 		
 		//创建分润记录
 		if(CollectionUtils.isNotEmpty(orderBos)) {

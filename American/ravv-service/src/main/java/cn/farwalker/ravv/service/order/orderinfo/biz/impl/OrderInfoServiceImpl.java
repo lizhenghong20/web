@@ -367,20 +367,12 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 		for (OrderInfoBo item : orderInfoBoList) {
 			//如果未支付，判断该订单是否失效
 			if(OrderStatusEnum.REVIEWADOPT_UNPAID.getKey().equals(item.getOrderStatus().getKey())){
-				//如果订单未失效，根据orderId查出订单下的所有商品，重新执行一遍confirm接口计算金额
+				//如果订单未支付，根据orderId查出订单下的所有商品，重新执行一遍confirm接口计算金额
 				//判断该订单有没有子单，分别查出OrderGoodsSkuVo属性值
 				List<Long> orderIdList = new ArrayList<>();
-				if(OrderTypeEnum.SINGLE.getKey().equals(item.getOrderType().getKey())){
-					orderIdList.add(item.getId());
-				} else if(OrderTypeEnum.MASTER.getKey().equals(item.getOrderType().getKey())){
-					//根据主单id查询出所有子单
-					List<OrderInfoBo> orderList = orderInfoBiz.selectList(Condition.create()
-							.eq(OrderInfoBo.Key.pid.toString(), item.getId()));
-					List<Long> childOrderList = orderList.stream().map(OrderInfoBo::getId).collect(Collectors.toList());
-					orderIdList.addAll(childOrderList);
-				}
+				orderIdList = getAllOrderIdListByMasterId(item);
 				//根据orderId查出订单所有商品
-				List<OrderGoodsSkuVo> valueids = getValueidsByOrderId(orderIdList);
+				List<OrderGoodsSkuVo> valueids = getValueidsByOrderId(orderIdList, true);
 				//判断valueids是否为空，为空说明商品失效
 				if(valueids == null){
 					//执行订单失效逻辑
@@ -410,6 +402,20 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 		return allList;
 	}
 
+	public List<Long> getAllOrderIdListByMasterId(OrderInfoBo item){
+		List<Long> orderIdList = new ArrayList<>();
+		if(OrderTypeEnum.SINGLE.getKey().equals(item.getOrderType().getKey())){
+			orderIdList.add(item.getId());
+		} else if(OrderTypeEnum.MASTER.getKey().equals(item.getOrderType().getKey())){
+			//根据主单id查询出所有子单
+			List<OrderInfoBo> orderList = orderInfoBiz.selectList(Condition.create()
+					.eq(OrderInfoBo.Key.pid.toString(), item.getId()));
+			List<Long> childOrderList = orderList.stream().map(OrderInfoBo::getId).collect(Collectors.toList());
+			orderIdList.addAll(childOrderList);
+		}
+		return orderIdList;
+	}
+
 	/**
 	 * @Author Mr.Simple
 	 * @Description 获得订单所有商品
@@ -417,19 +423,23 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 	 * @Param
 	 * @return
 	 **/
-	private List<OrderGoodsSkuVo> getValueidsByOrderId(List<Long> orderIdList){
+	public List<OrderGoodsSkuVo> getValueidsByOrderId(List<Long> orderIdList, boolean isCheckGoodsId){
 		List<OrderGoodsSkuVo> valueids = new ArrayList<>();
 		for (Long item : orderIdList) {
 			List<OrderGoodsBo> orderGoodsBos = iOrderGoodsBiz.selectList(Condition.create()
 					.eq(OrderGoodsBo.Key.orderId.toString(), item));
 			if(orderGoodsBos == null){
-				throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
+				log.info("-----------------未找到该订单商品，orderId:{}", item);
+				return null;
 			}
 			for (OrderGoodsBo list : orderGoodsBos) {
-				//查看goodsid,skuid是否存在,不存在直接return null
-				if(!checkGoods(list)){
-					return null;
+				//查看goodsid,skuid是否失效,不存在直接return null
+				if(isCheckGoodsId){
+					if(!checkGoods(list)){
+						return null;
+					}
 				}
+
 				OrderGoodsSkuVo orderGoodsSkuVo = new OrderReturnSkuVo();
 				orderGoodsSkuVo.setGoodsId(list.getGoodsId());
 				orderGoodsSkuVo.setSkuId(list.getSkuId());
@@ -441,15 +451,17 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 		return valueids;
 	}
 
-	private boolean checkGoods(OrderGoodsBo orderGoodsBo){
+	public boolean checkGoods(OrderGoodsBo orderGoodsBo){
 		//验证商品是否失效
 		GoodsBo goodsBo = iGoodsBiz.selectById(orderGoodsBo.getGoodsId());
 		if(goodsBo == null || !GoodsStatusEnum.ONLINE.getKey().equals(goodsBo.getGoodsStatus().getKey())){
+			log.info("-----------------商品已下架或删除，goodsId:{}", orderGoodsBo.getGoodsId());
 			return false;
 		}
 		//再查找sku
 		GoodsSkuDefBo skuDefBo = iGoodsSkuDefBiz.selectById(orderGoodsBo.getSkuId());
 		if(skuDefBo == null){
+			log.info("-----------------商品已下架或删除，skuId:{}", orderGoodsBo.getSkuId());
 			return false;
 		}
 		return true;
@@ -462,7 +474,7 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 	 * @Param
 	 * @return
 	 **/
-	private ConfirmVo getAddressId(Long orderId, Long memberId){
+	public ConfirmVo getAddressId(Long orderId, Long memberId){
 		ConfirmVo confirmVo = new ConfirmVo();
 		//通过orderId查询出该订单填写的物流地址（查询order_logistics表）
 		OrderLogisticsBo orderLogisticsBo = orderLogisticsBiz.selectOne(Condition.create()
@@ -490,12 +502,8 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 	 * @return
 	 **/
 	private boolean compareOrderPament(JsonResult<List<ConfirmOrderVo>> result, Long orderId){
-		BigDecimal total = (BigDecimal) result.get("total");
-		BigDecimal tax = (BigDecimal) result.get("tax");
-		BigDecimal ship = (BigDecimal) result.get("ship");
-		BigDecimal amount = Tools.bigDecimal.add(BigDecimal.ZERO, total, tax, ship);
+		BigDecimal amount = getAmount(result);
 		//根据orderId查询orderpayment查出订单应付金额
-
 		OrderPaymemtBo paymemtBo = orderPaymemtBiz.selectOne(Condition.create()
 											.eq(OrderPaymemtBo.Key.orderId.toString(), orderId));
 		if(paymemtBo == null){
@@ -508,6 +516,14 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 			return false;
 		}
 		return true;
+	}
+
+	public BigDecimal getAmount(JsonResult<List<ConfirmOrderVo>> result){
+		BigDecimal total = (BigDecimal) result.get("total");
+		BigDecimal tax = (BigDecimal) result.get("tax");
+		BigDecimal ship = (BigDecimal) result.get("ship");
+		BigDecimal amount = Tools.bigDecimal.add(BigDecimal.ZERO, total, tax, ship);
+		return amount;
 	}
 
 	/**

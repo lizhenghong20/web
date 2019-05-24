@@ -4,12 +4,28 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import javax.xml.crypto.Data;
 
+import cn.farwalker.ravv.service.flash.goods.model.FlashGoodsBo;
+import cn.farwalker.ravv.service.flash.sale.biz.IFlashSaleBiz;
+import cn.farwalker.ravv.service.flash.sale.model.FlashSaleBo;
+import cn.farwalker.ravv.service.flash.sku.biz.IFlashGoodsSkuBiz;
+import cn.farwalker.ravv.service.flash.sku.model.FlashGoodsSkuBo;
+import cn.farwalker.ravv.service.goods.inventory.biz.IGoodsInventoryBiz;
+import cn.farwalker.ravv.service.goods.inventory.model.GoodsInventoryBo;
 import cn.farwalker.ravv.service.member.pam.member.biz.IPamMemberBiz;
 import cn.farwalker.ravv.service.member.pam.member.model.PamMemberBo;
+import cn.farwalker.ravv.service.order.orderinfo.biz.*;
+import cn.farwalker.ravv.service.order.orderinfo.model.ConfirmOrderVo;
+import cn.farwalker.ravv.service.order.orderinfo.model.ConfirmVo;
+import cn.farwalker.ravv.service.order.orderinfo.model.OrderGoodsSkuVo;
+import cn.farwalker.ravv.service.order.returns.biz.IOrderReturnsService;
+import cn.farwalker.ravv.service.order.returns.model.OrderReturnsBo;
 import cn.farwalker.ravv.service.paypal.PaymentForm;
 import cn.farwalker.ravv.service.paypal.PaymentResultVo;
 import cn.farwalker.ravv.service.shipstation.biz.IShipStationService;
@@ -32,9 +48,6 @@ import cn.farwalker.ravv.service.member.basememeber.model.MemberBo;
 import cn.farwalker.ravv.service.order.constants.PayStatusEnum;
 import cn.farwalker.ravv.service.order.constants.PaymentPlatformEnum;
 import cn.farwalker.ravv.service.order.operationlog.biz.IOrderLogService;
-import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderInfoBiz;
-import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderInventoryService;
-import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderPaymentService;
 import cn.farwalker.ravv.service.order.orderinfo.constants.OrderStatusEnum;
 import cn.farwalker.ravv.service.order.orderinfo.model.OrderInfoBo;
 import cn.farwalker.ravv.service.order.paymemt.biz.IOrderPaymemtBiz;
@@ -81,7 +94,27 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 
 	@Autowired
 	private IPamMemberBiz iPamMemberBiz;
-	
+
+	@Autowired
+	private IOrderInfoService iOrderInfoService;
+
+	@Autowired
+	private IOrderCreateService iOrderCreateService;
+
+	@Autowired
+	private IOrderReturnsService iOrderReturnsService;
+
+	@Autowired
+	private IFlashGoodsSkuBiz iFlashGoodsSkuBiz;
+
+	@Autowired
+	private IFlashSaleBiz iFlashSaleBiz;
+
+	@Autowired
+	private IGoodsInventoryBiz iGoodsInventoryBiz;
+
+	private static final Lock lock = new ReentrantLock(true);
+
 	@Override
 	@Transactional(readOnly = false, rollbackFor = Exception.class)
 	public Boolean updatePaymentCallback(Long orderId, PaymentPlatformEnum platform, MemberPaymentLogBo paylogBo){
@@ -105,7 +138,7 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 		}
 		
 		BigDecimal amt = paylogBo.getTotalAmount();
-		updateGoodsSuccess(orderId);
+
 		if(platform == PaymentPlatformEnum.Advance){//余额支付
 			Long memberId = paylogBo.getMemberId();
 			if(memberId == null || memberId.longValue() ==0){
@@ -113,7 +146,18 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 			}
 			createAccountFlow(orderId, memberId, amt);
 		}
-		
+		OrderInfoBo orderInfoBo = orderInfoBiz.selectById(orderId);
+		//判断订单是否合法再更新库存；如果不合法，整单退款
+		if(!checkOrderAgain(orderInfoBo)){
+			//执行整单退款
+			doRefund(orderId, paylogBo.getMemberId());
+		}
+		//如果订单合法，查询库存，并更新；如果有任何错误，整单退款
+		if(!checkStock(orderInfoBo)){
+			//执行整单退款
+			doRefund(orderId, paylogBo.getMemberId());
+		}
+//		updateGoodsSuccess(orderId);
 		return Boolean.valueOf(up);
 	}
 
@@ -316,6 +360,174 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 		//支付完成则更新log
 		if(!iMemberPaymentLogBiz.insert(paylogBo))
 			throw new WakaException(RavvExceptionEnum.INSERT_ERROR);
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 检查订单是否合法
+	 * @Date 14:10 2019/5/24
+	 * @Param 
+	 * @return 
+	 **/
+	private boolean checkOrderAgain(OrderInfoBo orderInfoBo){
+		//再次执行confirm流程，对比价格
+		List<OrderGoodsSkuVo> valueids = getAllOrderGoods(orderInfoBo);
+		if(valueids.size() == 0){
+			log.info("-----------------checkOrderAgain未找到该订单商品，orderId:{}", orderInfoBo.getId());
+			return false;
+		}
+		ConfirmVo confirmVo = iOrderInfoService.getAddressId(orderInfoBo.getId(), orderInfoBo.getBuyerId());
+		if(confirmVo == null){
+			log.info("-----------------未查到生成订单时的地址，orderId:{}", orderInfoBo.getId());
+			return false;
+		}
+		//不为空则重新计算所有金额
+		JsonResult<List<ConfirmOrderVo>> result =
+				iOrderCreateService.calTotal(valueids, confirmVo.getAddressId(), confirmVo.getShipmentId());
+		if(!compareMemberPayLog(result, orderInfoBo.getId())){
+			log.info("-----------------订单支付金额不符，orderId:{}", orderInfoBo.getId());
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 取得订单所有商品
+	 * @Date 14:10 2019/5/24
+	 * @Param 
+	 * @return 
+	 **/
+	private List<OrderGoodsSkuVo> getAllOrderGoods(OrderInfoBo orderInfoBo){
+		List<Long> orderIdList = iOrderInfoService.getAllOrderIdListByMasterId(orderInfoBo);
+		List<OrderGoodsSkuVo> valueids = iOrderInfoService.getValueidsByOrderId(orderIdList,true);
+		return valueids;
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 比较计算价金额与支付金额
+	 * @Date 14:09 2019/5/24
+	 * @Param 
+	 * @return 
+	 **/
+	private boolean compareMemberPayLog(JsonResult<List<ConfirmOrderVo>> result, Long orderId){
+		BigDecimal amount = iOrderInfoService.getAmount(result);
+		MemberPaymentLogBo paymentLogBo = iMemberPaymentLogBiz.selectOne(Condition.create()
+													.eq(MemberPaymentLogBo.Key.orderId.toString(), orderId));
+		if(paymentLogBo == null){
+			log.info("-----------------未查到该订单支付日志");
+			return false;
+		}
+		if(amount.compareTo(paymentLogBo.getTotalAmount()) != 0){
+			log.info("-----------------amount:{}", amount);
+			log.info("-----------------paymentLogBo.getTotalAmount():{}", paymentLogBo.getTotalAmount());
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @Author Mr.Simple
+	 * @Description 订单不合法，执行全单退款
+	 * @Date 11:28 2019/5/24
+	 * @Param
+	 * @return
+	 **/
+	private void doRefund(Long orderId, Long memberId){
+		String reasonType = "颜色/图案/款式与商品描述不符";
+		String reason = "付款金额不符";
+		MemberBo memberBo = memberBiz.selectById(memberId);
+		if(memberBo == null){
+			throw new WakaException(RavvExceptionEnum.SELECT_ERROR);
+		}
+		//调用整单退款接口
+		OrderReturnsBo bo = iOrderReturnsService.createOrderRefund(orderId, reasonType, reason, memberBo);
+		if(bo == null){
+			throw new WakaException(RavvExceptionEnum.INSERT_ERROR + "refund error");
+		}
+	}
+
+	private boolean checkStock(OrderInfoBo orderInfoBo){
+		//获取该订单中的所有商品
+		List<OrderGoodsSkuVo> valueids = getAllOrderGoods(orderInfoBo);
+		Date today = new Date();
+		//遍历valueids，分别查找flashgoods和goods中的库存，判断库存是否足够
+		for (OrderGoodsSkuVo item : valueids) {
+			//先查找flashgoods
+			//查找出当前时间的限时购id
+			FlashSaleBo flashSaleBo = iFlashSaleBiz.selectOne(Condition.create()
+										.le(FlashSaleBo.Key.freezetime.toString(), today)
+										.ge(FlashSaleBo.Key.endtime.toString(), today));
+			if(flashSaleBo != null){
+				List<FlashGoodsSkuBo> flashGoodsSkuBoList = iFlashGoodsSkuBiz.selectList(Condition.create()
+						.eq(FlashGoodsSkuBo.Key.goodsId.toString(), item.getGoodsId())
+						.eq(FlashGoodsSkuBo.Key.goodsSkuDefId.toString(), item.getSkuId())
+						.eq(FlashGoodsSkuBo.Key.flashSaleId.toString(), flashSaleBo.getId()));
+				//先判断该商品是否在限时购中
+				if(flashGoodsSkuBoList.size() != 0){
+					//如果查找到有存在，判断该限时购中有多少个该商品，多于一个报错
+					if(flashGoodsSkuBoList.size() != 1){
+						log.info("------------------限时购中存在多个相同商品");
+						return false;
+					}
+					FlashGoodsSkuBo goodsSkuBo = flashGoodsSkuBoList.get(0);
+					//此处建议加锁，防止计算出错
+					try{
+						lock.lock();
+						int remainStock = goodsSkuBo.getInventory() - goodsSkuBo.getSaleCount();
+						if(remainStock < item.getQuan()){
+							log.info("-------------------flashGoodsSku库存不足,goodsId:{},skuId:{}",
+									item.getGoodsId(), item.getSkuId());
+							return false;
+						}
+						//操作数据库加上销售量
+						goodsSkuBo.setSaleCount(goodsSkuBo.getSaleCount() + item.getQuan());
+						if(!iFlashGoodsSkuBiz.updateById(goodsSkuBo)){
+							log.info("-------------------flashGoodsSku更新失败,goodsId:{},skuId:{}",
+									item.getGoodsId(), item.getSkuId());
+							return false;
+						}
+					} finally {
+						lock.unlock();
+					}
+
+				} else if(flashGoodsSkuBoList.size() == 0){
+					//查找商品的库存
+					checkGoodsInventory(item);
+				}
+			} else {
+				//查找商品的库存
+				checkGoodsInventory(item);
+			}
+
+		}
+		return true;
+	}
+
+	private boolean checkGoodsInventory(OrderGoodsSkuVo item){
+		GoodsInventoryBo goodsInventoryBo = iGoodsInventoryBiz.selectOne(Condition.create()
+												.eq(GoodsInventoryBo.Key.goodsId.toString(), item.getGoodsId())
+												.eq(GoodsInventoryBo.Key.skuId.toString(), item.getSkuId()));
+		if(goodsInventoryBo == null){
+			log.info("---------------------goodsInventory未查到该商品,goodsId:{},skuId:{}", item.getGoodsId(), item.getSkuId());
+			return false;
+		}
+		try {
+			lock.lock();
+			if(goodsInventoryBo.getSaleStockNum().compareTo(item.getQuan()) < 0){
+				log.info("---------------------goodsInventory库存不足,goodsId:{},skuId:{}", item.getGoodsId(), item.getSkuId());
+				return false;
+			}
+			goodsInventoryBo.setSaleStockNum(goodsInventoryBo.getSaleStockNum() - item.getQuan());
+			if(!iGoodsInventoryBiz.updateById(goodsInventoryBo)){
+				log.info("---------------------goodsInventory更新失败,goodsId:{},skuId:{}", item.getGoodsId(), item.getSkuId());
+				return false;
+			}
+		}finally {
+			lock.unlock();
+		}
+		return true;
 	}
 
 	private Boolean verifyPayPassword(final Long memberId,final String payPassword){
