@@ -27,7 +27,7 @@ public class ShippingAddressController {
     private IMemberAddressService iMemberAddressService;
 
     @RequestMapping("add_address")
-    public JsonResult<String> addAddress(HttpSession session, MemberAddressBo memberAddressBo){
+    public JsonResult<Long> addAddress(HttpSession session, MemberAddressBo memberAddressBo){
         try {
                 long memberId = (long)session.getAttribute("memberId");
                 if(memberId == 0)
@@ -48,7 +48,7 @@ public class ShippingAddressController {
     }
 
     @RequestMapping("update_address")
-    public JsonResult<String> updateAddress(HttpSession session, MemberAddressBo memberAddressBo){
+    public JsonResult<Long> updateAddress(HttpSession session, MemberAddressBo memberAddressBo){
         try {
             if(memberAddressBo.getId().longValue() == 0)
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
