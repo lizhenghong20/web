@@ -123,7 +123,7 @@ public class TaxUtil {
      * https://developers.taxjar.com/api/reference/#taxes
      * */
     public static String getTaxToken(){
-    	return "b08fd0d7ca7573e7fc95dd3070d628c0";//后期可以改为配置
+    	return "d6ce482f299afefec05ce5e6deff0aed";//后期可以改为配置
     }
 	/**
 	 * 计算税金
