@@ -16,7 +16,9 @@ public enum OrderFilterEnum implements IEnumJsons{
 	SENDGOODS_UNCONFIRM(OrderStatusEnum.SENDGOODS_UNCONFIRM ),
 	SING_GOODS(OrderStatusEnum.SING_GOODS ),
 	TRADE_CLOSE(OrderStatusEnum.TRADE_CLOSE ), 
-	CANCEL(OrderStatusEnum.CANCEL);
+	CANCEL(OrderStatusEnum.CANCEL),
+	INVALID(OrderStatusEnum.INVALID)
+	;
 	
 	private final String key;
 	private final String label;
