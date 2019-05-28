@@ -312,21 +312,36 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     @Rollback(false)
     public void testOrder() throws Exception{
 
-	    for(int i = 0 ; i < 1000; i++){
+	    for(int i = 0 ; i < 1; i++){
             Random random = new Random();
-	        int key = random.nextInt(3);
+	        int key = random.nextInt(4);
 	        if(key == 0){
 	            log.info("==================换货:{}", i);
                 doCreateOrderAndChange();
             } else if(key == 1){
-                log.info("==================仅退款");
+                log.info("==================仅退款:{}", i);
                 doCreateOrderAndRefund();
             } else if(key == 2){
-                log.info("==================退货退款");
+                log.info("==================退货退款:{}", i);
                 doCreateOrderAndReGoods();
+            }  else if(key == 3){
+                log.info("==================仅下单:{}", i);
+                doCreateOrderOnly();
             }
             Thread.sleep(10000);
         }
+    }
+
+    public void doCreateOrderOnly() throws Exception{
+        List<OrderGoodsSkuVo> cars = getGoods();
+        BaseTransferEntity baseTransferEntity = JwtUtil.wrapAsTransferEntity(cars, this.randomKey);
+        String contentData = Tools.json.toJson(baseTransferEntity);
+
+        log.info("=========================下单前确认");
+        BigDecimal allAmt = confirm(contentData);
+
+        log.info("=========================下单");
+        Long orderId = createOrder(allAmt, contentData);
     }
 
 //	@Test
@@ -565,6 +580,8 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .header("Authorization", "Bearer " + this.token)
                 .header("Content-Type",MediaType.APPLICATION_JSON_VALUE)
+                .param("shipmentId", "-1")
+                .param("addressId", "1077028699297873921")
                 .content(contentData)
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .session(getMokcSession());
@@ -693,6 +710,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void sendGoods(Long orderId){
+        log.info("=========================发货（下单发货）");
         OrderLogisticsBo logisticsBo = new OrderLogisticsBo();
         logisticsBo.setLogisticsStatus(LogisticsStatusEnum.NONE);
         logisticsBo.setReceiverFullname("sanpao");
@@ -718,6 +736,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void doRefundPay(Long returnsId){
+        log.info("=========================商家执行退款");
 	    //执行退款操作
         OrderReturnsBo orderReturnsBo = orderReturnsBiz.selectById(returnsId);
         if(orderReturnsBo == null){
@@ -729,6 +748,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void receiverBuy(Long orderId) throws Exception{
+        log.info("=========================买家收货（下单收货）");
         Long memberId = 1067707280516718594L;
         //下单前确认
         this.getMokcSession().setAttribute("memberId", memberId);
@@ -757,6 +777,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public Long applyChangeGoods(OrderGoodsSkuVo goodsSkuVo, Long orderId, ReturnsTypeEnum returnsType) throws Exception{
+        log.info("=========================仅退款开始");
 	    List<OrderReturnSkuVo> skus = new ArrayList<>();
 	    OrderReturnSkuVo orderReturnSkuVo = new OrderReturnSkuVo();
 	    BeanUtils.copyProperties(goodsSkuVo, orderReturnSkuVo);
@@ -797,6 +818,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void acceptApply(Long returnsId, ReturnsGoodsStatusEnum status){
+        log.info("=========================商家同意退换货");
         //根据退货id查询出信息
         OrderReturnsBo orderReturnsBo = orderReturnsBiz.selectById(returnsId);
         orderReturnsBo.setStatus(status);
@@ -806,6 +828,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void returnShipment(Long returnsId) throws Exception{
+        log.info("=========================买家退回商品");
         Long memberId = 1067707280516718594L;
         String logisticsNo = "125897";
         String shipmentId = "1087900490842017794";
@@ -837,6 +860,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void acceptanceReturnsGoods(Long returnsId){
+        log.info("=========================商家验货（退换货商品）");
 	    //根据returnsId查出returnsDetail
         OrderReturnsVo returnsVo = getByreturnsId(returnsId);
 
@@ -844,6 +868,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void warehouseOperateRefund(Long returnsId, ReturnsGoodsStatusEnum status){
+        log.info("=========================商家验货（修改状态为已验收换货退品）");
         OrderReturnsVo returnsVo = getByreturnsId(returnsId);
         returnsVo.setStatus(status);
 
@@ -851,6 +876,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void serviceOperateRefund(Long returnsId, ReturnsGoodsStatusEnum status){
+        log.info("=========================修改状态为允许退款");
 	    OrderReturnsVo returnsVo = getByreturnsId(returnsId);
 	    returnsVo.setStatus(status);
 	    returnsVo.setBuyerBearPostage(false);//如果拒绝换货，则要多设置是否退回字段
@@ -858,6 +884,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void sendReturnGoods(Long returnsId){
+        log.info("=========================商家发回退换货商品");
         OrderLogisticsBo logisticsBo = new OrderLogisticsBo();
         logisticsBo.setLogisticsStatus(LogisticsStatusEnum.NONE);
         logisticsBo.setReceiverFullname("sanpao");
@@ -881,6 +908,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     }
 
     public void confirmReceipt(Long returnsId) throws Exception{
+        log.info("=========================买家收货（最终收货）");
         Long memberId = 1067707280516718594L;
         BaseTransferEntity baseTransferEntity = JwtUtil.wrapAsTransferEntity(returnsId, this.randomKey);
         String contentData = Tools.json.toJson(baseTransferEntity);

@@ -371,6 +371,7 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 	 **/
 	private boolean checkOrderAgain(OrderInfoBo orderInfoBo){
 		//再次执行confirm流程，对比价格
+		log.info("=========================检查订单是否合法");
 		List<OrderGoodsSkuVo> valueids = getAllOrderGoods(orderInfoBo);
 		if(valueids.size() == 0){
 			log.info("-----------------checkOrderAgain未找到该订单商品，orderId:{}", orderInfoBo.getId());
@@ -435,6 +436,7 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 	 * @return
 	 **/
 	private void doRefund(Long orderId, Long memberId){
+		log.info("=========================执行全单退款");
 		String reasonType = "颜色/图案/款式与商品描述不符";
 		String reason = "付款金额不符";
 		MemberBo memberBo = memberBiz.selectById(memberId);
@@ -449,6 +451,7 @@ public class OrderPaymentServiceImpl implements IOrderPaymentService{
 	}
 
 	private boolean checkStock(OrderInfoBo orderInfoBo){
+		log.info("=========================检查库存");
 		//获取该订单中的所有商品
 		List<OrderGoodsSkuVo> valueids = getAllOrderGoods(orderInfoBo);
 		Date today = new Date();
