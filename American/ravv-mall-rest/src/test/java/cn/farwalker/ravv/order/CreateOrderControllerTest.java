@@ -312,7 +312,7 @@ public class CreateOrderControllerTest extends BaseRestJUnitController{
     @Rollback(false)
     public void testOrder() throws Exception{
 
-	    for(int i = 0 ; i < 1; i++){
+	    for(int i = 0 ; i < 100; i++){
             Random random = new Random();
 	        int key = random.nextInt(4);
 	        if(key == 0){

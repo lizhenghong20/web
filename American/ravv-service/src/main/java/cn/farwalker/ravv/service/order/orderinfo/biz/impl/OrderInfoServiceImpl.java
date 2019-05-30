@@ -179,7 +179,10 @@ public class OrderInfoServiceImpl implements IOrderInfoService {
 				search, waitReview, afterSale, sortfield);
 
 		//对未支付订单做失效判断（计算出的应付价格等与数据库存储不符即为失效）
-		rds = doInvalidOrder(rds);
+		if(rds.size() != 0){
+			rds = doInvalidOrder(rds);
+		}
+
 
 		page.setRecords(rds);
 		return page;
