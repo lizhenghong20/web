@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import cn.farwalker.ravv.common.constants.UserDefaultItem;
 import cn.farwalker.ravv.service.base.config.biz.IBaseConfigBiz;
 import cn.farwalker.ravv.service.base.config.model.BaseConfigBo;
 import cn.farwalker.ravv.service.member.pam.member.dao.IPamMemberDao;
-import cn.farwalker.ravv.service.member.pam.member.model.TestParam;
 import cn.farwalker.ravv.service.member.pam.member.model.TestVo;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.oss.qiniu.QiniuUtil;
@@ -71,7 +71,7 @@ public class PamMemberServiceImpl implements IPamMemberService {
     @Autowired
     private IBaseConfigBiz baseConfigBiz;
 
-    private static final String avator = "task_cutover_attachment/attachment/191M91702XCA0000/app.jpg";
+
 
 
     /**
@@ -103,7 +103,7 @@ public class PamMemberServiceImpl implements IPamMemberService {
         memberBo.setOrderNum(0);
         memberBo.setLoginCount(0);
         memberBo.setPoint(point);
-        memberBo.setAvator(QiniuUtil.getRelativePath(avator));
+        memberBo.setAvator(QiniuUtil.getRelativePath(UserDefaultItem.avator));
         memberBo.setAdvance(BigDecimal.ZERO);
         memberBo.setAdvanceFreeze(BigDecimal.ZERO);
         memberBo.setRegIp(ip);
@@ -340,7 +340,7 @@ public class PamMemberServiceImpl implements IPamMemberService {
             final String randomKey = jwtTokenUtil.getRandomKey();
             if(memberId == 0)
                 throw new WakaException(RavvExceptionEnum.USER_MEMBER_ID_ERROR);
-            final String token = jwtTokenUtil.generateToken(account,memberId,LoginTypeEnum.EMAIL.getLabel(), randomKey,true);
+            final String token = jwtTokenUtil.generateToken(account,memberId,LoginTypeEnum.EMAIL.getLabel(), randomKey,false);
             AuthLoginVo authLoginVo = new AuthLoginVo();
             authLoginVo.setLoginType(LoginTypeEnum.EMAIL.getLabel());
             authLoginVo.setToken(token);

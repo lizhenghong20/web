@@ -12,7 +12,7 @@ server:
 spring:
   profiles: dev
   datasource:
-      url: jdbc:mysql://localhost:3306/ravv?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+      url: jdbc:mysql://47.107.236.246:3306/ravv_american?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
       username: root
       password: Ravv_123
       db-name: ravv
@@ -55,4 +55,3 @@ cache:
   shareKey: shareRavv
   redisServer: netsupper.top:7000 #不配置就是使用本地ehcache
   redisPassword: Redis3312338 #redis密码
-            

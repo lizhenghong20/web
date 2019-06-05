@@ -5,6 +5,7 @@ import cn.farwalker.ravv.service.goodscart.biz.IGoodsCartService;
 import cn.farwalker.ravv.service.goodscart.model.GoodsCartVo;
 import cn.farwalker.ravv.service.goodscart.model.RecoverToCartForm;
 import cn.farwalker.ravv.service.goodscart.model.UpdateCartVo;
+import cn.farwalker.ravv.service.member.basememeber.biz.IMemberService;
 import cn.farwalker.waka.core.JsonResult;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
@@ -28,6 +29,10 @@ import java.util.List;
 public class ShoppingCartController {
     @Autowired
     private IGoodsCartService iGoodsCartService;
+
+    @Autowired
+    private IMemberService iMemberService;
+
 
     @RequestMapping("/add_to_cart")
     public JsonResult<String> addToCart(HttpSession httpSession,
@@ -57,6 +62,45 @@ public class ShoppingCartController {
 
         }
     }
+
+    /**
+     * 网页版新增接口
+     * @param httpSession
+     * @param goodsId
+     * @param skuId
+     * @param quantity
+     * @return
+     */
+    @RequestMapping("/add_to_cart_for_update")
+    public JsonResult<String> addToCartForUpdate(HttpSession httpSession,
+                                        Long goodsId,
+                                        Long skuId,
+                                        Integer quantity){
+        try {
+            //为其分配一个游客身份
+            iMemberService.addGuestToMember(httpSession);
+            if(skuId == 0||goodsId == 0||quantity<0){
+                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+            }
+            Long memberId = (Long)httpSession.getAttribute("memberId");
+
+            if(iGoodsCartService.addToCart(memberId,goodsId,skuId,quantity)){
+                return JsonResult.newSuccess("added successfully!");
+            }else{
+                return JsonResult.newFail("addition failed");
+            }
+
+        } catch (WakaException e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getMessage());
+
+        }
+    }
+
+
 
     @RequestMapping("/recover_to_cart")
     public JsonResult<String> addToCart(HttpSession httpSession, @RequestBody List<RecoverToCartForm> list){

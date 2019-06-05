@@ -6,8 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import cn.farwalker.ravv.service.email.IEmailService;
-import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
-import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountService;
+import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdPartAccountService;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import org.slf4j.Logger;
@@ -36,7 +35,7 @@ public class AuthController{
     private IEmailService iEmailService;
 
     @Autowired
-    private IMemberThirdpartAccountService memberThirdpartAccountService;
+    private IMemberThirdPartAccountService memberThirdPartAccountService;
 
 
     /**
@@ -71,7 +70,8 @@ public class AuthController{
         }
     }
     @RequestMapping("/email_login")
-    public JsonResult<AuthLoginVo> emailLogin( String email, String password){
+    public JsonResult<AuthLoginVo> emailLogin( String email, String password,
+                                               @RequestParam(value = "guestMemberId", required = false)String guestMemberId){
 
 
         try{
@@ -92,17 +92,18 @@ public class AuthController{
     }
 
     @RequestMapping("/thirdpart_login")
-    public JsonResult<AuthLoginVo> thirdpartLogin(HttpServletRequest request, String firstname, String lastname,
-                                                @RequestParam(value = "email", required = false)String email,
-                                                String userId, String avator, String loginType){
+    public JsonResult<AuthLoginVo> thirdPartLogin(HttpServletRequest request, String firstName, String lastName,
+                                                  @RequestParam(value = "email", required = false)String email,
+                                                  @RequestParam(value = "guestMemberId", required = false)String guestMemberId,
+                                                  String userId, String avator, String loginType){
         try{
             //createMethodSinge创建方法
-            if(Tools.string.isEmpty(firstname) || Tools.string.isEmpty(lastname) ||
+            if(Tools.string.isEmpty(firstName) || Tools.string.isEmpty(lastName) ||
                     Tools.string.isEmpty(userId) || Tools.string.isEmpty(avator)){
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             }
             String ip = request.getRemoteAddr();
-            return JsonResult.newSuccess(memberThirdpartAccountService.thirdpartLogin(firstname, lastname, email, userId,
+            return JsonResult.newSuccess(memberThirdPartAccountService.thirdPartLogin(firstName, lastName, email, userId,
                                                                 avator, ip, loginType));
         }
         catch(WakaException e){

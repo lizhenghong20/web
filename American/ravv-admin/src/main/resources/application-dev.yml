@@ -21,9 +21,9 @@ server:
 ###################  开发环境的profile  ##################
 ##########################################################
 spring:
-  profiles: prod
+  profiles: dev
   datasource:
-    url: jdbc:mysql://52.53.127.206:3306/ravv?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    url: jdbc:mysql://47.107.236.246:3306/ravv_american/ravv?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: root
     password: Ravv_123
     db-name: ravv

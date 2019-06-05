@@ -1,5 +1,7 @@
 package cn.farwalker.ravv.filter;
 
+import cn.farwalker.ravv.common.constants.TokenObject;
+import cn.farwalker.ravv.service.member.basememeber.biz.IMemberService;
 import cn.farwalker.waka.auth.properties.JwtProperties;
 import cn.farwalker.waka.auth.util.JwtTokenUtil;
 import cn.farwalker.waka.core.JsonResult;
@@ -38,6 +40,9 @@ public class AuthFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private JwtProperties jwtProperties;
+
+	@Autowired
+	private IMemberService iMemberService;
 
 
 	@Override
@@ -118,22 +123,33 @@ public class AuthFilter extends OncePerRequestFilter {
 			try {
 				boolean flag = jwtTokenUtil.isTokenExpired(authToken);
 				if (flag) {
-					RenderUtil.renderJson(response, JsonResult.newFail(RavvExceptionEnum.TOKEN_EXPIRED.getCode(),
-							RavvExceptionEnum.TOKEN_EXPIRED.getMessage()));
+					// 如果验证失败，就注册成游客的身份
+					String token = iMemberService.addGuestToMember(request.getSession());
+					TokenObject tokenObject = new TokenObject();
+					tokenObject.setIsToken(true);
+					tokenObject.setToken(token);
+					RenderUtil.renderJson(response, JsonResult.newSuccess(tokenObject));
 					return;
 				}
 				String userId = jwtTokenUtil.getPrivateClaimFromToken(authToken,"memberId");
 				Long memberId = Tools.web.setOnlineUser(userId);
 				request.getSession().setAttribute("memberId",memberId);
 			} catch (JwtException e) {
-				// 有异常就是token解析失败
-				RenderUtil.renderJson(response, JsonResult.newFail(RavvExceptionEnum.TOKEN_VERIFICATION_FAILED.getCode(),
-						RavvExceptionEnum.TOKEN_VERIFICATION_FAILED.getMessage()));
+				// 如果验证失败，就注册成游客的身份
+				String token = iMemberService.addGuestToMember(request.getSession());
+				TokenObject tokenObject = new TokenObject();
+				tokenObject.setIsToken(true);
+				tokenObject.setToken(token);
+				RenderUtil.renderJson(response, JsonResult.newSuccess(tokenObject));
 				return;
 			}
 		} else {
-			RenderUtil.renderJson(response, JsonResult.newFail(RavvExceptionEnum.TOKEN_VERIFICATION_FAILED.getCode(),
-					RavvExceptionEnum.TOKEN_VERIFICATION_FAILED.getMessage()));
+			// 如果验证失败，就注册成游客的身份
+			String token = iMemberService.addGuestToMember(request.getSession());
+			TokenObject tokenObject = new TokenObject();
+			tokenObject.setIsToken(true);
+			tokenObject.setToken(token);
+			RenderUtil.renderJson(response, JsonResult.newSuccess(tokenObject));
 			return;
 		}
 		chain.doFilter(request, response);
@@ -182,6 +198,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		}
 
 	}
+
 
 
 
