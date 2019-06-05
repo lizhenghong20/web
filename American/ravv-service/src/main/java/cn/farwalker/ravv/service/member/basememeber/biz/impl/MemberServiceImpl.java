@@ -1,5 +1,6 @@
 package cn.farwalker.ravv.service.member.basememeber.biz.impl;
 
+import cn.farwalker.ravv.common.constants.UserDefaultItem;
 import cn.farwalker.ravv.service.goodsext.favorite.biz.IGoodsFavoriteBiz;
 import cn.farwalker.ravv.service.goodsext.favorite.model.GoodsFavoriteBo;
 import cn.farwalker.ravv.service.goodsext.viewlog.biz.IGoodsViewLogBiz;
@@ -17,6 +18,7 @@ import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAc
 import cn.farwalker.ravv.service.youtube.liveanchor.biz.IYoutubeLiveAnchorBiz;
 import cn.farwalker.ravv.service.youtube.liveanchor.model.YoutubeLiveAnchorBo;
 import cn.farwalker.ravv.service.youtube.service.IYoutubeService;
+import cn.farwalker.waka.auth.util.JwtTokenUtil;
 import cn.farwalker.waka.constants.SexEnum;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
@@ -30,7 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * Created by asus on 2018/11/8.
@@ -60,6 +64,9 @@ public class MemberServiceImpl implements IMemberService {
 
     @Autowired
     private IMemberThirdpartAccountBiz memberThirdpartAccountBiz;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     @Override
     public MemberExVo getBasicInfo(Long memberId, String loginType) {
@@ -161,6 +168,29 @@ public class MemberServiceImpl implements IMemberService {
             throw new WakaException(RavvExceptionEnum.UPDATE_ERROR);
         }
         return getBasicInfo(memberId, memberInfo.getLoginType());
+    }
+
+    @Override
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public String addGuestToMember(HttpSession httpSession){
+        String token = null;
+        Long memberId = (Long)httpSession.getAttribute("memberId");
+        if(memberId == null || memberId == 0){
+            MemberBo memberBo = new MemberBo();
+            memberBo.setAvator(UserDefaultItem.avator);
+            memberBo.setRegIp(UserDefaultItem.guestIP);
+            memberBo.setFirstname(UserDefaultItem.firstName);
+            if(!iMemberBiz.insert(memberBo)){
+                throw new WakaException(RavvExceptionEnum.INSERT_ERROR);
+            }
+
+            final String randomKey = jwtTokenUtil.getRandomKey();
+            httpSession.setAttribute("memberId",memberBo.getId());
+            token = jwtTokenUtil.generateToken(UserDefaultItem.account,memberBo.getId(),LoginTypeEnum.EMAIL.getLabel(), randomKey,true);
+
+        }
+
+        return token;
     }
 
 }

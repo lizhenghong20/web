@@ -123,12 +123,13 @@ public class JwtTokenUtil {
         return doGenerateToken(claims, userName);
     }
 
-    public String generateToken(String account,long memberId, String loginType,String randomKey,boolean isForApp) {
+    public String generateToken(String account,long memberId, String loginType,String randomKey,boolean isGuest) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("account", account);
         claims.put("loginType", loginType);
         claims.put("memberId",memberId);
         claims.put(jwtProperties.getMd5Key(), randomKey);
+        claims.put("isGuest", isGuest);
         return doGenerateToken(claims);
     }
 

@@ -6,7 +6,7 @@ import cn.farwalker.ravv.service.member.basememeber.model.MemberBo;
 import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
 import cn.farwalker.ravv.service.member.pam.member.model.AuthLoginVo;
 import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountBiz;
-import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountService;
+import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdPartAccountService;
 import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAccountBo;
 import cn.farwalker.waka.auth.util.JwtTokenUtil;
 import cn.farwalker.waka.core.RavvExceptionEnum;
@@ -23,7 +23,7 @@ import java.util.Date;
 
 @Slf4j
 @Service
-public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccountService {
+public class MemberThirdPartAccountServiceImpl implements IMemberThirdPartAccountService {
 
     @Autowired
     private IMemberBiz memberBiz;
@@ -35,8 +35,8 @@ public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccoun
     private JwtTokenUtil jwtTokenUtil;
 
     @Override
-    public AuthLoginVo thirdpartLogin(String firstname, String lastname, String email, String userId, String avator,
-                                       String ip, String loginType) {
+    public AuthLoginVo thirdPartLogin(String firstName, String lastName, String email, String userId, String avator,
+                                      String ip, String loginType) {
         LoginTypeEnum type = null;
         if(LoginTypeEnum.GOOGLE.getLabel().equals(loginType)){
             type = LoginTypeEnum.GOOGLE;
@@ -53,13 +53,13 @@ public class MemberThirdpartAccountServiceImpl implements IMemberThirdpartAccoun
             //计入member表
             memberBo = insertMember(ip);
             //插入thirdpart表
-            thirdpartAccountBo = insertThirdAccount(memberBo.getId(), firstname, lastname, email, userId, avator,
+            thirdpartAccountBo = insertThirdAccount(memberBo.getId(), firstName, lastName, email, userId, avator,
                     type);
         } else {
             memberBo = memberBiz.selectById(thirdpartAccountBo.getMemberId());
         }
         String randomKey = jwtTokenUtil.getRandomKey();
-        String token = jwtTokenUtil.generateToken(userId, memberBo.getId(), type.getLabel(), randomKey,true);
+        String token = jwtTokenUtil.generateToken(userId, memberBo.getId(), type.getLabel(), randomKey,false);
         AuthLoginVo authLoginVo = new AuthLoginVo();
         authLoginVo.setToken(token);
         authLoginVo.setAccount(userId);
