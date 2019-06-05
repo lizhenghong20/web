@@ -5,8 +5,8 @@ import cn.farwalker.ravv.service.member.basememeber.constants.ApplyStatusEnum;
 import cn.farwalker.ravv.service.member.basememeber.model.MemberBo;
 import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
 import cn.farwalker.ravv.service.member.pam.member.model.AuthLoginVo;
-import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountBiz;
-import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdPartAccountService;
+import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdAccountBiz;
+import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdAccountService;
 import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAccountBo;
 import cn.farwalker.waka.auth.util.JwtTokenUtil;
 import cn.farwalker.waka.core.RavvExceptionEnum;
@@ -23,13 +23,13 @@ import java.util.Date;
 
 @Slf4j
 @Service
-public class MemberThirdPartAccountServiceImpl implements IMemberThirdPartAccountService {
+public class MemberThirdAccountServiceImpl implements IMemberThirdAccountService {
 
     @Autowired
     private IMemberBiz memberBiz;
 
     @Autowired
-    private IMemberThirdpartAccountBiz memberThirdpartAccountBiz;
+    private IMemberThirdAccountBiz memberThirdpartAccountBiz;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;

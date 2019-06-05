@@ -1,8 +1,7 @@
 package cn.farwalker.ravv.service.member.thirdpartaccount.model;
 import java.util.Date;
-import java.util.List;
+
 import com.cangwu.frame.orm.core.BaseBo;
-import com.cangwu.frame.orm.core.annotation.LoadJoinValue;
 import com.cangwu.frame.orm.ddl.annotation.DDLColumn;
 import com.cangwu.frame.orm.ddl.annotation.DDLTable;
 import com.cangwu.frame.orm.core.IFieldKey;
@@ -14,7 +13,6 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.FieldStrategy;
 import com.baomidou.mybatisplus.enums.IdType;
-import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountBiz;
 
 /**
  * 会员第三方账号绑定
