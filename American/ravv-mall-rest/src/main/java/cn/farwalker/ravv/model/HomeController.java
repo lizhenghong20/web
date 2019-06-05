@@ -9,6 +9,8 @@ import cn.farwalker.ravv.service.model.newarrivals.activity.biz.INewArrivalsActi
 import cn.farwalker.ravv.service.model.newarrivals.activity.model.NewArrivalsActivityBo;
 import cn.farwalker.ravv.service.model.newarrivals.goods.biz.INewArrivalsGoodsService;
 import cn.farwalker.ravv.service.model.newarrivals.goods.model.NewArrivalsGoodsBo;
+import cn.farwalker.ravv.service.web.webmodel.biz.IWebModelService;
+import cn.farwalker.ravv.service.web.webmodel.model.WebModelBo;
 import cn.farwalker.waka.core.JsonResult;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
@@ -36,6 +38,9 @@ public class HomeController {
 
     @Autowired
     private IBestSellersGoodsService bestSellersGoodsService;
+
+    @Autowired
+    private IWebModelService webModelService;
 
     @RequestMapping("/new_arrivals_activity")
     public JsonResult<List<NewArrivalsActivityBo>> getNewArrivalsActivity() {
@@ -84,6 +89,19 @@ public class HomeController {
         try {
             currentPage++;
             return JsonResult.newSuccess(bestSellersGoodsService.getGoods(currentPage, pageSize));
+        } catch (WakaException e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getMessage());
+        }
+    }
+
+    @RequestMapping("/model")
+    public JsonResult<List<WebModelBo>> getModel() {
+        try {
+            return JsonResult.newSuccess(webModelService.getAllModel());
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());
