@@ -59,6 +59,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		releaseSet.add("/goods");
 		releaseSet.add("/web");
 		releaseSet.add("/test");
+		releaseSet.add("/home");
 		releaseSet.add("/flash_sale");
 		releaseSet.add("/youtube_live/main_page");
 		releaseSet.add("/qiniu/token");
