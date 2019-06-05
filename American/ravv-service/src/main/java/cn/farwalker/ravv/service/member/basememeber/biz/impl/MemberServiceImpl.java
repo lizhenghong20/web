@@ -13,7 +13,7 @@ import cn.farwalker.ravv.service.member.basememeber.model.MemberInfoVo;
 import cn.farwalker.ravv.service.member.pam.constants.LoginTypeEnum;
 import cn.farwalker.ravv.service.member.pam.member.biz.IPamMemberBiz;
 import cn.farwalker.ravv.service.member.pam.member.model.PamMemberBo;
-import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdpartAccountBiz;
+import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdAccountBiz;
 import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAccountBo;
 import cn.farwalker.ravv.service.youtube.liveanchor.biz.IYoutubeLiveAnchorBiz;
 import cn.farwalker.ravv.service.youtube.liveanchor.model.YoutubeLiveAnchorBo;
@@ -34,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.util.Date;
-import java.util.Optional;
 
 /**
  * Created by asus on 2018/11/8.
@@ -63,7 +62,7 @@ public class MemberServiceImpl implements IMemberService {
     private IYoutubeLiveAnchorBiz iYoutubeLiveAnchorBiz;
 
     @Autowired
-    private IMemberThirdpartAccountBiz memberThirdpartAccountBiz;
+    private IMemberThirdAccountBiz memberThirdpartAccountBiz;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;

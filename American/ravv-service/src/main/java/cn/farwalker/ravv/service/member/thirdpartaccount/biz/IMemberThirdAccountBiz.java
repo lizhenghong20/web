@@ -8,5 +8,5 @@ import cn.farwalker.ravv.service.member.thirdpartaccount.model.MemberThirdpartAc
  * //手写的注释:以"//"开始 <br/>
  * @author generateModel.java
  */
-public interface IMemberThirdpartAccountBiz extends IService<MemberThirdpartAccountBo>{
+public interface IMemberThirdAccountBiz extends IService<MemberThirdpartAccountBo>{
 }

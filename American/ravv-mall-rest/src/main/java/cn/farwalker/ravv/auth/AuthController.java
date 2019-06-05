@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import cn.farwalker.ravv.service.email.IEmailService;
-import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdPartAccountService;
+import cn.farwalker.ravv.service.member.thirdpartaccount.biz.IMemberThirdAccountService;
 import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class AuthController{
     private IEmailService iEmailService;
 
     @Autowired
-    private IMemberThirdPartAccountService memberThirdPartAccountService;
+    private IMemberThirdAccountService memberThirdPartAccountService;
 
 
     /**
