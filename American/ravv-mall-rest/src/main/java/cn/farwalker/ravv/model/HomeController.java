@@ -79,7 +79,7 @@ public class HomeController {
         }
     }
 
-    @RequestMapping("/best_sellers_activity")
+    @RequestMapping("/best_sellers_goods")
     public JsonResult<List<BestSellersGoodsBo>> getBestSellersGoods(Integer currentPage, Integer pageSize) {
         try {
             currentPage++;

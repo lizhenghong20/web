@@ -23,6 +23,7 @@ public class IBestSellersGoodsServiceImpl implements IBestSellersGoodsService {
     public List<BestSellersGoodsBo> getGoods(int currentPage, int pageSize) {
         Page page = new Page(currentPage, pageSize);
         Page<BestSellersGoodsBo> arrivalsGoodsBoPage = goodsBiz.selectPage(page, Condition.create()
+                .eq(BestSellersGoodsBo.Key.display.toString(), 1)
                 .orderBy(BestSellersGoodsBo.Key.sequence.toString(), true));
         return arrivalsGoodsBoPage.getRecords();
     }

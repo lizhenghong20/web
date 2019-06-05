@@ -1,5 +1,6 @@
 package cn.farwalker.ravv.service.model.newarrivals.goods.biz.impl;
 
+import cn.farwalker.ravv.service.model.bestsellers.goods.model.BestSellersGoodsBo;
 import cn.farwalker.ravv.service.model.newarrivals.goods.biz.INewArrivalsGoodsBiz;
 import cn.farwalker.ravv.service.model.newarrivals.goods.biz.INewArrivalsGoodsService;
 import cn.farwalker.ravv.service.model.newarrivals.goods.model.NewArrivalsGoodsBo;
@@ -22,6 +23,7 @@ public class INewArrivalsGoodsServiceImpl implements INewArrivalsGoodsService {
     public List<NewArrivalsGoodsBo> getGoods(int currentPage, int pageSize) {
         Page page = new Page(currentPage, pageSize);
         Page<NewArrivalsGoodsBo> arrivalsGoodsBoPage = goodsBiz.selectPage(page, Condition.create()
+                .eq(NewArrivalsGoodsBo.Key.display.toString(), 1)
                 .orderBy(NewArrivalsGoodsBo.Key.sequence.toString(), true));
         return arrivalsGoodsBoPage.getRecords();
     }
