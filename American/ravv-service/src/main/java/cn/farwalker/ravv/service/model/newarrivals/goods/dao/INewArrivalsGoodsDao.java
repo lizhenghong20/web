@@ -1,6 +1,9 @@
 package cn.farwalker.ravv.service.model.newarrivals.goods.dao;
+import cn.farwalker.ravv.service.goods.base.model.GoodsBo;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import cn.farwalker.ravv.service.model.newarrivals.goods.model.NewArrivalsGoodsBo;
+
+import java.util.List;
 
 /**
  * 新品到达商品<br/>
@@ -9,4 +12,5 @@ import cn.farwalker.ravv.service.model.newarrivals.goods.model.NewArrivalsGoodsB
  * @author generateModel.java
  */
 public interface INewArrivalsGoodsDao extends BaseMapper<NewArrivalsGoodsBo>{
+    List<GoodsBo> selectGoodsForMenuId(Long menuId);
 }

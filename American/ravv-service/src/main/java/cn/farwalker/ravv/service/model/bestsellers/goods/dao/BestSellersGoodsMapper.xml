@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
     <mapper namespace="cn.farwalker.ravv.service.model.bestsellers.goods.dao.IBestSellersGoodsDao">
+    <select id="selectGoodsForMenuId" parameterType="java.lang.Long" resultType="cn.farwalker.ravv.service.goods.base.model.GoodsBo">
+        select gds.*
+        from web_menu_goods as wmg
+        left join best_seller_goods as bsg in wmg.goodsId = bsg.goodsId
+        left join goods as gds in bsg.goodsId = gds.id
+         where menuId = wmg.menuId
+    </select>
+
+
 </mapper>
