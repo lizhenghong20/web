@@ -2,8 +2,13 @@ package cn.farwalker.ravv.service.web.menu.biz.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import cn.farwalker.ravv.common.constants.ModelItem;
+import cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo;
 import cn.farwalker.ravv.service.goods.base.model.GoodsListVo;
+import cn.farwalker.ravv.service.model.bestsellers.goods.dao.IBestSellersGoodsDao;
+import cn.farwalker.ravv.service.model.newarrivals.goods.dao.INewArrivalsGoodsDao;
 import cn.farwalker.ravv.service.web.menu.model.*;
 import cn.farwalker.ravv.service.web.webmodel.biz.IWebModelBiz;
 import cn.farwalker.ravv.service.web.webmodel.dao.IWebModelGoodsDao;
@@ -47,6 +52,12 @@ public class WebMenuServiceImpl implements IWebMenuService {
 
 	@Autowired
 	private IWebModelBiz iWebModelBiz;
+
+	@Autowired
+	private IBestSellersGoodsDao iBestSellersGoodsDao;
+
+	@Autowired
+	private INewArrivalsGoodsDao iNewArrivalsGoodsDao;
 
     /**
      * @description: 查出一级菜单
@@ -162,13 +173,35 @@ public class WebMenuServiceImpl implements IWebMenuService {
     }
 
 	@Override
-	List<GoodsListVo> getModelGoodsByMenuId(long modelId, long menuId, int currentPage, int pageSize){
+	public List<GoodsDetailsVo> getModelGoodsByMenuId(Long modelId, Long menuId, int currentPage, int pageSize){
 		WebModelBo query =  iWebModelBiz.selectById(modelId);
 		if(query == null){
 			throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
 		}
 
-		if()
+		List<Long> menuIdList = null;
+
+		if(menuId != null)
+			menuIdList = getAllSubMenus(menuId).stream().map(s->s.getId()).collect(Collectors.toList());
+
+		if(ModelItem.BEST_SELLERS.getCode().equals(query.getModelCode())){
+			Page page = new Page(currentPage, pageSize);
+			return 	iBestSellersGoodsDao.selectGoodsForMenuId(page,menuIdList);
+
+		}else if(ModelItem.NEW_ARRIVALS.getCode().equals(query.getModelCode())){
+
+			Page page = new Page(currentPage, pageSize);
+		  return 	iNewArrivalsGoodsDao.selectGoodsForMenuId(page,menuIdList);
+
+		}else if(ModelItem.BEFORE_THEY_GO.getCode().equals(query.getModelCode())){
+			return null;
+			//// TODO: 2019/6/6
+		}else if(ModelItem.LIVE_STREAMING.getCode().equals(query.getModelCode())){
+			return null;
+			//// TODO: 2019/6/6
+		}else{
+			throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+		}
 		
 	}
 

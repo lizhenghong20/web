@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import cn.farwalker.ravv.service.goods.base.model.GoodsBo;
+import cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo;
 import cn.farwalker.ravv.service.goods.base.model.GoodsListVo;
 import cn.farwalker.ravv.service.web.menu.model.AppMenuFrontVo;
 import cn.farwalker.ravv.service.web.menu.model.WebMenuBo;
@@ -15,7 +16,7 @@ public interface IWebMenuService {
 
 	List<GoodsListVo> getGoodsByMenuId(long menuId, int currentPage, int pageSize);
 
-	List<GoodsListVo> getModelGoodsByMenuId(long modelId, long menuId, int currentPage, int pageSize);
+	List<GoodsDetailsVo> getModelGoodsByMenuId(Long modelId, Long menuId, int currentPage, int pageSize);
 
     public List<AppMenuFrontVo> getMenuForApp();
     

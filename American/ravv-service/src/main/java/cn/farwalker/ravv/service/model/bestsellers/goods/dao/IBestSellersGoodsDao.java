@@ -5,6 +5,7 @@ import cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import cn.farwalker.ravv.service.model.bestsellers.goods.model.BestSellersGoodsBo;
 import com.baomidou.mybatisplus.plugins.Page;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -16,6 +17,6 @@ import java.util.List;
  * @author generateModel.java
  */
 public interface IBestSellersGoodsDao extends BaseMapper<BestSellersGoodsBo>{
-    List<GoodsBo> selectGoodsForMenuId(Long menuId);
+    List<GoodsDetailsVo> selectGoodsForMenuId(Page page,@Param("menuIdList")List<Long> menuIdList);
     List<GoodsDetailsVo> getGoods(Page page);
 }

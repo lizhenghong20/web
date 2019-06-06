@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import cn.farwalker.ravv.common.constants.WebModelCodeEnum;
+import cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo;
 import cn.farwalker.ravv.service.order.orderinfo.biz.IOrderCreateService;
 import cn.farwalker.ravv.service.shipstation.biz.IShipStationService;
 import cn.farwalker.ravv.service.web.searchkeyhistory.biz.IWebSearchkeyHistoryBiz;
@@ -21,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.taxjar.Taxjar;
@@ -186,10 +188,13 @@ public class WebController {
     }
 
     @RequestMapping("/goods_by_menu_id_for_model")
-    public JsonResult<List<GoodsListVo>> getGoodsByMenuIdForModel(Long modelId,Long menuId, Integer currentPage, Integer pageSize){
+    public JsonResult<List<GoodsDetailsVo>> getGoodsByMenuIdForModel( Long modelId, @RequestParam(value = "menuId",required = false)Long menuId, Integer currentPage, Integer pageSize){
         try{
+
+            if(currentPage == null || pageSize == null)
+                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             currentPage++;
-            if(menuId == 0)
+            if(modelId == null || modelId == 0)
                 throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             return JsonResult.newSuccess(iWebMenuService.getModelGoodsByMenuId(modelId,menuId,currentPage,pageSize));
         }
