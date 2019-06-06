@@ -3,16 +3,19 @@
     <mapper namespace="cn.farwalker.ravv.service.model.newarrivals.goods.dao.INewArrivalsGoodsDao">
 
     <select id="selectGoodsForMenuId" parameterType="java.lang.Long" resultType="cn.farwalker.ravv.service.goods.base.model.GoodsBo">
-        select gds.*
+        select gds.*,min(gp.price) as lowest_price,
         from web_menu_goods as wmg
         left join new_arrivals_goods as nag on wmg.goodsId = nag.goodsId
         left join goods as gds on nag.goodsId = gds.id
+        LEFT  join goods_price as gp on goods.id = gp.goods_id
+        left join goods_image as gi on  goods.id = gi.goods_id
         where menuId = wmg.menuId
+        and gi.ima_position like 'MAJOR'
     </select>
 
     <select id="getGoods" resultType="cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo">
-        select goods.*, min(gp.price) as lowest_price ,nag.img_url as image_major from goods
-        LEFT  join new_arrivals_goods as nag on goods.id = nag.goods_id
+        select goods.*, min(gp.price) as lowest_price ,nag.img_url as image_major from  new_arrivals_goods as nag
+        LEFT  join goods on goods.id = nag.goods_id
         LEFT  join goods_price as gp on goods.id = gp.goods_id
         GROUP by goods.id
 
