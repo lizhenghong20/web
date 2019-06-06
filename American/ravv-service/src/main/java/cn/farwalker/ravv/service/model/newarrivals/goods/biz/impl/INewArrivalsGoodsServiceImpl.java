@@ -7,6 +7,7 @@ import cn.farwalker.ravv.service.model.newarrivals.goods.biz.INewArrivalsGoodsBi
 import cn.farwalker.ravv.service.model.newarrivals.goods.biz.INewArrivalsGoodsService;
 import cn.farwalker.ravv.service.model.newarrivals.goods.dao.INewArrivalsGoodsDao;
 import cn.farwalker.ravv.service.model.newarrivals.goods.model.NewArrivalsGoodsBo;
+import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.plugins.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class INewArrivalsGoodsServiceImpl implements INewArrivalsGoodsService {
     public List<GoodsDetailsVo> getGoods(int currentPage, int pageSize) {
         Page page = new Page(currentPage, pageSize);
         List<GoodsDetailsVo> queryList = iNewArrivalsGoodsDao.getGoods(page);
+        queryList.forEach(s-> s.setImageMajor(QiniuUtil.getFullPath(s.getImageMajor())));
         return queryList;
     }
 }

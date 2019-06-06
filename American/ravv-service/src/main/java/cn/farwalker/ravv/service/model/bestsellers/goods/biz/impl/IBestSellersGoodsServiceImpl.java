@@ -6,6 +6,7 @@ import cn.farwalker.ravv.service.model.bestsellers.goods.biz.IBestSellersGoodsSe
 import cn.farwalker.ravv.service.model.bestsellers.goods.dao.IBestSellersGoodsDao;
 import cn.farwalker.ravv.service.model.bestsellers.goods.model.BestSellersGoodsBo;
 import cn.farwalker.ravv.service.model.newarrivals.goods.model.NewArrivalsGoodsBo;
+import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.plugins.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class IBestSellersGoodsServiceImpl implements IBestSellersGoodsService {
     public List<GoodsDetailsVo> getGoods(int currentPage, int pageSize) {
         Page page = new Page(currentPage, pageSize);
         List<GoodsDetailsVo> queryList = iBestSellersGoodsDao.getGoods(page);
+        queryList.forEach(s-> s.setImageMajor(QiniuUtil.getFullPath(s.getImageMajor())));
         return queryList;
     }
 }

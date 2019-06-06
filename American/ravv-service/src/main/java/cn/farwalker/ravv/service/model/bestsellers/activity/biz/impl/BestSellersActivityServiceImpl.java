@@ -4,6 +4,7 @@ import cn.farwalker.ravv.service.model.bestsellers.activity.biz.IBestSellersActi
 import cn.farwalker.ravv.service.model.bestsellers.activity.biz.IBestSellersActivityService;
 import cn.farwalker.ravv.service.model.bestsellers.activity.model.BestSellersActivityBo;
 import cn.farwalker.ravv.service.model.newarrivals.activity.model.NewArrivalsActivityBo;
+import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 import com.baomidou.mybatisplus.mapper.Condition;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,8 @@ public class BestSellersActivityServiceImpl implements IBestSellersActivityServi
         List<BestSellersActivityBo> allActivity = activityBiz.selectList(Condition.create()
                 .isNotNull(BestSellersActivityBo.Key.imgUrl.toString())
                 .orderBy(BestSellersActivityBo.Key.sequence.toString(), true));
+        allActivity.forEach(s-> s.setImgUrl(QiniuUtil.getFullPath(s.getImgUrl())));
+
 //        if(allActivity.size() == 0){
 //            throw new WakaException("there are not any thing");
 //        }
