@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
     <mapper namespace="cn.farwalker.ravv.service.model.bestsellers.goods.dao.IBestSellersGoodsDao">
+    <select id="getGoods" resultType="cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo">
+        select goods.*, min(gp.price) as lowest_price from goods
+        LEFT  join best_sellers_goods as bsg on goods.id = bsg.goods_id
+        LEFT  join goods_price as gp on goods.id = gp.goods_id
+        GROUP by goods.id
+    </select>
 </mapper>
