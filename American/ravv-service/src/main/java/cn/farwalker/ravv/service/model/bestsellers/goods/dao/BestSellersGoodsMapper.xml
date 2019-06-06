@@ -13,8 +13,8 @@
 
 
     <select id="getGoods" resultType="cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo">
-        select goods.*, min(gp.price) as lowest_price,bsg.img_url as image_major from goods
-        LEFT  join best_sellers_goods as bsg on goods.id = bsg.goods_id
+        select goods.*, min(gp.price) as lowest_price,bsg.img_url as image_major from best_sellers_goods as bsg
+        LEFT  join goods on goods.id = bsg.goods_id
         LEFT  join goods_price as gp on goods.id = gp.goods_id
         GROUP by goods.id
     </select>
