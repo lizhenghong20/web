@@ -185,6 +185,23 @@ public class WebController {
         }
     }
 
+    @RequestMapping("/goods_by_menu_id_for_model")
+    public JsonResult<List<GoodsListVo>> getGoodsByMenuIdForModel(Long modelId,Long menuId, Integer currentPage, Integer pageSize){
+        try{
+            currentPage++;
+            if(menuId == 0)
+                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+            return JsonResult.newSuccess(iWebMenuService.getModelGoodsByMenuId(modelId,menuId,currentPage,pageSize));
+        }
+        catch(WakaException e){
+            log.error("",e);
+            return JsonResult.newFail(e.getCode(),e.getMessage());
+        }catch(Exception e){
+            log.error("",e);
+            return JsonResult.newFail(e.getMessage());
+        }
+    }
+
     //返回一，二，三级所有菜单
     @RequestMapping("/get_menu_for_app")
     public JsonResult<List<AppMenuFrontVo>> getMenuForApp(){

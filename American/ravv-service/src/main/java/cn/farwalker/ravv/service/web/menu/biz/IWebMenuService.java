@@ -13,7 +13,9 @@ public interface IWebMenuService {
 
     public List<WebMenuFrontVo> getMenuByPid(long menuId);
 
-    public List<GoodsListVo> getGoodsByMenuId(long menuId, int currentPage, int pageSize);
+	List<GoodsListVo> getGoodsByMenuId(long menuId, int currentPage, int pageSize);
+
+	List<GoodsListVo> getModelGoodsByMenuId(long modelId, long menuId, int currentPage, int pageSize);
 
     public List<AppMenuFrontVo> getMenuForApp();
     

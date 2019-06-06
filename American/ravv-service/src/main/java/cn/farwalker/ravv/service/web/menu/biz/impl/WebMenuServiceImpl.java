@@ -5,7 +5,9 @@ import java.util.List;
 
 import cn.farwalker.ravv.service.goods.base.model.GoodsListVo;
 import cn.farwalker.ravv.service.web.menu.model.*;
+import cn.farwalker.ravv.service.web.webmodel.biz.IWebModelBiz;
 import cn.farwalker.ravv.service.web.webmodel.dao.IWebModelGoodsDao;
+import cn.farwalker.ravv.service.web.webmodel.model.WebModelBo;
 import cn.farwalker.waka.core.WakaException;
 import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 import com.baomidou.mybatisplus.mapper.Condition;
@@ -42,6 +44,9 @@ public class WebMenuServiceImpl implements IWebMenuService {
 
     @Autowired
 	private IWebModelGoodsDao webModelGoodsDao;
+
+	@Autowired
+	private IWebModelBiz iWebModelBiz;
 
     /**
      * @description: 查出一级菜单
@@ -155,6 +160,17 @@ public class WebMenuServiceImpl implements IWebMenuService {
 		});
         return menuGoodsFrontVoList;
     }
+
+	@Override
+	List<GoodsListVo> getModelGoodsByMenuId(long modelId, long menuId, int currentPage, int pageSize){
+		WebModelBo query =  iWebModelBiz.selectById(modelId);
+		if(query == null){
+			throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+		}
+
+		
+	}
+
 
 	@Override
 	public List<AppMenuFrontVo> getMenuForApp() {
