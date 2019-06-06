@@ -5,9 +5,10 @@
     <select id="selectGoodsForMenuId" parameterType="java.lang.Long" resultType="cn.farwalker.ravv.service.goods.base.model.GoodsBo">
         select gds.*
         from web_menu_goods as wmg
-        left join new_arrivals_goods as nag in wmg.goodsId = nag.goodsId
-        left join goods as gds in nag.goodsId = gds.id
+        left join new_arrivals_goods as nag on wmg.goodsId = nag.goodsId
+        left join goods as gds on nag.goodsId = gds.id
         where menuId = wmg.menuId
+    </select>
 
     <select id="getGoods" resultType="cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo">
         select goods.*, min(gp.price) as lowest_price ,bsg.img_url as image_major from goods
