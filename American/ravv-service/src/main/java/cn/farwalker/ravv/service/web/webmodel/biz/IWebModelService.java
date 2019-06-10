@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface IWebModelService {
     List<WebModelBo> getAllModel();
+
+    String insertData();
 }
