@@ -1,7 +1,7 @@
 package cn.farwalker.ravv.model;
 
-import cn.farwalker.ravv.service.model.VO.BestSellerVo;
-import cn.farwalker.ravv.service.model.VO.NewArrivalsVo;
+import cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo;
+import cn.farwalker.ravv.service.goods.base.model.ParseSkuExtVo;
 import cn.farwalker.ravv.service.model.bestsellers.activity.biz.IBestSellersActivityService;
 import cn.farwalker.ravv.service.model.bestsellers.activity.model.BestSellersActivityBo;
 import cn.farwalker.ravv.service.model.bestsellers.goods.biz.IBestSellersGoodsService;
@@ -13,7 +13,9 @@ import cn.farwalker.ravv.service.model.newarrivals.goods.model.NewArrivalsGoodsB
 import cn.farwalker.ravv.service.web.webmodel.biz.IWebModelService;
 import cn.farwalker.ravv.service.web.webmodel.model.WebModelBo;
 import cn.farwalker.waka.core.JsonResult;
+import cn.farwalker.waka.core.RavvExceptionEnum;
 import cn.farwalker.waka.core.WakaException;
+import cn.farwalker.waka.util.Tools;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,38 +58,15 @@ public class HomeController {
     }
 
     @RequestMapping("/new_arrivals_goods")
-    public JsonResult<List<NewArrivalsGoodsBo>> getNewArrivalsGoods(Integer currentPage, Integer pageSize) {
+    public JsonResult<List<GoodsDetailsVo>> getNewArrivalsGoods(Integer currentPage, Integer pageSize) {
         try {
+            if(currentPage == null || currentPage < 0)
+                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+            if(pageSize == null || pageSize < 0)
+                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+
             currentPage++;
             return JsonResult.newSuccess(arrivalsGoodsService.getGoods(currentPage, pageSize));
-        } catch (WakaException e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getCode(), e.getMessage());
-        } catch (Exception e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getMessage());
-        }
-    }
-
-    @RequestMapping("/best_sellers")
-    public JsonResult<BestSellerVo> getBestSellers() {
-        try {
-
-            return JsonResult.newSuccess();
-        } catch (WakaException e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getCode(), e.getMessage());
-        } catch (Exception e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getMessage());
-        }
-    }
-
-    @RequestMapping("/best_sellers")
-    public JsonResult<NewArrivalsVo> getNewArrivals() {
-        try {
-
-            return JsonResult.newSuccess();
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());
@@ -112,8 +91,12 @@ public class HomeController {
     }
 
     @RequestMapping("/best_sellers_goods")
-    public JsonResult<List<BestSellersGoodsBo>> getBestSellersGoods(Integer currentPage, Integer pageSize) {
+    public JsonResult<List<GoodsDetailsVo>> getBestSellersGoods(Integer currentPage, Integer pageSize) {
         try {
+            if(currentPage == null || currentPage < 0)
+                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
+            if(pageSize == null || pageSize < 0)
+                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
             currentPage++;
             return JsonResult.newSuccess(bestSellersGoodsService.getGoods(currentPage, pageSize));
         } catch (WakaException e) {
@@ -129,19 +112,6 @@ public class HomeController {
     public JsonResult<List<WebModelBo>> getModel() {
         try {
             return JsonResult.newSuccess(webModelService.getAllModel());
-        } catch (WakaException e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getCode(), e.getMessage());
-        } catch (Exception e) {
-            log.error("", e);
-            return JsonResult.newFail(e.getMessage());
-        }
-    }
-
-    @RequestMapping("/insert_mock_data")
-    public JsonResult<String> insertMockData() {
-        try {
-            return JsonResult.newSuccess(webModelService.insertData());
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());

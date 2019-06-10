@@ -1,9 +1,12 @@
 package cn.farwalker.ravv.service.model.bestsellers.goods.biz.impl;
 
+import cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo;
 import cn.farwalker.ravv.service.model.bestsellers.goods.biz.IBestSellersGoodsBiz;
 import cn.farwalker.ravv.service.model.bestsellers.goods.biz.IBestSellersGoodsService;
+import cn.farwalker.ravv.service.model.bestsellers.goods.dao.IBestSellersGoodsDao;
 import cn.farwalker.ravv.service.model.bestsellers.goods.model.BestSellersGoodsBo;
 import cn.farwalker.ravv.service.model.newarrivals.goods.model.NewArrivalsGoodsBo;
+import cn.farwalker.waka.oss.qiniu.QiniuUtil;
 import com.baomidou.mybatisplus.mapper.Condition;
 import com.baomidou.mybatisplus.plugins.Page;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +22,14 @@ public class IBestSellersGoodsServiceImpl implements IBestSellersGoodsService {
     @Autowired
     private IBestSellersGoodsBiz goodsBiz;
 
+    @Autowired
+    private IBestSellersGoodsDao iBestSellersGoodsDao;
+
     @Override
-    public List<BestSellersGoodsBo> getGoods(int currentPage, int pageSize) {
+    public List<GoodsDetailsVo> getGoods(int currentPage, int pageSize) {
         Page page = new Page(currentPage, pageSize);
-        Page<BestSellersGoodsBo> arrivalsGoodsBoPage = goodsBiz.selectPage(page, Condition.create()
-                .eq(BestSellersGoodsBo.Key.display.toString(), 1)
-                .orderBy(BestSellersGoodsBo.Key.sequence.toString(), true));
-        return arrivalsGoodsBoPage.getRecords();
+        List<GoodsDetailsVo> queryList = iBestSellersGoodsDao.getGoods(page);
+        queryList.forEach(s-> s.setImageMajor(QiniuUtil.getFullPath(s.getImageMajor())));
+        return queryList;
     }
 }
