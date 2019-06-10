@@ -27,9 +27,11 @@ public class INewArrivalsGoodsServiceImpl implements INewArrivalsGoodsService {
     private INewArrivalsGoodsDao iNewArrivalsGoodsDao;
 
     @Override
-    public List<GoodsDetailsVo> getGoods(int currentPage, int pageSize) {
-        Page page = new Page(currentPage, pageSize);
-        List<GoodsDetailsVo> queryList = iNewArrivalsGoodsDao.getGoods(page);
+    public List<GoodsDetailsVo> getGoods() {
+        List<GoodsDetailsVo> queryList = iNewArrivalsGoodsDao.getGoods();
+//        if(queryList.size() == 0){
+//            return queryList;
+//        }
         queryList.forEach(s-> s.setImageMajor(QiniuUtil.getFullPath(s.getImageMajor())));
         return queryList;
     }

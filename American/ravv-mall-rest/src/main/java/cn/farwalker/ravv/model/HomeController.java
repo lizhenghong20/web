@@ -2,10 +2,12 @@ package cn.farwalker.ravv.model;
 
 import cn.farwalker.ravv.service.goods.base.model.GoodsDetailsVo;
 import cn.farwalker.ravv.service.goods.base.model.ParseSkuExtVo;
+import cn.farwalker.ravv.service.model.VO.HomeModelVo;
 import cn.farwalker.ravv.service.model.bestsellers.activity.biz.IBestSellersActivityService;
 import cn.farwalker.ravv.service.model.bestsellers.activity.model.BestSellersActivityBo;
 import cn.farwalker.ravv.service.model.bestsellers.goods.biz.IBestSellersGoodsService;
 import cn.farwalker.ravv.service.model.bestsellers.goods.model.BestSellersGoodsBo;
+import cn.farwalker.ravv.service.model.biz.IHomeModelService;
 import cn.farwalker.ravv.service.model.newarrivals.activity.biz.INewArrivalsActivityService;
 import cn.farwalker.ravv.service.model.newarrivals.activity.model.NewArrivalsActivityBo;
 import cn.farwalker.ravv.service.model.newarrivals.goods.biz.INewArrivalsGoodsService;
@@ -43,6 +45,23 @@ public class HomeController {
     @Autowired
     private IWebModelService webModelService;
 
+    @Autowired
+    private IHomeModelService homeModelService;
+
+    @RequestMapping("/get_home_model")
+    public JsonResult<HomeModelVo> getHomeModel() {
+        try {
+
+            return JsonResult.newSuccess(homeModelService.getHomeModel());
+        } catch (WakaException e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error("", e);
+            return JsonResult.newFail(e.getMessage());
+        }
+    }
+
     @RequestMapping("/new_arrivals_activity")
     public JsonResult<List<NewArrivalsActivityBo>> getNewArrivalsActivity() {
         try {
@@ -58,15 +77,9 @@ public class HomeController {
     }
 
     @RequestMapping("/new_arrivals_goods")
-    public JsonResult<List<GoodsDetailsVo>> getNewArrivalsGoods(Integer currentPage, Integer pageSize) {
+    public JsonResult<List<GoodsDetailsVo>> getNewArrivalsGoods() {
         try {
-            if(currentPage == null || currentPage < 0)
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            if(pageSize == null || pageSize < 0)
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-
-            currentPage++;
-            return JsonResult.newSuccess(arrivalsGoodsService.getGoods(currentPage, pageSize));
+            return JsonResult.newSuccess(arrivalsGoodsService.getGoods());
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());
@@ -91,14 +104,9 @@ public class HomeController {
     }
 
     @RequestMapping("/best_sellers_goods")
-    public JsonResult<List<GoodsDetailsVo>> getBestSellersGoods(Integer currentPage, Integer pageSize) {
+    public JsonResult<List<GoodsDetailsVo>> getBestSellersGoods() {
         try {
-            if(currentPage == null || currentPage < 0)
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            if(pageSize == null || pageSize < 0)
-                throw new WakaException(RavvExceptionEnum.INVALID_PARAMETER_ERROR);
-            currentPage++;
-            return JsonResult.newSuccess(bestSellersGoodsService.getGoods(currentPage, pageSize));
+            return JsonResult.newSuccess(bestSellersGoodsService.getGoods());
         } catch (WakaException e) {
             log.error("", e);
             return JsonResult.newFail(e.getCode(), e.getMessage());

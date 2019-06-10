@@ -17,6 +17,8 @@ import java.util.List;
  * @author generateModel.java
  */
 public interface IBestSellersGoodsDao extends BaseMapper<BestSellersGoodsBo>{
+
     List<GoodsDetailsVo> selectGoodsForMenuId(Page page,@Param("menuIdList")List<Long> menuIdList);
-    List<GoodsDetailsVo> getGoods(Page page);
+    List<GoodsDetailsVo> getGoods();
+
 }

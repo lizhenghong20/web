@@ -6,5 +6,5 @@ import cn.farwalker.ravv.service.model.bestsellers.goods.model.BestSellersGoodsB
 import java.util.List;
 
 public interface IBestSellersGoodsService {
-    List<GoodsDetailsVo> getGoods(int currentPage, int pageSize);
+    List<GoodsDetailsVo> getGoods();
 }
