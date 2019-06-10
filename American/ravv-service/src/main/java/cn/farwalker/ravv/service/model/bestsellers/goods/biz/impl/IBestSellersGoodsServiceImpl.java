@@ -26,9 +26,8 @@ public class IBestSellersGoodsServiceImpl implements IBestSellersGoodsService {
     private IBestSellersGoodsDao iBestSellersGoodsDao;
 
     @Override
-    public List<GoodsDetailsVo> getGoods(int currentPage, int pageSize) {
-        Page page = new Page(currentPage, pageSize);
-        List<GoodsDetailsVo> queryList = iBestSellersGoodsDao.getGoods(page);
+    public List<GoodsDetailsVo> getGoods() {
+        List<GoodsDetailsVo> queryList = iBestSellersGoodsDao.getGoods();
         queryList.forEach(s-> s.setImageMajor(QiniuUtil.getFullPath(s.getImageMajor())));
         return queryList;
     }

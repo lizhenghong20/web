@@ -15,5 +15,5 @@ import java.util.List;
  */
 public interface INewArrivalsGoodsDao extends BaseMapper<NewArrivalsGoodsBo>{
 
-    List<GoodsDetailsVo> getGoods(Page page);
+    List<GoodsDetailsVo> getGoods();
 }
