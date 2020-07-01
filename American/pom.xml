@@ -51,7 +51,7 @@
         <jwt.version>0.7.0</jwt.version>
         <hutool.version>4.0.0</hutool.version>
         <weixin-java-tools.version>3.0.0</weixin-java-tools.version>
-        <quartz.version>2.3.0</quartz.version>
+        <quartz.version>2.3.2</quartz.version>
         <lombok.version>1.18.4</lombok.version>
         <google.http.version>1.23.0</google.http.version>
         <paypal.version>1.4.2</paypal.version>
